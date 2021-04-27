@@ -260,6 +260,7 @@
         app:layout_constraintBottom_toTopOf="@id/center_azimuth"
         android:textColor="@android:color/holo_orange_dark"
         android:textSize="14sp"
+        android:maxLines="2"
         android:text="@string/label_center_azimuth" />
 
     <TextView
@@ -281,6 +282,7 @@
         app:layout_constraintBottom_toTopOf="@id/center_altitude"
         android:textColor="@android:color/holo_blue_dark"
         android:textSize="14sp"
+        android:maxLines="2"
         android:text="@string/label_center_altitude" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

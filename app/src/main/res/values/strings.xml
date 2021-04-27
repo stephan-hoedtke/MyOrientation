@@ -31,7 +31,7 @@
     <string name="default_roll">32°</string>
     <string name="label_roll">Roll</string>
     <string name="default_center_azimuth">32°</string>
-    <string name="label_center_azimuth">Center<br/>Azimuth</string>
+    <string name="label_center_azimuth">Center\nAzimuth</string>
     <string name="default_center_altitude">32°</string>
-    <string name="label_center_altitude">Center<br/>Altitude</string>
+    <string name="label_center_altitude">Center\nAltitude</string>
 </resources>
