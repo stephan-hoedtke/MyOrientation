@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="properties">
+        <item>Azimuth</item>
+        <item>Pitch</item>
+        <item>Roll</item>
+        <item>Center Azimuth</item>
+        <item>Center Altitude</item>
+    </string-array>
+</resources>

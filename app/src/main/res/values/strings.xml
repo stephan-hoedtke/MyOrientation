@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">MyOrientation</string>
+    <string name="action_settings">Settings</string>
+    <string name="main_fragment_label">Main Fragment</string>
+    <string name="settings_fragment_label">Settings Fragment</string>
+    <string name="label_name_value">%s = %s</string>
+    <string name="label_value_degree">%s°</string>
+    <string name="label_done">Done</string>
+    <string name="label_reset_default_values">Reset Default Values</string>
+    <string name="label_method">Method</string>
+    <string name="label_property">Property</string>
+    <string name="default_acceleration_factor">0.8</string>
+    <string name="label_acceleration_factor">Acceleration Factor (Critical Damped Rotation)</string>
+    <string name="default_filter_coefficient">0.98</string>
+    <string name="label_filter_coefficient">Filter Coefficient (Sensor Fusion)</string>
+    <string name="default_time_constant">0.2</string>
+    <string name="label_time_constant">Time Constant (Low Pass Filter)</string>
+    <string name="label_parameters">Parameters</string>
+    <string name="label_accelerometer">Accelerometer</string>
+    <string name="label_magnetometer">Magnetometer</string>
+    <string name="label_gyroscope">Gyroscope</string>
+    <string name="label_acceleration_value">a = 0.70</string>
+    <string name="label_time_constant_value">t = 0.40</string>
+    <string name="label_filter_coefficient_value">f = 0.98</string>
+    <string name="label_azimuth">Azimuth</string>
+    <string name="label_acceleration_and_magnetometer"><![CDATA[Acceleration & Magnetometer]]></string>
+    <string name="label_version_value">1.4.2</string>
+    <string name="default_azimuth">32°</string>
+    <string name="default_pitch">32°</string>
+    <string name="label_pitch">Pitch</string>
+    <string name="default_roll">32°</string>
+    <string name="label_roll">Roll</string>
+    <string name="default_center_azimuth">32°</string>
+    <string name="label_center_azimuth">Center<br/>Azimuth</string>
+    <string name="default_center_altitude">32°</string>
+    <string name="label_center_altitude">Center<br/>Altitude</string>
+</resources>
