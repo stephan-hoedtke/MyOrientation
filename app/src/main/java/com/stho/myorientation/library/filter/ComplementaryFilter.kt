@@ -1,12 +1,10 @@
 package com.stho.myorientation.library.filter
 
 import android.hardware.SensorManager
-import android.os.Handler
-import android.os.Looper
 import com.stho.myorientation.Entries
 import com.stho.myorientation.Measurements
-import com.stho.myorientation.Repository
 import com.stho.myorientation.library.*
+import com.stho.myorientation.library.algebra.Matrix
 import com.stho.myorientation.library.algebra.Quaternion
 import kotlin.math.sqrt
 
@@ -18,11 +16,12 @@ class ComplementaryFilter(accelerationFactor: Double = 0.7, filterCoefficient: D
     private val magnetometerReading = FloatArray(3)
     private val gyroscopeReading = FloatArray(3)
 
-    private var gyroDeltaRotationQuaternion: Quaternion = Quaternion.default
-    private var gyroOrientationQuaternion: Quaternion = Quaternion.default
-    private var accelerationOrientationQuaternion: Quaternion = Quaternion.default
+    private var gyroDeltaRotation: Quaternion = Quaternion.default
+    private var gyroOrientation: Quaternion = Quaternion.default
+    private var accelerationMagnetometerOrientation: Quaternion = Quaternion.default
 
-    private var hasAcceleration: Boolean = false
+    private var hasMagnetometer: Boolean = false
+    private var hasAccelerationMagnetometer: Boolean = false
     private var hasGyro: Boolean = false
 
     private var timer: Timer = Timer()
@@ -32,6 +31,7 @@ class ComplementaryFilter(accelerationFactor: Double = 0.7, filterCoefficient: D
         when (type) {
             Measurements.Type.Magnetometer -> {
                 System.arraycopy(values, 0, magnetometerReading, 0, magnetometerReading.size)
+                hasMagnetometer = true
             }
             Measurements.Type.Accelerometer -> {
                 System.arraycopy(values, 0, accelerometerReading, 0, accelerometerReading.size)
@@ -45,22 +45,27 @@ class ComplementaryFilter(accelerationFactor: Double = 0.7, filterCoefficient: D
     }
 
     private fun updateOrientationAnglesFromAcceleration() {
+        // If magnetometer is not initialized yet, don't continue...
+        if (!hasMagnetometer)
+            return
+
         val rotationMatrix = FloatArray(9)
         if (SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading)) {
-            val adjustedRotationMatrix = getAdjustedRotationMatrix(rotationMatrix)
-            accelerationOrientationQuaternion = Quaternion.fromRotationMatrix(adjustedRotationMatrix)
-            hasAcceleration = true
+            // TODO: get quaternion from readings directly
+            val adjustedRotationMatrix = Matrix.fromFloatArray(getAdjustedRotationMatrix(rotationMatrix))
+            accelerationMagnetometerOrientation = Quaternion.fromRotationMatrix( adjustedRotationMatrix)
+            hasAccelerationMagnetometer = true
         }
     }
 
     private fun updateOrientationAnglesFromGyroscope() {
         // If acceleration is not initialized yet, don't continue...
-        if (!hasAcceleration)
+        if (!hasAccelerationMagnetometer)
             return
 
         // If gyro is not initialized yet, do it now...
         if (!hasGyro) {
-            gyroOrientationQuaternion *= accelerationOrientationQuaternion
+            gyroOrientation = Quaternion.default * accelerationMagnetometerOrientation
             hasGyro = true
         }
 
@@ -68,7 +73,7 @@ class ComplementaryFilter(accelerationFactor: Double = 0.7, filterCoefficient: D
         getDeltaRotationFromGyroscope()
 
         // update the gyro orientation
-        gyroOrientationQuaternion *= gyroDeltaRotationQuaternion  // TODO: ? .inverse()
+        gyroOrientation *= gyroDeltaRotation
 
         // update orientation
         updateOrientationFromGyroOrientation()
@@ -101,31 +106,43 @@ class ComplementaryFilter(accelerationFactor: Double = 0.7, filterCoefficient: D
             // in order to get a delta rotation from this sample over the timestep
             // We will convert this axis-angle representation of the delta rotation
             // into a quaternion before turning it into the rotation matrix.
+            //
+            // Quaternion integration:
+            // ds/dt = omega x s
+            // with s = q # s0 # q* follows
+            //      dq/dt = 0.5 * omega # q
+            //      q(t) = exp(0.5 * omega * (t - t0)) # q0
+            //      q(t) = cos(|v|) + v / |v| * sin(|v|) # q0 with v = 0.5 * omega * (t - t0)
+            //      this is equivalent to a rotation by theta around the rotation vector omega/|omega| with theta = |omega| * (t - t0)
             val theta: Double = omegaMagnitude * dt
-            gyroDeltaRotationQuaternion = Quaternion.forRotation(x, y, z, theta)
+            gyroDeltaRotation = Quaternion.forRotation(x, y, z, theta)
         }
     }
 
     override fun fuseSensors() {
-        if (hasGyro && hasAcceleration) {
-            // calculateFusedOrientation()
+        if (hasGyro && hasAccelerationMagnetometer) {
+            calculateFusedOrientation()
         }
+    }
+
+    override fun reset() {
+        hasMagnetometer= false
+        hasAccelerationMagnetometer = false
+        hasGyro = false
     }
 
     /**
      * fuse gyro with acceleration to overcome the gyro bias
      */
     private fun calculateFusedOrientation() {
-        val fusedOrientation = Quaternion.interpolate(gyroOrientationQuaternion, accelerationOrientationQuaternion, interpolationFactor)
-
-        // update the gyro orientation to reflect the correction by the acceleration and magnetometer sensor
-        gyroOrientationQuaternion = fusedOrientation
+        gyroOrientation = Quaternion.interpolate(gyroOrientation, accelerationMagnetometerOrientation, interpolationFactor)
     }
 
     private fun updateOrientationFromGyroOrientation() {
-        val matrix = gyroOrientationQuaternion.toRotationMatrix()
-        val adjustedRotationMatrix = getAdjustedRotationMatrix(matrix)
-        val angles = getOrientationAnglesFromRotationMatrix(adjustedRotationMatrix)
+        // TODO: get angles from quaternion directly
+        val matrix = gyroOrientation.toRotationMatrix()
+        val adjustedRotationMatrix = Matrix.fromFloatArray(getAdjustedRotationMatrix(matrix.toFloatArray()))
+        val angles = getOrientationForRotationMatrix(adjustedRotationMatrix)
         onOrientationAnglesChanged(angles)
     }
 

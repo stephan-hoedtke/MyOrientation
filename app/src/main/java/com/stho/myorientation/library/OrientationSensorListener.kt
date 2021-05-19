@@ -20,7 +20,10 @@ class OrientationSensorListener(private val context: Context, private var filter
     }
 
     internal fun onResume() {
-        context.display?.let { filter.deviceRotation = it.rotation }
+        filter.reset()
+        context.display?.let {
+            filter.deviceRotation = it.rotation
+        }
         initializeRotationVectorSensor()
         initializeMagneticFieldSensor()
         initializeAccelerationSensor()

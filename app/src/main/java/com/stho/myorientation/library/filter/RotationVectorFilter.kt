@@ -3,9 +3,7 @@ package com.stho.myorientation.library.filter
 import android.hardware.SensorManager
 import com.stho.myorientation.Entries
 import com.stho.myorientation.Measurements
-import com.stho.myorientation.Repository
-import com.stho.myorientation.library.*
-import com.stho.myorientation.library.Acceleration
+import com.stho.myorientation.library.algebra.Matrix
 
 
 class RotationVectorFilter(accelerationFactor: Double = 0.7): AbstractOrientationFilter(Entries.Method.RotationVector, accelerationFactor), OrientationFilter {
@@ -22,15 +20,19 @@ class RotationVectorFilter(accelerationFactor: Double = 0.7): AbstractOrientatio
         }
     }
 
+    override fun reset() {
+        // nothing to do
+    }
+
     /**
      * Compute the three orientation angles based on the most recent readings from rotation vector
      */
     private fun updateOrientationAnglesFromRotationVector() {
         val rotationMatrix = FloatArray(9)
         SensorManager.getRotationMatrixFromVector(rotationMatrix, rotationVectorReading)
-        val adjustedRotationMatrix = getAdjustedRotationMatrix(rotationMatrix)
-        val angles = getOrientationAnglesFromRotationMatrix(adjustedRotationMatrix)
-        onOrientationAnglesChanged(angles)
+        val adjustedRotationMatrix = Matrix.fromFloatArray(getAdjustedRotationMatrix(rotationMatrix))
+        val orientation = getOrientationForRotationMatrix(adjustedRotationMatrix)
+        onOrientationAnglesChanged(orientation)
     }
 }
 

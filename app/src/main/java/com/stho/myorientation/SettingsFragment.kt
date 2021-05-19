@@ -110,6 +110,7 @@ class SettingsFragment : Fragment() {
         methods.add(Entries.Method.AccelerometerMagnetometer)
         methods.add(Entries.Method.RotationVector)
         methods.add(Entries.Method.ComplementaryFilter)
+        methods.add(Entries.Method.MadgwickFilter)
         methods.add(Entries.Method.KalmanFilter)
         methods.add(Entries.Method.Composition)
 

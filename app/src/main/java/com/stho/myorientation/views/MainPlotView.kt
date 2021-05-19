@@ -15,6 +15,7 @@ class MainPlotView(context: Context?, attrs: AttributeSet?) : AbstractPlotView(c
     private val gray: Paint = Paint().apply { color = Color.GRAY; style = Paint.Style.STROKE; }
     private val yellow: Paint = Paint().apply { color = Color.YELLOW; style = Paint.Style.STROKE }
     private val green: Paint = Paint().apply { color = Color.GREEN; style = Paint.Style.STROKE }
+    private val pink: Paint = Paint().apply { color = Color.rgb(0xFC, 0x0F, 0xC0); style = Paint.Style.STROKE }
 
     private val repository: Repository by lazy { Repository.instance }
     private var property: Entries.Property = Entries.Property.Azimuth
@@ -34,7 +35,8 @@ class MainPlotView(context: Context?, attrs: AttributeSet?) : AbstractPlotView(c
         drawer.draw(repository.entries, Entries.Method.AccelerometerMagnetometer, property, red)
         drawer.draw(repository.entries, Entries.Method.RotationVector, property, yellow)
         drawer.draw(repository.entries, Entries.Method.ComplementaryFilter, property, cyan)
-        drawer.draw(repository.entries, Entries.Method.KalmanFilter, property, green)
+        drawer.draw(repository.entries, Entries.Method.MadgwickFilter, property, green)
+        //drawer.draw(repository.entries, Entries.Method.KalmanFilter, property, pink)
         drawer.draw(repository.entries, Entries.Method.Damped, property, gray)
     }
 }

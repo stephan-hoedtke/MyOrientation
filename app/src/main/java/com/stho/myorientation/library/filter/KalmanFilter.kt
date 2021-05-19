@@ -26,6 +26,10 @@ class KalmanFilter(accelerationFactor: Double = 0.7) : AbstractOrientationFilter
         }
     }
 
+    override fun reset() {
+
+    }
+
     private fun updateOrientationAnglesFromAcceleration() {
 
     }

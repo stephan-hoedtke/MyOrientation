@@ -2,10 +2,8 @@ package com.stho.myorientation
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.stho.myorientation.library.Degree
-import com.stho.myorientation.library.Orientation
 import com.stho.myorientation.library.Timer
-import kotlin.math.PI
+import com.stho.myorientation.library.algebra.Orientation
 
 class Repository private constructor() {
 

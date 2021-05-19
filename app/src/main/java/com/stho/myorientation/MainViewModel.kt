@@ -4,11 +4,11 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.stho.myorientation.library.Orientation
+import com.stho.myorientation.library.algebra.Orientation
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val methodLiveData: MutableLiveData<Entries.Method> = MutableLiveData<Entries.Method>().apply { value = Entries.Method.ComplementaryFilter }
+    private val methodLiveData: MutableLiveData<Entries.Method> = MutableLiveData<Entries.Method>().apply { value = Entries.Method.Composition }
     private val zoomLiveData: MutableLiveData<Double> = MutableLiveData<Double>().apply { value = DEFAULT_ZOOM }
     private val startTimeLiveData: MutableLiveData<Double> = MutableLiveData<Double>().apply { value = DEFAULT_START_TIME }
     private val propertyLiveData: MutableLiveData<Entries.Property> = MutableLiveData<Entries.Property>().apply { value = Entries.Property.CenterAzimuth}
@@ -48,6 +48,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         get() = Repository.instance.isActiveLD
 
     fun reset() {
+        methodLiveData.postValue(method)
         startTimeLiveData.postValue(DEFAULT_START_TIME)
         zoomLiveData.postValue(DEFAULT_ZOOM)
     }
@@ -116,7 +117,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun startStop() {
         if (Repository.instance.startStop()) {
-            startTimeLiveData.postValue(DEFAULT_START_TIME)
+            reset()
         }
     }
 

@@ -4,6 +4,7 @@
         <item>Acceleration &amp; Magnetometer</item>
         <item>Rotation Vector</item>
         <item>Complementary Filter</item>
+        <item>Madgwick Filter</item>
         <item>Kalman Filter</item>
         <item>Composition</item>
     </string-array>

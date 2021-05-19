@@ -6,7 +6,10 @@ import com.stho.myorientation.Entries
 import com.stho.myorientation.Repository
 import com.stho.myorientation.library.Acceleration
 import com.stho.myorientation.library.Degree
-import com.stho.myorientation.library.Orientation
+import com.stho.myorientation.library.algebra.Matrix
+import com.stho.myorientation.library.algebra.Orientation
+import com.stho.myorientation.library.algebra.Quaternion
+import com.stho.myorientation.library.algebra.Rotation
 
 
 abstract class AbstractOrientationFilter(private val method: Entries.Method, accelerationFactor: Double) : OrientationFilter {
@@ -28,70 +31,35 @@ abstract class AbstractOrientationFilter(private val method: Entries.Method, acc
 
     override var deviceRotation: Int = Surface.ROTATION_0
 
-    internal fun lookAtThePhoneFromAbove(roll: Double) =
-        -90 < roll && roll < 90
-
-    internal fun adjustForLookingAtThePhoneFromBelow(angles: DoubleArray): DoubleArray =
-        doubleArrayOf(
-            -angles[0],
-            180 - angles[1],
-            180 - angles[2],
-            angles[3],
-            angles[4]
-        )
-
-    protected open fun onOrientationAnglesChanged(angles: DoubleArray) {
-        if (lookAtThePhoneFromAbove(angles[2])) {
-            setOrientationAngles(angles)
+    protected open fun onOrientationAnglesChanged(orientation: Orientation) {
+        if (Rotation.requireAdjustmentForLookingAtThePhoneFromBelow(orientation)) {
+            setOrientation(Rotation.adjustForLookingAtThePhoneFromBelow(orientation))
         } else {
-            setOrientationAngles(adjustForLookingAtThePhoneFromBelow(angles))
+            setOrientation(orientation)
         }
     }
 
-    private fun setOrientationAngles(angles: DoubleArray) {
-        val sensorOrientation = Orientation(
-                angles[0],
-                angles[1],
-                angles[2],
-                angles[3],
-                angles[4]
-        )
-
-        Repository.instance.recordEntry(method, sensorOrientation)
-
-        azimuthAcceleration.rotateTo(sensorOrientation.azimuth)
-        pitchAcceleration.rotateTo(sensorOrientation.pitch)
-        rollAcceleration.rotateTo(sensorOrientation.roll)
-        centerAzimuthAcceleration.rotateTo(sensorOrientation.centerAzimuth)
-        centerAltitudeAcceleration.rotateTo(sensorOrientation.centerAltitude)
+    private fun setOrientation(orientation: Orientation) {
+        Repository.instance.recordEntry(method, orientation)
+        azimuthAcceleration.rotateTo(orientation.azimuth)
+        pitchAcceleration.rotateTo(orientation.pitch)
+        rollAcceleration.rotateTo(orientation.roll)
+        centerAzimuthAcceleration.rotateTo(orientation.centerAzimuth)
+        centerAltitudeAcceleration.rotateTo(orientation.centerAltitude)
     }
 
     /**
-     *
-     * 1) azimuth and altitude: north vector = (0, 1, 0) --> R * north vector = (x = R[1], y = R[4], z = R[7])
-     *      azimuth = atan2(x, y) = atan2(R[1], R[4])
-     *      altitude = -asin(R[Z]) = asin(-R[7)
-     *
-     * 2) roll:
-     *      roll = atan2(x, z) = atan2(R[6], R[8])
-     *
-     *      see: SensorManager.getOrientation()
-     *      values[0] = (float) Math.atan2(R[1], R[4]);
-     *      values[1] = (float) Math.asin(-R[7]);
-     *      values[2] = (float) Math.atan2(-R[6], R[8]);
-     *
-     * 3) center: center vector = (0, 0, -1) --> R * center vector = (x = -R[2], y = -R[5], z = -R[8])
-     *      azimuth = atan2(x, y) = atan2(-R[2], -R[5])
-     *      altitude = asin(z) = asin(-R[8])
+     * Returns the orientation for a rotation matrix which converts a vector from device frame into earth frame
+     *      as it is used by the sensor manager
      */
-    internal fun getOrientationAnglesFromRotationMatrix(R: FloatArray) =
-        doubleArrayOf(
-            Degree.arcTan2(R[1].toDouble(), R[4].toDouble()),       // pointer azimuth
-            Degree.arcSin(-R[7].toDouble()),                         // pitch (opposite of pointer altitude)
-            Degree.arcTan2(-R[6].toDouble(), R[8].toDouble()),      // roll
-            Degree.arcTan2(-R[2].toDouble(), -R[5].toDouble()),     // center azimuth
-            Degree.arcSin(-R[8].toDouble())                         // center altitude
-        )
+    internal fun getOrientationForRotationMatrix(r: Matrix): Orientation =
+        Rotation.rotationMatrixToOrientation(r.transpose())
+
+    /**
+     * Returns the orientation for a quaternion which converts a vector from earth frame into device frame
+     */
+    internal fun getOrientationForQuaternion(q: Quaternion): Orientation =
+        Rotation.quaternionToOrientation(q)
 
     /**
      * See the following training materials from google.

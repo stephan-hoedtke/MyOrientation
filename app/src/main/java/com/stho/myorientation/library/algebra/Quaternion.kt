@@ -3,7 +3,8 @@ package com.stho.myorientation.library.algebra
 import kotlin.math.*
 
 /**
- * see: https://mathworld.wolfram.com/Quaternion.html
+ * https://mathworld.wolfram.com/Quaternion.html
+ * https://www.ashwinnarayan.com/post/how-to-integrate-quaternions/
  */
 data class Quaternion(val v: Vector, val s: Double) {
     val x: Double = v.x
@@ -38,55 +39,63 @@ data class Quaternion(val v: Vector, val s: Double) {
         conjugate() * (1 / normSquare())
 
     fun normalize(): Quaternion =
-        this * (sign(x) / norm())
+        this * (1.0 / norm())
 
-    fun toRotationMatrix(): FloatArray {
-        return FloatArray(9).apply {
-            val x2 = 2 * x * x
-            val y2 = 2 * y * y
-            val z2 = 2 * z * z
-            val xy = 2 * x * y
-            val xz = 2 * x * z
-            val yz = 2 * y * z
-            val sz = 2 * s * z
-            val sy = 2 * s * y
-            val sx = 2 * s * x
-            val m11 = 1 - y2 - z2
-            val m12 = xy - sz
-            val m13 = sy + xz
-            val m21 = xy + sz
-            val m22 = 1 - x2 - z2
-            val m23 = yz - sx
-            val m31 = xz - sy
-            val m32 = sx + yz
-            val m33 = 1 - x2 - y2
-            this[0] = m11.toFloat()
-            this[1] = m12.toFloat()
-            this[2] = m13.toFloat()
-            this[3] = m21.toFloat()
-            this[4] = m22.toFloat()
-            this[5] = m23.toFloat()
-            this[6] = m31.toFloat()
-            this[7] = m32.toFloat()
-            this[8] = m33.toFloat()
+    fun normalizePositiveX(): Quaternion =
+        // warning: do not use sign(x) as it is 0 for x = 0
+        // this method may be difficult for gradient descent debugging...
+        when {
+            x < 0 -> this * (-1.0 / norm())
+            else -> this * (1.0 / norm())
         }
+
+    fun round(): Quaternion {
+        val n = norm()
+        val xx = (x / n).round(6)
+        val yy = (y / n).round(6)
+        val zz = (z / n).round(6)
+        val ss = (s / n).round(6)
+        return Quaternion(xx, yy, zz, ss)
     }
 
+    fun toRotationMatrix(): Matrix =
+        Rotation.quaternionToRotationMatrix(this)
+
+    fun toEulerAngles(): EulerAngles =
+        Rotation.quaternionToEulerAngles(this)
+
     companion object {
-        fun fromEventValues(v: FloatArray): Quaternion =
+        fun fromFloatArray(v: FloatArray): Quaternion =
                 if (v.size >= 4) {
-                    Quaternion(v[0].toDouble(), v[1].toDouble(), v[2].toDouble(), v[3].toDouble())
+                    // assume v[0], v[1], v[2] build the vector and s = v[3] of a unit quaternion already
+                    Quaternion(x = v[0].toDouble(), y = v[1].toDouble(), z = v[2].toDouble(), s = v[3].toDouble())
                 } else {
+                    // assume v[0], v[1], v[2] build the vector, so that s can be calculated for the unit quaternion
                     val n = 1 - v[0] * v[0] - v[1] * v[1] - v[2] * v[2];
                     val s = if (n > 0) sqrt(n.toDouble()) else 0.0
-                    Quaternion(v[0].toDouble(), v[1].toDouble(), v[2].toDouble(), s)
+                    Quaternion(x = v[0].toDouble(), y = v[1].toDouble(), z = v[2].toDouble(), s = s)
                 }
 
-        fun forEulerAngles(azimuth: Double, pitch: Double, roll: Double): Quaternion {
-            val m = Matrix.fromEulerAngles(azimuth, pitch, roll)
-            return Quaternion.fromRotationMatrix(m)
-        }
+        /**
+         * Returns a rotation quaternion for Euler angles in degree
+         *
+         *      v_earth = v_device.rotateBy(q)
+         */
+        fun forEulerAngles(azimuth: Double, pitch: Double, roll: Double): Quaternion =
+            Rotation.eulerAnglesToQuaternion(EulerAngles.fromAzimuthPitchRoll(azimuth, pitch, roll))
 
+        /**
+         * Returns a rotation quaternion for Euler angles given as Vector(pitch,roll,azimuth) in radian
+         *
+         *      v_earth = v_device.rotateBy(q)
+         */
+        fun forEulerAngles(eulerAngles: EulerAngles): Quaternion =
+            Rotation.eulerAnglesToQuaternion(eulerAngles)
+
+
+        /**
+         * Quaternion for rotating by theta (in radians) around the vector (x, y, z)
+         */
         fun forRotation(x: Double, y: Double, z: Double, theta: Double): Quaternion {
             // see: https://developer.android.com/reference/android/hardware/SensorEvent
             val thetaOverTwo = theta / 2.0
@@ -95,6 +104,9 @@ data class Quaternion(val v: Vector, val s: Double) {
             return Quaternion(x = x * sinThetaOverTwo, y = y * sinThetaOverTwo, z = z * sinThetaOverTwo, s = cosThetaOverTwo)
         }
 
+        /**
+         * Quaternion for rotating by theta (in radians) around the vector u
+         */
         fun forRotation(u: Vector, theta: Double): Quaternion {
             // see: https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation
             val thetaOverTwo = theta / 2.0
@@ -125,62 +137,8 @@ data class Quaternion(val v: Vector, val s: Double) {
             )
         }
 
-        fun fromRotationMatrix(m: FloatArray): Quaternion {
-            // see: https://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
-            if (m.size != 9) {
-                throw Exception("Invalid rotation matrix")
-            }
-            val m00 = m[0].toDouble()
-            val m01 = m[1].toDouble()
-            val m02 = m[2].toDouble()
-            val m10 = m[3].toDouble()
-            val m11 = m[4].toDouble()
-            val m12 = m[5].toDouble()
-            val m20 = m[6].toDouble()
-            val m21 = m[7].toDouble()
-            val m22 = m[8].toDouble()
-
-            val trace: Double = m00 + m11 + m22
-
-            when {
-                trace > 0 -> {
-                    val fourS = 2.0 * sqrt(1.0 + trace) // 4s = 4 * q.s
-                    return Quaternion(
-                            x = (m21 - m12) / fourS,
-                            y = (m02 - m20) / fourS,
-                            z = (m10 - m01) / fourS,
-                            s = 0.25 * fourS
-                    )
-                }
-                m00 > m11 && m00 > m22 -> {
-                    val fourX = 2.0 * sqrt(1.0 + m00 - m11 - m22) // 4x = 4 * q.x
-                    return Quaternion(
-                            x = 0.25 * fourX,
-                            y = (m01 + m10) / fourX,
-                            z = (m02 + m20) / fourX,
-                            s = (m21 - m12) / fourX,
-                    )
-                }
-                m11 > m22 -> {
-                    val fourY = 2.0 * sqrt(1.0 + m11 - m00 - m22) // 4y = 4*q.y
-                    return Quaternion(
-                            x = (m01 + m10) / fourY,
-                            y = 0.25 * fourY,
-                            z = (m12 + m21) / fourY,
-                            s = (m02 - m20) / fourY
-                    )
-                }
-                else -> {
-                    val fourZ = 2.0 * sqrt(1.0 + m22 - m00 - m11) // 4z = 4 * q.z
-                    return Quaternion(
-                            x = (m02 + m20) / fourZ,
-                            y = (m12 + m21) / fourZ,
-                            z = 0.25 * fourZ,
-                            s = (m10 - m01) / fourZ
-                    )
-                }
-            }
-        }
+        fun fromRotationMatrix(m: Matrix): Quaternion =
+            Rotation.rotationMatrixToQuaternion(m)
 
         fun dot(a: Quaternion, b: Quaternion): Double =
                 a.x * b.x + a.y * b.y + a.z * b.z + a.s * b.s
@@ -189,9 +147,12 @@ data class Quaternion(val v: Vector, val s: Double) {
 
         /**
          * Q(t) := A sin((1 - t) * θ) / sin(θ) + B sin(t * θ) / sin(θ)
-         * with cos(θ) = dot(A, B)
-         * mind to ensure -90 <= θ <= 90, use -A when dot(A,B) < 0
-         * θ := tθ0
+         *      with cos(θ) = dot(A, B)
+         *
+         *      To ensure -90 <= θ <= 90: use -A when dot(A,B) < 0
+         *      Note:
+         *          Q(0) = A
+         *          Q(1) = B
          */
         fun interpolate(a: Quaternion, b: Quaternion, t: Double): Quaternion {
             // see: https://theory.org/software/qfa/writeup/node12.html
@@ -233,8 +194,20 @@ data class Quaternion(val v: Vector, val s: Double) {
             }
             return r.normalize()
         }
+
+        private const val EPSILON: Double = 0.000000001
     }
 }
+
+/**
+ * Rounds a double to the number of digits. It's a kind of slow, but works
+ */
+fun Double.round(decimals: Int): Double {
+    var f = 1.0
+    repeat(decimals) { f *= 10 }
+    return round(this * f + 0.5) / f
+}
+
 
 
 

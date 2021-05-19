@@ -39,8 +39,8 @@ class MainActivity : AppCompatActivity() {
         orientationSensorListener = OrientationSensorListener(this, orientationFilter)
 
         viewModel.isActiveLD.observe(this, { isActive -> observeIsActive(isActive) })
-        viewModel.accelerationFactorLD.observe(this, { _ -> reset() })
-        viewModel.timeConstantLD.observe(this, { _ -> reset() })
+        viewModel.accelerationFactorLD.observe(this, { _ -> viewModel.reset() })
+        viewModel.timeConstantLD.observe(this, { _ -> viewModel.reset() })
         viewModel.methodLD.observe(this, { method -> observeMethod(method) })
 
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -76,7 +76,6 @@ class MainActivity : AppCompatActivity() {
         fab.setImageResource(if (isActive) android.R.drawable.ic_media_pause else android.R.drawable.ic_media_play)
     }
 
-    @Suppress("NON_EXHAUSTIVE_WHEN")
     private fun observeMethod(method: Entries.Method) {
         when (method) {
             Entries.Method.AccelerometerMagnetometer -> {
@@ -91,6 +90,10 @@ class MainActivity : AppCompatActivity() {
                 orientationFilter = ComplementaryFilter(viewModel.accelerationFactor, viewModel.filterCoefficient)
                 orientationSensorListener.setFilter(orientationFilter)
             }
+            Entries.Method.MadgwickFilter -> {
+                orientationFilter = MadgwickFilter(viewModel.accelerationFactor)
+                orientationSensorListener.setFilter(orientationFilter)
+            }
             Entries.Method.KalmanFilter -> {
                 orientationFilter = KalmanFilter(viewModel.accelerationFactor)
                 orientationSensorListener.setFilter(orientationFilter)
@@ -98,6 +101,9 @@ class MainActivity : AppCompatActivity() {
             Entries.Method.Composition -> {
                 orientationFilter = CompositionFilter(viewModel.accelerationFactor, viewModel.timeConstant, viewModel.filterCoefficient)
                 orientationSensorListener.setFilter(orientationFilter)
+            }
+            Entries.Method.Damped -> {
+                // do nothing...
             }
         }
     }
@@ -140,12 +146,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun stopHandler() =
             handler.removeCallbacksAndMessages(null)
-
-    private fun reset() {
-        orientationFilter = AccelerationMagnetometerFilter(viewModel.accelerationFactor, viewModel.timeConstant)
-        orientationSensorListener.setFilter(orientationFilter)
-        viewModel.reset()
-    }
 
     private fun showSnackbar(message: String) {
         val container: View = findViewById<View>(R.id.toolbar)

@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.stho.myorientation.databinding.FragmentMainBinding
 import com.stho.myorientation.library.Formatter
-import com.stho.myorientation.library.Orientation
+import com.stho.myorientation.library.algebra.Orientation
 import com.stho.myorientation.views.AbstractPlotView
 
 /**
@@ -151,9 +151,11 @@ class MainFragment : Fragment() {
             when (method) {
                 Entries.Method.AccelerometerMagnetometer -> Color.RED
                 Entries.Method.RotationVector -> Color.YELLOW
-                Entries.Method.KalmanFilter -> Color.GREEN
+                Entries.Method.KalmanFilter -> Color.rgb(0xFC, 0x0F, 0xC0);
                 Entries.Method.ComplementaryFilter -> Color.CYAN
-                else -> Color.WHITE
+                Entries.Method.MadgwickFilter -> Color.GREEN
+                Entries.Method.Composition -> Color.WHITE
+                Entries.Method.Damped -> Color.GRAY
             }
 
 

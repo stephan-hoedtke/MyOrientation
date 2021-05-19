@@ -4,7 +4,9 @@
       <w>asin</w>
       <w>atan</w>
       <w>gimbal</w>
+      <w>jacobian</w>
       <w>kalman</w>
+      <w>madgwick</w>
       <w>myorientation</w>
       <w>seekbar</w>
       <w>snackbar</w>

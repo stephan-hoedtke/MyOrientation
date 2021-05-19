@@ -6,21 +6,23 @@ class Timer {
     private var startTime = timeSource.elapsedRealtimeSeconds
 
     /**
-     * reset start time
+     * Reset start time
      */
     fun reset() {
         startTime = timeSource.elapsedRealtimeSeconds
     }
 
     /**
-     * get elapsed time since last start time in seconds
+     * Return elapsed time (since last start time) in seconds
      */
     fun getTime(): Double {
         return timeSource.elapsedRealtimeSeconds - startTime
     }
 
     /**
-     * getTime() + reset()
+     * Return elapsed time (since last start time) in seconds and reset start time
+     *
+     *      getTime() + reset()
      */
     fun getNextTime(): Double {
         val previousStartTime = startTime
