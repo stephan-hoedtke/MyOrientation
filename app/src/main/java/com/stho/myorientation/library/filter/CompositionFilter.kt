@@ -2,7 +2,7 @@ package com.stho.myorientation.library.filter
 
 import com.stho.myorientation.Entries
 import com.stho.myorientation.Measurements
-import com.stho.myorientation.library.Degree
+import com.stho.myorientation.library.algebra.Degree
 import com.stho.myorientation.library.algebra.Orientation
 
 

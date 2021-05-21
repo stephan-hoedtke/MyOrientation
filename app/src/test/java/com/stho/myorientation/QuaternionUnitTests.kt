@@ -1,6 +1,6 @@
 package com.stho.myorientation
 
-import com.stho.myorientation.library.Degree
+import com.stho.myorientation.library.algebra.Degree
 import com.stho.myorientation.library.algebra.Matrix
 import com.stho.myorientation.library.algebra.Quaternion
 import com.stho.myorientation.library.algebra.Vector
@@ -27,24 +27,28 @@ class QuaternionUnitTests {
         val sin30 = 0.5
 
         // rotation by 90° around z-axis: moves x to y and y to -x and keeps z
-        quaternion_rotation_isCorrect(Vector(1.0, 0.0, 0.0), Quaternion.forRotation(0.0, 0.0, 1.0, PI/2), Vector(0.0, 1.0, 0.0))
-        quaternion_rotation_isCorrect(Vector(0.0, 1.0, 0.0), Quaternion.forRotation(0.0, 0.0, 1.0, PI/2), Vector(-1.0, 0.0, 0.0))
-        quaternion_rotation_isCorrect(Vector(0.0, 0.0, 1.0), Quaternion.forRotation(0.0, 0.0, 1.0, PI/2), Vector(0.0, 0.0, 1.0))
+        val q1 = Quaternion.forRotation(0.0, 0.0, 1.0, PI/2)
+        quaternion_rotation_isCorrect(Vector(1.0, 0.0, 0.0), q1, Vector(0.0, 1.0, 0.0))
+        quaternion_rotation_isCorrect(Vector(0.0, 1.0, 0.0), q1, Vector(-1.0, 0.0, 0.0))
+        quaternion_rotation_isCorrect(Vector(0.0, 0.0, 1.0), q1, Vector(0.0, 0.0, 1.0))
 
         // rotation by 90° around x-axis: moves y to z and z to -y and keeps x
-        quaternion_rotation_isCorrect(Vector(1.0, 0.0, 0.0), Quaternion.forRotation(1.0, 0.0, 0.0, PI/2), Vector(1.0, 0.0, 0.0))
-        quaternion_rotation_isCorrect(Vector(0.0, 1.0, 0.0), Quaternion.forRotation(1.0, 0.0, 0.0, PI/2), Vector(0.0, 0.0, 1.0))
-        quaternion_rotation_isCorrect(Vector(0.0, 0.0, 1.0), Quaternion.forRotation(1.0, 0.0, 0.0, PI/2), Vector(0.0, -1.0, 0.0))
+        val q2 = Quaternion.forRotation(1.0, 0.0, 0.0, PI/2)
+        quaternion_rotation_isCorrect(Vector(1.0, 0.0, 0.0), q2, Vector(1.0, 0.0, 0.0))
+        quaternion_rotation_isCorrect(Vector(0.0, 1.0, 0.0), q2, Vector(0.0, 0.0, 1.0))
+        quaternion_rotation_isCorrect(Vector(0.0, 0.0, 1.0), q2, Vector(0.0, -1.0, 0.0))
 
         // rotation by 30° around x-axis: moves y to z and z to -y and keeps x
-        quaternion_rotation_isCorrect(Vector(1.0, 0.0, 0.0), Quaternion.forRotation(1.0, 0.0, 0.0, PI/6), Vector(1.0, 0.0, 0.0))
-        quaternion_rotation_isCorrect(Vector(0.0, 1.0, 0.0), Quaternion.forRotation(1.0, 0.0, 0.0, PI/6), Vector(0.0, cos30, sin30))
-        quaternion_rotation_isCorrect(Vector(0.0, 0.0, 1.0), Quaternion.forRotation(1.0, 0.0, 0.0, PI/6), Vector(0.0, -sin30, cos30))
+        val q3 = Quaternion.forRotation(1.0, 0.0, 0.0, PI/6)
+        quaternion_rotation_isCorrect(Vector(1.0, 0.0, 0.0), q3, Vector(1.0, 0.0, 0.0))
+        quaternion_rotation_isCorrect(Vector(0.0, 1.0, 0.0), q3, Vector(0.0, cos30, sin30))
+        quaternion_rotation_isCorrect(Vector(0.0, 0.0, 1.0), q3, Vector(0.0, -sin30, cos30))
 
         // rotation by 90° around y-axis: moves x to -z and z to x and keeps y
-        quaternion_rotation_isCorrect(Vector(1.0, 0.0, 0.0), Quaternion.forRotation(0.0, 1.0, 0.0, PI/2), Vector(0.0, 0.0, -1.0))
-        quaternion_rotation_isCorrect(Vector(0.0, 1.0, 0.0), Quaternion.forRotation(0.0, 1.0, 0.0, PI/2), Vector(0.0, 1.0, 0.0))
-        quaternion_rotation_isCorrect(Vector(0.0, 0.0, 1.0), Quaternion.forRotation(0.0, 1.0, 0.0, PI/2), Vector(1.0, 0.0, 0.0))
+        val q4 = Quaternion.forRotation(0.0, 1.0, 0.0, PI/2)
+        quaternion_rotation_isCorrect(Vector(1.0, 0.0, 0.0), q4, Vector(0.0, 0.0, -1.0))
+        quaternion_rotation_isCorrect(Vector(0.0, 1.0, 0.0), q4, Vector(0.0, 1.0, 0.0))
+        quaternion_rotation_isCorrect(Vector(0.0, 0.0, 1.0), q4, Vector(1.0, 0.0, 0.0))
     }
 
 

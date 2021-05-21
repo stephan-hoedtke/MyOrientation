@@ -1,7 +1,5 @@
 package com.stho.myorientation
 
-import com.stho.myorientation.library.Degree
-import java.lang.Exception
 import kotlin.math.abs
 
 @Suppress("ReplaceWithEnumMap")

@@ -1,25 +1,26 @@
 package com.stho.myorientation.library.algebra
 
-import com.stho.myorientation.library.Degree
-
 /**
- * Orientation: angles in Degree
+ * Orientation: angles in degree (azimuth, pitch, roll)
  *
  * Project the positive y-axis [from the bottom edge to the top edge of the phone] to the sphere
  *      - azimuth: the angle to the geographic north at the horizon plane
  *      - pitch: the angle downwards when the top edge is tilted down
  *      - roll: the angle downwards when the left edge is tilted down
- *  Project the negative z-axis [how your eyes look into the phone] to the spheres
+ *
+ * Project the negative z-axis [how your eyes look into the phone] to the spheres
  *      - center azimuth: the angle to the geographic north at the horizon plane
  *      - center altitude: the angle upwards or downwards from the horizon
+ *
+ *
+ * see also: EulerAngles for exact definition of azimuth, pitch and roll
  */
 data class Orientation(val azimuth: Double, val pitch: Double, val roll: Double, val centerAzimuth: Double, val centerAltitude: Double) {
 
     /**
      * Altitude (top edge of the device pointing upwards) is the opposite of pitch (top edge of the device pointing downwards)
      */
-    val altitude: Double
-        get() = -pitch
+    val altitude: Double by lazy { -pitch }
 
     fun toEulerAngles(): EulerAngles =
         EulerAngles.fromAzimuthPitchRoll(azimuth, pitch, roll)

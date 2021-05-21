@@ -1,6 +1,6 @@
 package com.stho.myorientation
 
-import com.stho.myorientation.library.Degree
+import com.stho.myorientation.library.algebra.Degree
 import com.stho.myorientation.library.algebra.Orientation
 
 

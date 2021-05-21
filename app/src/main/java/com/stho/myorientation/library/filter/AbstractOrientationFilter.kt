@@ -5,7 +5,7 @@ import android.view.Surface
 import com.stho.myorientation.Entries
 import com.stho.myorientation.Repository
 import com.stho.myorientation.library.Acceleration
-import com.stho.myorientation.library.Degree
+import com.stho.myorientation.library.algebra.Degree
 import com.stho.myorientation.library.algebra.Matrix
 import com.stho.myorientation.library.algebra.Orientation
 import com.stho.myorientation.library.algebra.Quaternion
@@ -47,19 +47,6 @@ abstract class AbstractOrientationFilter(private val method: Entries.Method, acc
         centerAzimuthAcceleration.rotateTo(orientation.centerAzimuth)
         centerAltitudeAcceleration.rotateTo(orientation.centerAltitude)
     }
-
-    /**
-     * Returns the orientation for a rotation matrix which converts a vector from device frame into earth frame
-     *      as it is used by the sensor manager
-     */
-    internal fun getOrientationForRotationMatrix(r: Matrix): Orientation =
-        Rotation.rotationMatrixToOrientation(r.transpose())
-
-    /**
-     * Returns the orientation for a quaternion which converts a vector from earth frame into device frame
-     */
-    internal fun getOrientationForQuaternion(q: Quaternion): Orientation =
-        Rotation.quaternionToOrientation(q)
 
     /**
      * See the following training materials from google.

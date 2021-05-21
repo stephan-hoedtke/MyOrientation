@@ -8,7 +8,7 @@ import com.stho.myorientation.library.algebra.Orientation
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val methodLiveData: MutableLiveData<Entries.Method> = MutableLiveData<Entries.Method>().apply { value = Entries.Method.Composition }
+    private val methodLiveData: MutableLiveData<Entries.Method> = MutableLiveData<Entries.Method>().apply { value = Entries.Method.MadgwickFilter }
     private val zoomLiveData: MutableLiveData<Double> = MutableLiveData<Double>().apply { value = DEFAULT_ZOOM }
     private val startTimeLiveData: MutableLiveData<Double> = MutableLiveData<Double>().apply { value = DEFAULT_START_TIME }
     private val propertyLiveData: MutableLiveData<Entries.Property> = MutableLiveData<Entries.Property>().apply { value = Entries.Property.CenterAzimuth}

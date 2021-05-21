@@ -1,5 +1,6 @@
 package com.stho.myorientation.library
 
+import com.stho.myorientation.library.algebra.Degree
 import kotlin.math.exp
 
 internal class Acceleration(factorInSeconds: Double = 0.8, private val timeSource: TimeSource = SystemClockTimeSource()) {

@@ -2,10 +2,17 @@ package com.stho.myorientation.library.algebra
 
 import kotlin.math.*
 
-data class Matrix(
-    val m11: Double, val m12: Double, val m13: Double,
-    val m21: Double, val m22: Double, val m23: Double,
-    val m31: Double, val m32: Double, val m33: Double) {
+
+data class Matrix (
+    override val m11: Double,
+    override val m12: Double,
+    override val m13: Double,
+    override val m21: Double,
+    override val m22: Double,
+    override val m23: Double,
+    override val m31: Double,
+    override val m32: Double,
+    override val m33: Double) : IRotation {
 
     operator fun times(m: Matrix): Matrix =
         multiplyBy(m)
@@ -59,11 +66,59 @@ data class Matrix(
         )
 
 
+    fun toQuaternion(): Quaternion {
+        // see: https://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
+        // mind, as both q and -q define the same rotation you may get q or -q, respectively
+
+        when {
+            m11 + m22 + m33 > 0 -> {
+                val fourS = 2.0 * sqrt(1.0 + m11 + m22 + m33) // 4s = 4 * q.s
+                return Quaternion(
+                    x = (m32 - m23) / fourS,
+                    y = (m13 - m31) / fourS,
+                    z = (m21 - m12) / fourS,
+                    s = 0.25 * fourS
+                )
+            }
+            m11 > m22 && m11 > m33 -> {
+                val fourX = 2.0 * sqrt(1.0 + m11 - m22 - m33) // 4x = 4 * q.x
+                return Quaternion(
+                    x = 0.25 * fourX,
+                    y = (m12 + m21) / fourX,
+                    z = (m13 + m31) / fourX,
+                    s = (m32 - m23) / fourX,
+                )
+            }
+            m22 > m33 -> {
+                val fourY = 2.0 * sqrt(1.0 + m22 - m11 - m33) // 4y = 4*q.y
+                return Quaternion(
+                    x = (m12 + m21) / fourY,
+                    y = 0.25 * fourY,
+                    z = (m23 + m32) / fourY,
+                    s = (m13 - m31) / fourY
+                )
+            }
+            else -> {
+                val fourZ = 2.0 * sqrt(1.0 + m33 - m11 - m22) // 4z = 4 * q.z
+                return Quaternion(
+                    x = (m13 + m31) / fourZ,
+                    y = (m23 + m32) / fourZ,
+                    z = 0.25 * fourZ,
+                    s = (m21 - m12) / fourZ
+                )
+            }
+        }
+    }
+
+
     /**
      * Returns the euler angles in radians as a vector for a rotation matrix m
      */
     fun toEulerAngles(): EulerAngles =
-        Rotation.rotationMatrixToEulerAngles(this)
+        Rotation.getEulerAnglesFor(this)
+
+    fun toOrientation(): Orientation =
+        Rotation.getOrientationFor(this)
 
     fun toFloatArray(): FloatArray =
         FloatArray(9).apply {
@@ -101,23 +156,15 @@ data class Matrix(
                 m33 = m[8].toDouble(),
             )
 
-        /**
-         * Returns the rotation matrix for Euler angles in degree
-         *
-         * @param azimuth rotation about z-axis
-         * @param pitch rotation about x-axis
-         * @param roll rotation about y-axis
-         *
-         *      R(alpha, beta, gamma) := E -> Rz(gamma) * Ry(beta) * Rz(gamma) * E
-         *
-         *      v_earth = R * v_device
-         */
+        fun fromQuaternion(q: Quaternion): Matrix =
+                q.toRotationMatrix()
+
         fun fromEulerAngles(azimuth: Double, pitch: Double, roll: Double): Matrix =
-            Rotation.eulerAnglesToRotationMatrix(EulerAngles.fromAzimuthPitchRoll(
+            EulerAngles.fromAzimuthPitchRoll(
                 azimuth,
                 pitch,
                 roll
-            ))
+            ).toRotationMatrix()
 
     }
 }

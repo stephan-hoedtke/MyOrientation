@@ -1,7 +1,6 @@
 package com.stho.myorientation
 
-import android.hardware.SensorManager
-import com.stho.myorientation.library.Degree
+import com.stho.myorientation.library.algebra.Degree
 import com.stho.myorientation.library.algebra.*
 import com.stho.myorientation.library.filter.MadgwickFilter
 import org.junit.Assert.*
@@ -204,8 +203,8 @@ class MadgwickFilterUnitTests {
     }
 
     private fun gradientDescent_isCorrect(a: Vector, m: Vector) {
-        val r = Rotation.getRotationMatrix(a, m)
-        val e = Quaternion.fromRotationMatrix(r.transpose())
+        val r = Rotation.getRotationMatrixFromAccelerationMagnetometer(a, m)
+        val e = Quaternion.fromRotationMatrix(r)
         val eulerAngles = e.toEulerAngles()
         gradientDescent_isCorrect(eulerAngles.azimuth, eulerAngles.pitch, eulerAngles.roll, a, m)
     }
@@ -239,8 +238,8 @@ class MadgwickFilterUnitTests {
     }
 
     private fun getOrientation(acceleration: Vector, magnetometer: Vector): EulerAngles {
-        val r = Rotation.getRotationMatrix(acceleration, magnetometer)
-        return r.transpose().toEulerAngles()
+        val r = Rotation.getRotationMatrixFromAccelerationMagnetometer(acceleration, magnetometer)
+        return r.toEulerAngles()
     }
 
     private fun gradientDescent_isCorrect(e: Quaternion, q: Quaternion) {

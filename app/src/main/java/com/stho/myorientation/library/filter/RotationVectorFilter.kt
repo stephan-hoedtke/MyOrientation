@@ -31,7 +31,7 @@ class RotationVectorFilter(accelerationFactor: Double = 0.7): AbstractOrientatio
         val rotationMatrix = FloatArray(9)
         SensorManager.getRotationMatrixFromVector(rotationMatrix, rotationVectorReading)
         val adjustedRotationMatrix = Matrix.fromFloatArray(getAdjustedRotationMatrix(rotationMatrix))
-        val orientation = getOrientationForRotationMatrix(adjustedRotationMatrix)
+        val orientation = adjustedRotationMatrix.toOrientation()
         onOrientationAnglesChanged(orientation)
     }
 }

@@ -89,7 +89,7 @@ class MadgwickFilter(accelerationFactor: Double = 0.7) : AbstractOrientationFilt
             // Mind:
             // the rotation matrix from sensor is: rotating a sensor frame vector into the earth frame
             // while the quaternion rotates an earth frame vector into the sensor frame
-            val adjustedRotationMatrix = Matrix.fromFloatArray(getAdjustedRotationMatrix(rotationMatrix)).transpose()
+            val adjustedRotationMatrix = Matrix.fromFloatArray(getAdjustedRotationMatrix(rotationMatrix))
             return Quaternion.fromRotationMatrix(adjustedRotationMatrix)
         }
         else {
@@ -98,15 +98,17 @@ class MadgwickFilter(accelerationFactor: Double = 0.7) : AbstractOrientationFilt
     }
 
     private fun updateOrientationFromGyroOrientation() {
-        // TODO: get angles from quaternion directly
-        val matrix = estimate.toRotationMatrix().transpose()
-        val angles = getOrientationForRotationMatrix(matrix)
-        onOrientationAnglesChanged(angles)
+        val matrix = estimate.toRotationMatrix()
+        val orientation = matrix.toOrientation()
+        onOrientationAnglesChanged(orientation)
     }
 
-/*
+    /*
+
     Description of the algorithm
-    q: current estimation
+
+    q: current estimation:
+        rotating from sensor frame to earth frame
 
     // 1) magnetic distortion compensation
     m -->
@@ -115,8 +117,8 @@ class MadgwickFilter(accelerationFactor: Double = 0.7) : AbstractOrientationFilt
 
     // 2) gradient as correction of q_dot using the magnetic field and acceleration
     m, a -->
-          fa := q # a0 # q* - a.normalize()
-          fm := q # b0 # q* - m.normalize()
+          fa := q* # a0 # q - a.normalize()
+          fm := q* # b0 # q - m.normalize()
           f := fa + fm
           J := Jacobian
           grad f := J * f
@@ -140,13 +142,11 @@ class MadgwickFilter(accelerationFactor: Double = 0.7) : AbstractOrientationFilt
 
     /**
      * Estimated orientation quaternion with initial conditions
-     * SEq
      */
     private var estimate: Quaternion = Quaternion.default
 
     /**
      * estimated gyroscope bias error
-     * w_b
      */
     private var gyroBias: Quaternion = Quaternion.default
 
@@ -303,8 +303,8 @@ class MadgwickFilter(accelerationFactor: Double = 0.7) : AbstractOrientationFilt
 
         /**
          * return the objective function for the current estimate and the normalized acceleration
-         *   fa := q # g0 # q* - a  with  g0 = (0, 0, 0, -1)
-         *   fm := q # b0 # q* - m  with  b0 = (0, 0, by, bz)
+         *   fa := q* # g0 # q - a  with  g0 = (0, 0, 0, -1)
+         *   fm := q* # b0 # q - m  with  b0 = (0, 0, by, bz)
          *
          * @param q: current estimated orientation
          * @param a: normalized acceleration

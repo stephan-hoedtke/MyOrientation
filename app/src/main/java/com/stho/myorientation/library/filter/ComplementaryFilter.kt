@@ -139,11 +139,10 @@ class ComplementaryFilter(accelerationFactor: Double = 0.7, filterCoefficient: D
     }
 
     private fun updateOrientationFromGyroOrientation() {
-        // TODO: get angles from quaternion directly
         val matrix = gyroOrientation.toRotationMatrix()
         val adjustedRotationMatrix = Matrix.fromFloatArray(getAdjustedRotationMatrix(matrix.toFloatArray()))
-        val angles = getOrientationForRotationMatrix(adjustedRotationMatrix)
-        onOrientationAnglesChanged(angles)
+        val orientation = adjustedRotationMatrix.toOrientation()
+        onOrientationAnglesChanged(orientation)
     }
 
     companion object {
