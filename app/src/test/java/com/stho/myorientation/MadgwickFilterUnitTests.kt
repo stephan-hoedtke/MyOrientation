@@ -218,8 +218,8 @@ class MadgwickFilterUnitTests {
     }
 
     private fun rotationGivesAccelerationMagnetometer(e: Quaternion, a: Vector, m: Vector) {
-        val ae = Vector(x = 0.0, y = 0.0, z = 9.81).rotateBy(e)
-        val me = Vector(x = 0.0, y = 18.0, z = -44.0).rotateBy(e)
+        val ae = Vector(x = 0.0, y = 0.0, z = 9.81).rotateBy(e.inverse())
+        val me = Vector(x = 0.0, y = 18.0, z = -44.0).rotateBy(e.inverse())
 
         assertEquals("a.x", a.x, ae.x, EPS_E0)
         assertEquals("a.y", a.y, ae.y, EPS_E0)
@@ -243,8 +243,8 @@ class MadgwickFilterUnitTests {
     }
 
     private fun gradientDescent_isCorrect(e: Quaternion, q: Quaternion) {
-        val a = Vector(0.0, 0.0, 9.81).rotateBy(e)
-        val m = Vector(0.0, 18.0, -44.0).rotateBy(e)
+        val a = Vector(0.0, 0.0, 9.81).rotateBy(e.inverse())
+        val m = Vector(0.0, 18.0, -44.0).rotateBy(e.inverse())
         gradientDescentReducesObjectiveFunction(a, m, q, e)
     }
 
@@ -339,11 +339,11 @@ class MadgwickFilterUnitTests {
         val e = Quaternion.forEulerAngles(7.0, -7.0, 7.0).normalize()
         val q = Quaternion.forEulerAngles(7.1, -7.1, 6.9).normalize()
 
-        val ae = g0.rotateBy(e)
-        val me = b0.rotateBy(e)
+        val ae = g0.rotateBy(e.inverse())
+        val me = b0.rotateBy(e.inverse())
 
-        val aq = g0.rotateBy(q)
-        val mq = b0.rotateBy(q)
+        val aq = g0.rotateBy(q.inverse())
+        val mq = b0.rotateBy(q.inverse())
 
         objectiveFunction_isCorrect(e, ae, me)
         objectiveFunction_isCorrect(q, ae, me)
@@ -353,8 +353,8 @@ class MadgwickFilterUnitTests {
     private fun objectiveFunction_isCorrect(q: Quaternion, a: Vector, m: Vector) {
         val f = MadgwickFilter.objectiveFunction(q, by = b0.y, bz = b0.z, a = a, m = m)
 
-        val fa = g0.rotateBy(q) - a
-        val fm = b0.rotateBy(q) - m
+        val fa = g0.rotateBy(q.inverse()) - a
+        val fm = b0.rotateBy(q.inverse()) - m
 
         assertEquals("f1", fa.x, f.f1, EPS_E6)
         assertEquals("f2", fa.y, f.f2, EPS_E6)
@@ -371,20 +371,20 @@ class MadgwickFilterUnitTests {
         val e1 = Quaternion.forEulerAngles(7.1, -7.1, 6.9).normalize()
         val e2 = Quaternion.forEulerAngles(7.01, -7.01, 6.99).normalize()
 
-        val a0 = g0.rotateBy(e0)
-        val m0 = b0.rotateBy(e0)
+        val a0 = g0.rotateBy(e0.inverse())
+        val m0 = b0.rotateBy(e0.inverse())
         val n0 = MadgwickFilter.objectiveFunction(e0, b0.y, b0.z, a0, m0).normSquare()
 
         assertEquals("error for e0 is zero", 0.0, n0, EPS_E8)
 
-        val a1 = g0.rotateBy(e1)
-        val m1 = b0.rotateBy(e1)
+        val a1 = g0.rotateBy(e1.inverse())
+        val m1 = b0.rotateBy(e1.inverse())
         val n01 = MadgwickFilter.objectiveFunction(e0, b0.y, b0.z, a0, m1).normSquare()
         val n10 = MadgwickFilter.objectiveFunction(e1, b0.y, b0.z, a1, m0).normSquare()
         val n11 = MadgwickFilter.objectiveFunction(e1, b0.y, b0.z, a1, m1).normSquare()
 
-        val a2 = g0.rotateBy(e2)
-        val m2 = b0.rotateBy(e2)
+        val a2 = g0.rotateBy(e2.inverse())
+        val m2 = b0.rotateBy(e2.inverse())
         val n02 = MadgwickFilter.objectiveFunction(e0, b0.y, b0.z, a0, m2).normSquare()
         val n20 = MadgwickFilter.objectiveFunction(e2, b0.y, b0.z, a2, m0).normSquare()
         val n22 = MadgwickFilter.objectiveFunction(e2, b0.y, b0.z, a2, m2).normSquare()

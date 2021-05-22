@@ -324,12 +324,12 @@ class MadgwickFilter(accelerationFactor: Double = 0.7) : AbstractOrientationFilt
             val qsqz = 2 * q.s * q.z
 
             return ObjectiveFunction(
-                    f1 = (qxqz + qsqy) - a.x,
-                    f2 = (qyqz - qsqx) - a.y,
+                    f1 = (qxqz - qsqy) - a.x,
+                    f2 = (qyqz + qsqx) - a.y,
                     f3 = (1 - qxqx - qyqy) - a.z,
-                    f4 = by * (qxqy - qsqz) + bz * (qxqz + qsqy) - m.x,
-                    f5 = by * (1 - qxqx - qzqz) + bz * (qyqz - qsqx) - m.y,
-                    f6 = by * (qsqx + qyqz) + bz * (1 - qxqx - qyqy) - m.z,
+                    f4 = by * (qxqy + qsqz) + bz * (qxqz - qsqy) - m.x,
+                    f5 = by * (1 - qxqx - qzqz) + bz * (qyqz + qsqx) - m.y,
+                    f6 = by * (qyqz - qsqx) + bz * (1 - qxqx - qyqy) - m.z,
             )
         }
 

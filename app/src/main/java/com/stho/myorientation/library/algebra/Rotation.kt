@@ -6,19 +6,8 @@ import kotlin.math.*
 object Rotation {
 
     /**
-     * Returns the rotation matrix for given Euler angles
-     *
-     * The rotation matrix is rotating a vector in sensor frame to earth frame
+     * Returns the rotation matrix for given Euler angles, rotating a vector in sensor frame to earth frame
      *      v_earth = M(x,y,z) * v_sensor
-     *
-     * References:
-     *   https://www.cdiweb.com/datasheets/invensense/sensor-introduction.pdf
-     *
-     * Note:
-     *   1) M(x, y, z) = M(y) * M(x) * M(z)
-     *   2) M.inverse() = M.transpose()
-     *
-     * see also: SensorManager.getOrientation(float[] R, ...)
      */
     fun eulerAnglesToRotationMatrix(omega: EulerAngles): Matrix {
         val cosX = cos(omega.x)
@@ -27,6 +16,21 @@ object Rotation {
         val sinY = sin(omega.y)
         val cosZ = cos(omega.z)
         val sinZ = sin(omega.z)
+
+        // calculate as m.transpose() of m = My * Mx * Mz with
+        //
+        //       |  cos(Y)   0   sin(Y) |
+        //  My = |  0        1   0      |
+        //       | -sin(Y)   0   cos(Y) |
+        //
+        //       |  1   0        0      |
+        //  Mx = |  0   cos(X)  -sin(X) |
+        //       |  0   sin(X)   cos(X) |
+        //
+        //       |  cos(Z)  -sin(Z)   0 |
+        //  Mz = |  sin(Z)   cos(Z)   0 |
+        //       |  0        0        1 |
+
         return Matrix(
             m11 = sinX * sinY * sinZ + cosY * cosZ,
             m12 = cosX * sinZ,
@@ -41,9 +45,7 @@ object Rotation {
     }
 
     /**
-     * Returns the rotation matrix for given Euler angles
-     *
-     * The quaternion is rotating a vector in sensor frame to earth frame
+     * Returns the rotation matrix for given Euler angles rotating a vector in sensor frame to earth frame
      *      v_earth = q # v_sensor # q*
      */
     fun eulerAnglesToQuaternion(omega: EulerAngles): Quaternion {
@@ -120,13 +122,13 @@ object Rotation {
         //            values[2] = (float) Math.atan2(-R[6], R[8]);  // roll: atan2(-m31, m33)
         //
         if (isGimbalLockForSinus(r.m32)) {
-            if (r.m32 < 0) { // 90°
+            if (r.m32 < 0) { // pitch 90°
                 EulerAngles(
                     x = PI_OVER_TWO,
                     y = atan2(r.m21, r.m23),
                     z = 0.0,
                 )
-            } else { // -90°
+            } else { // pitch -90°
                 EulerAngles(
                     x = -PI_OVER_TWO,
                     y = atan2(-r.m21, -r.m23),
@@ -144,43 +146,46 @@ object Rotation {
     /**
      * Returns the orientation (azimuth, pitch, roll, center azimuth, center altitude) of the device
      *      for a rotation from sensor frame into earth frame
+     *
+     *      (C) The center "pointer" vector is defined by
+     *              C = M * (0, 0, -1)
+     *
+     *          --> C = (-m13, -m23, -m33)
+     *
+     *              center azimuth  = atan2(-m13, -m23)
+     *              center azimuth = asin(-m33) // opposite of pitch
      */
     internal fun getOrientationFor(r: IRotation): Orientation =
-        //
-        // SensorManager.getOrientation()
-        //            values[0] = (float) Math.atan2(R[1], R[4]);   // azimuth: atan2(m12, m22)
-        //            values[1] = (float) Math.asin(-R[7]);         // pitch: asin(-m32)
-        //            values[2] = (float) Math.atan2(-R[6], R[8]);  // roll: atan2(-m31, m33)
-        //
         if (isGimbalLockForSinus(r.m32)) {
-            if (r.m32 < 0) { // 90°
-                val angle = Degree.arcTan2(r.m21, r.m23)
+            if (r.m32 < 0) { // pitch 90°
+                val roll = Degree.arcTan2(r.m21, r.m23)
                 Orientation(
                     azimuth = 0.0,
                     pitch = 90.0,
-                    roll = angle,
-                    centerAzimuth = angle,
+                    roll = roll,
+                    centerAzimuth = 180 - roll,
                     centerAltitude = 0.0,
                 )
-            } else { // -90°
-                val angle = Degree.arcTan2(-r.m21, -r.m23)
+            } else { // pitch -90°
+                val roll = Degree.arcTan2(-r.m21, -r.m23)
                 Orientation(
                     azimuth = 0.0,
                     pitch = -90.0,
-                    roll = angle,
-                    centerAzimuth = angle,
+                    roll = roll,
+                    centerAzimuth = roll,
                     centerAltitude = 0.0,
                 )
             }
         } else {
-            if (isGimbalLockForCenter(r.m13, r.m23)) { // 0°
-                val angle = Degree.arcTan2(r.m12, r.m22)
+            if (isGimbalLockForCenter(r.m13, r.m23)) { // pitch 0°
+                val azimuth = Degree.arcTan2(r.m12, r.m22)
+                val roll = Degree.arcTan2(r.m31, r.m33)
                 Orientation(
-                    azimuth = angle,
+                    azimuth = azimuth,
                     pitch = Degree.arcSin(-r.m32),
-                    roll = Degree.arcTan2(r.m31, r.m33),
-                    centerAzimuth = angle,
-                    centerAltitude = Degree.arcSin(-r.m33)
+                    roll = roll,
+                    centerAzimuth = azimuth,
+                    centerAltitude = roll - 90
                 )
             }
             else {
@@ -188,7 +193,7 @@ object Rotation {
                     azimuth = Degree.arcTan2(r.m12, r.m22),
                     pitch = Degree.arcSin(-r.m32),
                     roll = Degree.arcTan2(r.m31, r.m33),
-                    centerAzimuth = Degree.arcTan2(r.m13, r.m23),
+                    centerAzimuth = Degree.arcTan2(-r.m13, -r.m23),
                     centerAltitude = Degree.arcSin(-r.m33)
                 )
             }

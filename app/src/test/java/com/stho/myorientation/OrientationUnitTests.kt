@@ -12,10 +12,10 @@ class OrientationUnitTests {
     fun orientation_isCorrect() {
         orientation_isCorrect(0.0, 0.0, 0.0, 0.0, -90.0)
         orientation_isCorrect(30.0, 0.0, 0.0, 30.0, -90.0)
-        orientation_isCorrect(0.0, 30.0, 0.0, 0.0, -60.0)
-        orientation_isCorrect(0.0, -30.0, 0.0, -180.0, -60.0)
+        orientation_isCorrect(0.0, 30.0, 0.0, -180.0, -60.0)
+        orientation_isCorrect(0.0, -30.0, 0.0, 0.0, -60.0)
         orientation_isCorrect(0.0, -90.0, 0.0, 0.0, 0.0)
-        orientation_isCorrect(0.0, -100.0, 0.0, -180.0, 10.0)
+        orientation_isCorrect(0.0, -100.0, 0.0, 0.0, 10.0)
         orientation_isCorrect(0.0, -90.0, 30.0, 30.0, 0.0)
         orientation_isCorrect(0.0, 0.0, 10.0, 90.0, -80.0)
     }
