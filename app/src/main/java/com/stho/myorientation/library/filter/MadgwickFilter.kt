@@ -82,21 +82,6 @@ class MadgwickFilter(accelerationFactor: Double = 0.7) : AbstractOrientationFilt
         updateOrientationFromGyroOrientation()
     }
 
-    private fun orientationFromMagnetometerAcceleration(): Quaternion {
-        val rotationMatrix = FloatArray(9)
-        if (SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading)) {
-            // TODO: get quaternion from readings directly
-            // Mind:
-            // the rotation matrix from sensor is: rotating a sensor frame vector into the earth frame
-            // while the quaternion rotates an earth frame vector into the sensor frame
-            val adjustedRotationMatrix = Matrix.fromFloatArray(getAdjustedRotationMatrix(rotationMatrix))
-            return Quaternion.fromRotationMatrix(adjustedRotationMatrix)
-        }
-        else {
-            return Quaternion.default
-        }
-    }
-
     private fun updateOrientationFromGyroOrientation() {
         val matrix = estimate.toRotationMatrix()
         val orientation = matrix.toOrientation()
@@ -181,49 +166,25 @@ class MadgwickFilter(accelerationFactor: Double = 0.7) : AbstractOrientationFilt
 
         // compute gyroscope biases and correct gyro angle rotation
         gyroBias += omegaError * (dt * zeta)
-        //val omega = w - gyroBias
-        val omega = w
+        val omega = w - gyroBias
+        //val omega = w
 
         // EVALUATE
         Log.d("Gyro", "omega x=${omega.x.f11()}, y=${omega.y.f11()}, z=${omega.z.f11()}, s=${omega.s.f11()}")
 
-        if (omega.normSquare() > 0) {
-            val qDotGyro = estimate * omega * 0.5
-            val delta = qDotGyro * dt
-            estimate += delta
-
-
-            // EVALUATE
-            val n1 = objectiveFunction(estimate, b.y, b.z, a, m).normSquare()
-            Log.d("Gyro", "qDotGyro x=${qDotGyro.x.f11()}, y=${qDotGyro.y.f11()}, z=${qDotGyro.z.f11()}, s=${qDotGyro.s.f11()}")
-            Log.d("Gyro", "dt=${dt.f11()} delta x=${delta.x.f11()}, y=${delta.y.f11()}, z=${delta.z.f11()}, s=${delta.s.f11()} n1=${n1.f11()}")
-        }
-
-
-/*
-        var f = 1.0
-
-        for (i in 1..100) {
-            // compute then integrate the estimated quaternion rate
-            val qDot = qDotError * (f * beta)
-            val delta = qDot * dt
-            val newEstimate = (estimate - delta).normalize()
-
-            // EVALUATE
-            val n2 = objectiveFunction(newEstimate, b.y, b.z, a, m).normSquare()
-            if (n2 < n0) {
-                estimate = newEstimate
-                Log.d("Correction", "delta=${delta.norm().f11()} x=${delta.x.f11()}, y=${delta.y.f11()}, z=${delta.z.f11()}, s=${delta.s.f11()} n2=${n2.f11()} Step=$i")
-                break
-            }
-
-            f /= 5
-        }
-*/
+        val qDotGyro = estimate * omega * 0.5
+        val qDotCorrection = qDotError * beta
+        val qDot = qDotGyro - qDotCorrection
+        val delta = qDot * dt
+        estimate = (estimate + delta).normalize()
 
         // EVALUATE
-        val n3 = objectiveFunction(estimate, b.y, b.z, a, m).normSquare()
-        Log.d("Final", "error=${n3.f11()} estimate x=${estimate.x.f11()}, y=${estimate.y.f11()}, z=${estimate.z.f11()}, s=${estimate.s.f11()}")
+        val n1 = objectiveFunction(estimate, b.y, b.z, a, m).normSquare()
+        Log.d("Delta","qDotGyro x=${qDotGyro.x.f11()}, y=${qDotGyro.y.f11()}, z=${qDotGyro.z.f11()}, s=${qDotGyro.s.f11()}")
+        Log.d("Delta","qDotCorrection x=${qDotCorrection.x.f11()}, y=${qDotCorrection.y.f11()}, z=${qDotCorrection.z.f11()}, s=${qDotCorrection.s.f11()}")
+        Log.d("Delta","qDot x=${qDot.x.f11()}, y=${qDot.y.f11()}, z=${qDot.z.f11()}, s=${qDot.s.f11()}")
+        Log.d("Delta","delta x=${delta.x.f11()}, y=${delta.y.f11()}, z=${delta.z.f11()}, s=${delta.s.f11()}")
+        Log.d("Final","error=${n1.f11()} estimate x=${estimate.x.f11()}, y=${estimate.y.f11()}, z=${estimate.z.f11()}, s=${estimate.s.f11()}")
 
         hasEstimate = true
     }
@@ -250,6 +211,21 @@ class MadgwickFilter(accelerationFactor: Double = 0.7) : AbstractOrientationFilt
                         y = 2 * (df1dy * f.f1 + df2dy * f.f2 + df3dy * f.f3 + df4dy * f.f4 + df5dy * f.f5 + df6dy * f.f6),
                         z = 2 * (df1dz * f.f1 + df2dz * f.f2 + df3dz * f.f3 + df4dz * f.f4 + df5dz * f.f5 + df6dz * f.f6),
                 )
+    }
+
+    private fun orientationFromMagnetometerAcceleration(): Quaternion {
+        val rotationMatrix = FloatArray(9)
+        if (SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading)) {
+            // TODO: get quaternion from readings directly
+            // Mind:
+            // the rotation matrix from sensor is: rotating a sensor frame vector into the earth frame
+            // while the quaternion rotates an earth frame vector into the sensor frame
+            val adjustedRotationMatrix = Matrix.fromFloatArray(getAdjustedRotationMatrix(rotationMatrix))
+            return Quaternion.fromRotationMatrix(adjustedRotationMatrix)
+        }
+        else {
+            return Quaternion.default
+        }
     }
 
     companion object {

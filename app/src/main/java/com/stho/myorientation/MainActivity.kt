@@ -1,8 +1,10 @@
 package com.stho.myorientation
 
+import android.annotation.SuppressLint
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
@@ -22,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var orientationFilter: OrientationFilter
     private lateinit var orientationSensorListener: OrientationSensorListener
 
+    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -31,8 +34,7 @@ class MainActivity : AppCompatActivity() {
             viewModel.startStop()
         }
 
-        // TODO: replace Handler()
-        handler = Handler()
+        handler = Handler(Looper.getMainLooper())
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
         orientationFilter = AccelerationMagnetometerFilter(viewModel.accelerationFactor, viewModel.timeConstant)
@@ -43,6 +45,7 @@ class MainActivity : AppCompatActivity() {
         viewModel.timeConstantLD.observe(this, { _ -> viewModel.reset() })
         viewModel.methodLD.observe(this, { method -> observeMethod(method) })
 
+        // TODO: google says its not good to lock the orientation, wo why...
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
 
