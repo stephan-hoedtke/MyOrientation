@@ -143,6 +143,9 @@ data class Quaternion(val v: Vector, val s: Double) : IRotation {
         val default: Quaternion
             get() = Quaternion(0.0, 0.0, 0.0, 1.0)
 
+        val zero: Quaternion
+            get() = Quaternion(0.0, 0.0, 0.0, 0.0)
+        
         // (r1,v1) * (r2,v2) = (r1 r2 - dot(v1,v2), r1 v2 + r2 v1 + cross(v1, v2)
         private fun hamiltonProduct(a: Quaternion, b: Quaternion): Quaternion {
             val a1 = a.s

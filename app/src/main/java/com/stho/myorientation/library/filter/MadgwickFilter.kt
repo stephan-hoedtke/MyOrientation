@@ -88,42 +88,6 @@ class MadgwickFilter(accelerationFactor: Double = 0.7) : AbstractOrientationFilt
         onOrientationAnglesChanged(orientation)
     }
 
-    /*
-
-    Description of the algorithm
-
-    q: current estimation:
-        rotating from sensor frame to earth frame
-
-    // 1) magnetic distortion compensation
-    m -->
-          h := q # m # q*
-          b := [0, sqrt(hx^2+ hy^2), 0, hz]
-
-    // 2) gradient as correction of q_dot using the magnetic field and acceleration
-    m, a -->
-          fa := q* # a0 # q - a.normalize()
-          fm := q* # b0 # q - m.normalize()
-          f := fa + fm
-          J := Jacobian
-          grad f := J * f
-
-    // 3) correction of q_dot = dq/dt
-          q_dot_error := grad f / || grad f ||
-
-    // 4) correction of gyro
-          omega_error := 2 * q # q_dot_error
-          omega_bias := zeta * SUM(omega_error * dt)
-
-    // 5) gyroscope measurement
-    w ->
-          omega = w - omega_bias
-          q_dot_gyro := 1/2 q # omega
-
-    // 6) sensor fusion
-          q_dot := q_dot_gyro - beta * q_dot_error
-          q := (q + q_dot * dt).normalize()
- */
 
     /**
      * Estimated orientation quaternion with initial conditions
@@ -133,7 +97,7 @@ class MadgwickFilter(accelerationFactor: Double = 0.7) : AbstractOrientationFilt
     /**
      * estimated gyroscope bias error
      */
-    private var gyroBias: Quaternion = Quaternion.default
+    private var gyroBias: Quaternion = Quaternion.zero
 
     /**
      * Function to compute one filter iteration
@@ -149,13 +113,12 @@ class MadgwickFilter(accelerationFactor: Double = 0.7) : AbstractOrientationFilt
         }
 
         // reference direction of magnetic field in earth frame after distortion compensation
-        val b: Vector = flux(estimate, m)
-        //val b: Vector = flux(a, m)
+        //val b: Vector = flux(estimate, m)
+        val b: Vector = flux(a, m)
 
         // EVALUATE
         val n0 = objectiveFunction(estimate, b.y, b.z, a, m).normSquare()
         Log.d("Estimate", "error=${n0.f11()} b=(0, ${b.y.f2()}, ${b.z.f2()}, 0) estimate x=${estimate.x.f11()}, y=${estimate.y.f11()}, z=${estimate.z.f11()}, s=${estimate.s.f11()}")
-
 
         // compute the gradient (matrix multiplication) estimated direction of the gyroscope error
         val qDotError: Quaternion = gradient(estimate, b.y, b.z, a, m).normalize()
@@ -163,13 +126,14 @@ class MadgwickFilter(accelerationFactor: Double = 0.7) : AbstractOrientationFilt
         // compute angular estimated direction of the gyroscope error: omega_err
         val omegaError = estimate * qDotError * 2.0
 
-
         // compute gyroscope biases and correct gyro angle rotation
-        gyroBias += omegaError * (dt * zeta)
+        gyroBias += omegaError.inverse() * (dt * zeta)
         val omega = w - gyroBias
         //val omega = w
 
         // EVALUATE
+        Log.d("Gyro", "measurement x=${w.x.f11()}, y=${w.y.f11()}, z=${w.z.f11()}")
+        Log.d("Gyro", "bias x=${gyroBias.x.f11()}, y=${gyroBias.y.f11()}, z=${gyroBias.z.f11()}, s=${gyroBias.s.f11()}")
         Log.d("Gyro", "omega x=${omega.x.f11()}, y=${omega.y.f11()}, z=${omega.z.f11()}, s=${omega.s.f11()}")
 
         val qDotGyro = estimate * omega * 0.5
@@ -368,9 +332,9 @@ class MadgwickFilter(accelerationFactor: Double = 0.7) : AbstractOrientationFilt
          * @param q: current orientation estimate
          */
         internal fun flux(q: Quaternion, m: Vector): Vector {
-            // computed flux in the earth frame: h := q* # m # q = m.rotateBy(q)
+            // computed flux in the earth frame: h := q # m # q* = m.rotateBy(q)
             // normalise the flux vector to have only components in the x and z
-            val h: Vector = m.rotateBy(q.conjugate())
+            val h: Vector = m.rotateBy(q)
             return Vector(
                     x = 0.0,
                     y = sqrt((h.x * h.x) + (h.y * h.y)),
