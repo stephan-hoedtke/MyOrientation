@@ -13,7 +13,7 @@ import kotlin.math.*
  * See [testing documentation](http://d.android.com/tools/testing).
  * See https://github.com/Josef4Sci/AHRS_Filter/blob/master/Filters/MadgwickAHRS3.m
  */
-class MadgwickFilterUnitTests {
+class MadgwickFilterUnitTests : BaseUnitTestsHelper() {
 
     //                |  cos(pitch)   -sin(pitch) |
     // (y,z)_Device = |                           | * (y,z)_Earth
@@ -203,7 +203,7 @@ class MadgwickFilterUnitTests {
     }
 
     private fun gradientDescent_isCorrect(a: Vector, m: Vector) {
-        val r = Rotation.getRotationMatrixFromAccelerationMagnetometer(a, m)
+        val r = Rotation.getRotationMatrixFromAccelerationMagnetometer(a, m, Matrix.E)
         val e = Quaternion.fromRotationMatrix(r)
         val eulerAngles = e.toEulerAngles()
         gradientDescent_isCorrect(eulerAngles.azimuth, eulerAngles.pitch, eulerAngles.roll, a, m)
@@ -238,7 +238,7 @@ class MadgwickFilterUnitTests {
     }
 
     private fun getOrientation(acceleration: Vector, magnetometer: Vector): EulerAngles {
-        val r = Rotation.getRotationMatrixFromAccelerationMagnetometer(acceleration, magnetometer)
+        val r = Rotation.getRotationMatrixFromAccelerationMagnetometer(acceleration, magnetometer, Matrix.E)
         return r.toEulerAngles()
     }
 
@@ -310,8 +310,7 @@ class MadgwickFilterUnitTests {
         var p0 = q
         var n0 = MadgwickFilter.objectiveFunction(q = p0, by = b.y, bz = b.z, a = aa, m = mm).normSquare()
 
-        var gradientJacobian = MadgwickFilter.gradient(q = p0, by = b.y, bz = b.z, a = aa, m = mm)
-        var gradient = MadgwickFilter.getGradientAsTangentialApproximation(p0, b.y, b.z, aa, mm)
+        var gradient = MadgwickFilter.gradientAsJacobianTimesObjectiveFunction(q = p0, by = b.y, bz = b.z, a = aa, m = mm)
 
         while (f > limit) {
 
@@ -322,8 +321,7 @@ class MadgwickFilterUnitTests {
                 // another step with same step size f
                 p0 = p1
                 n0 = n1
-                gradientJacobian = MadgwickFilter.gradient(q = p0, by = b.y, bz = b.z, a = aa, m = mm)
-                gradient = MadgwickFilter.getGradientAsTangentialApproximation(p0, b.y, b.z, aa, mm)
+                gradient = MadgwickFilter.gradientAsJacobianTimesObjectiveFunction(p0, b.y, b.z, aa, mm)
             }
             else {
                 // reduce step size
@@ -396,32 +394,9 @@ class MadgwickFilterUnitTests {
         assertEquals("error for e2, a2, m2 is zero", 0.0, n22, EPS_E8)
     }
 
-    @Test
-    fun gradient_isCorrect() {
-        val q = Quaternion.forEulerAngles(13.0, -13.0, 13.0).normalize()
-        val e = Quaternion.forEulerAngles(7.0, -7.0, 7.0).normalize()
-        val a = g0.rotateBy(e)
-        val m = b0.rotateBy(e)
-        gradient_isCorrect(q, a, m)
-    }
-
     private val g0: Vector = Vector(0.0, 0.0, 9.81).normalize()
     private val b0: Vector = Vector(0.0, 10 * Degree.cos(60.0), -10.0).normalize()
     private val q0: Quaternion = Quaternion.forEulerAngles(0.0, 0.0, 0.0).normalize()
-
-    private fun gradient_isCorrect(q: Quaternion, a: Vector, m: Vector) {
-         gradient_matchesTangentialPlane(q, a, m)
-    }
-
-    private fun gradient_matchesTangentialPlane(q: Quaternion, a: Vector, m: Vector) {
-        val gradient = MadgwickFilter.gradient(q, b0.y, b0.z, a, m)
-        val approximation = MadgwickFilter.getGradientAsTangentialApproximation(q, b0.y, b0.z, a, m)
-
-        assertEquals("x", gradient.x, approximation.x, EPS_E6)
-        assertEquals("y", gradient.y, approximation.y, EPS_E6)
-        assertEquals("z", gradient.z, approximation.z, EPS_E6)
-        assertEquals("s", gradient.s, approximation.s, EPS_E6)
-    }
 
     @Test
     fun estimation_change_by_gyro_measurement_is_correct() {
@@ -484,12 +459,22 @@ class MadgwickFilterUnitTests {
         assertEquals(e, estimation2, EPS_E3)
     }
 
+    @Test
+    fun flux_is_correct() {
+        val q = super.quaternionForEulerAngles(EulerAngles.fromAzimuthPitchRoll(30.0, 10.0, 20.0))
+        val a = Vector(0.0, 0.0, 9.81).rotateBy(q.inverse())
+        val m = Vector(0.0, 18.0, -44.0).rotateBy(q.inverse())
 
-    private fun assertEquals(e: Quaternion, a: Quaternion, delta: Double = EPS_E6) {
-        assertEquals("x", e.x, a.x, delta)
-        assertEquals("y", e.y, a.y, delta)
-        assertEquals("z", e.z, a.z, delta)
-        assertEquals("s", e.s, a.s, delta)
+        val b = MadgwickFilter.flux(a, m)
+
+        val x = 0.0
+        val z = -0.925546
+        val y = 0.378632
+
+        assertEquals("b.x", x, b.x, EPS_E6)
+        assertEquals("b.y", y, b.y, EPS_E6)
+        assertEquals("b.z", z, b.z, EPS_E6)
+
     }
 
     companion object {

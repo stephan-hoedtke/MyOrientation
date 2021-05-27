@@ -34,4 +34,15 @@
     <string name="label_center_azimuth">Center\nAzimuth</string>
     <string name="default_center_altitude">32°</string>
     <string name="label_center_altitude">Center\nAltitude</string>
+    <string name="label_madgwick">Madgwick</string>
+    <string name="label_separated_correction">Separated Correction</string>
+    <string name="label_default">Default</string>
+    <string name="label_modified">Modified</string>
+    <string name="label_accelerometer_magnetometer"><![CDATA[Accelerometer & Magnetometer]]></string>
+    <string name="label_rotation_vector">Rotation Vector</string>
+    <string name="label_madgwick_filter">Madgwick Filter</string>
+    <string name="label_complementary_filter">Complementary Filter</string>
+    <string name="label_separated_correction_filter">Separated Correction Filter</string>
+    <string name="label_kalman_filter">Kalman Filter</string>
+    <string name="label_orthogonal">Orthogonal</string>
 </resources>

@@ -12,6 +12,8 @@ import androidx.navigation.fragment.findNavController
 import com.stho.myorientation.databinding.FragmentMainBinding
 import com.stho.myorientation.library.Formatter
 import com.stho.myorientation.library.algebra.Orientation
+import com.stho.myorientation.library.f0
+import com.stho.myorientation.library.f2
 import com.stho.myorientation.views.AbstractPlotView
 
 /**
@@ -78,6 +80,7 @@ class MainFragment : Fragment() {
         viewModel.accelerationFactorLD.observe(viewLifecycleOwner, { accelerationFactor -> observeFactor(accelerationFactor) })
         viewModel.methodLD.observe(viewLifecycleOwner, { method -> observeMethod(method) })
         viewModel.orientationLD.observe(viewLifecycleOwner, { orientation -> observeOrientation(orientation) })
+        viewModel.optionsLD.observe(viewLifecycleOwner, { options -> observeOptions(options) })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -119,6 +122,10 @@ class MainFragment : Fragment() {
         binding.property.setTextColor(getColorForProperty(property))
     }
 
+    private fun observeOptions(options: MainViewModel.Options) {
+        binding.mainView.setOptions(options = options)
+    }
+
     private fun getColorForProperty(property: Entries.Property): Int =
             resources.getColor(getColorResourceIdForProperty(property), null)
 
@@ -132,14 +139,14 @@ class MainFragment : Fragment() {
         }
 
     private fun observeTimeConstant(timeConstant: Double) {
-        binding.timeConstant.text = getString(R.string.label_name_value, "t", Formatter.df2.format(timeConstant))
+        binding.timeConstant.text = getString(R.string.label_name_value, "t", timeConstant.f2())
     }
 
     private fun observeFilterCoefficient(filterCoefficient: Double) {
-        binding.filterCoefficient.text = getString(R.string.label_name_value, "f", Formatter.df2.format(filterCoefficient))
+        binding.filterCoefficient.text = getString(R.string.label_name_value, "f", filterCoefficient.f2())
     }
     private fun observeFactor(accelerationFactor: Double) {
-        binding.accelerationFactor.text = getString(R.string.label_name_value, "a", Formatter.df2.format(accelerationFactor))
+        binding.accelerationFactor.text = getString(R.string.label_name_value, "a", accelerationFactor.f2())
     }
 
     private fun observeMethod(method: Entries.Method) {
@@ -154,17 +161,18 @@ class MainFragment : Fragment() {
                 Entries.Method.KalmanFilter -> Color.rgb(0xFC, 0x0F, 0xC0);
                 Entries.Method.ComplementaryFilter -> Color.CYAN
                 Entries.Method.MadgwickFilter -> Color.GREEN
+                Entries.Method.SeparatedCorrectionFilter -> Color.MAGENTA
                 Entries.Method.Composition -> Color.WHITE
                 Entries.Method.Damped -> Color.GRAY
             }
 
 
     private fun observeOrientation(orientation: Orientation) {
-        binding.azimuth.text = getString(R.string.label_value_degree, Formatter.df0.format(orientation.azimuth))
-        binding.pitch.text = getString(R.string.label_value_degree, Formatter.df0.format(orientation.pitch))
-        binding.roll.text = getString(R.string.label_value_degree, Formatter.df0.format(orientation.roll))
-        binding.centerAzimuth.text = getString(R.string.label_value_degree, Formatter.df0.format(orientation.centerAzimuth))
-        binding.centerAltitude.text = getString(R.string.label_value_degree, Formatter.df0.format(orientation.centerAltitude))
+        binding.azimuth.text = getString(R.string.label_value_degree, orientation.azimuth.f0())
+        binding.pitch.text = getString(R.string.label_value_degree, orientation.pitch.f0())
+        binding.roll.text = getString(R.string.label_value_degree, orientation.roll.f0())
+        binding.centerAzimuth.text = getString(R.string.label_value_degree, orientation.centerAzimuth.f0())
+        binding.centerAltitude.text = getString(R.string.label_value_degree, orientation.centerAltitude.f0())
     }
 
     private fun onChangeProperty(newProperty: Entries.Property) {

@@ -22,17 +22,50 @@ data class Quaternion(val v: Vector, val s: Double) : IRotation {
     private val sx: Double by lazy { 2 * s * x }
 
     // https://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
+    /**
+     * 1 - 2yy - 2zz
+     */
     override val m11: Double by lazy { 1 - y2 - z2 }
+
+    /**
+     * 2xy - 2sz
+     */
     override val m12: Double by lazy { xy - sz }
+
+    /**
+     * 2xz + 2sy
+     */
     override val m13: Double by lazy { xz + sy }
+
+    /**
+     * 2xy + 2sz
+     */
     override val m21: Double by lazy { xy + sz }
+
+    /**
+     * 1 - 2xx - 2zz
+     */
     override val m22: Double by lazy { 1 - x2 - z2 }
+
+    /**
+     * 2yz - 2sx
+     */
     override val m23: Double by lazy { yz - sx }
+
+    /**
+     * 2xz - 2sy
+     */
     override val m31: Double by lazy { xz - sy }
+
+    /**
+     * 2yz + 2sx
+     */
     override val m32: Double by lazy { yz + sx }
+
+    /**
+     * 1 - 2xx - 2yy
+     */
     override val m33: Double by lazy { 1 - x2 - y2 }
-
-
 
     fun toRotationMatrix(): Matrix =
         Matrix(
@@ -61,6 +94,9 @@ data class Quaternion(val v: Vector, val s: Double) : IRotation {
 
     operator fun times(q: Quaternion): Quaternion =
             hamiltonProduct(this, q)
+
+    operator fun div(f: Double): Quaternion =
+            Quaternion(v / f, s / f)
 
     fun norm(): Double =
             sqrt(normSquare())

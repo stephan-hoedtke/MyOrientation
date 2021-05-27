@@ -13,6 +13,9 @@ data class Vector(val x: Double, val y: Double, val z: Double) {
     operator fun times(f: Double): Vector =
             Vector(x * f, y * f, z * f)
 
+    operator fun div(f: Double): Vector =
+            Vector(x / f, y / f, z / f)
+
     /**
      * Rotate this vector by q: returns q # this # q* (hamilton product)
      */

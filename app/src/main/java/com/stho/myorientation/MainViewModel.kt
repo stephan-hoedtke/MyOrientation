@@ -5,8 +5,21 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.stho.myorientation.library.algebra.Orientation
+import com.stho.myorientation.library.filter.MadgwickFilter
+import com.stho.myorientation.library.filter.SeparatedCorrectionFilter
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
+
+    data class Options(
+        var madgwickMode: MadgwickFilter.Mode = MadgwickFilter.Mode.Default,
+        var separatedCorrectionMode: SeparatedCorrectionFilter.Mode = SeparatedCorrectionFilter.Mode.SCF,
+        var showAccelerometerMagnetometerFilter: Boolean = true,
+        var showRotationVectorFilter: Boolean = true,
+        var showMadgwickFilter: Boolean = true,
+        var showComplementaryFilter: Boolean = true,
+        var showSeparatedCorrectionFilter: Boolean = true,
+        var showKalmanFilter: Boolean = true,
+    )
 
     private val methodLiveData: MutableLiveData<Entries.Method> = MutableLiveData<Entries.Method>().apply { value = Entries.Method.Composition }
     private val zoomLiveData: MutableLiveData<Double> = MutableLiveData<Double>().apply { value = DEFAULT_ZOOM }
@@ -16,6 +29,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val timeConstantLiveData: MutableLiveData<Double> = MutableLiveData<Double>().apply { value = DEFAULT_TIME_CONSTANT }
     private val filterCoefficientLiveData: MutableLiveData<Double> = MutableLiveData<Double>().apply { value = DEFAULT_FILTER_COEFFICIENT }
     private val orientationLiveData: MutableLiveData<Orientation> = MutableLiveData<Orientation>().apply { value = Orientation(0.0, 0.0, 0.0, 0.0, 0.0) }
+    private val optionsLiveData: MutableLiveData<Options> = MutableLiveData<Options>().apply { value = Options()}
 
     val methodLD: LiveData<Entries.Method>
         get() = methodLiveData
@@ -44,8 +58,49 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val versionLD: LiveData<Long>
         get() = Repository.instance.versionLD
 
+    val optionsLD: LiveData<Options>
+        get() = optionsLiveData
+
     val isActiveLD: LiveData<Boolean>
         get() = Repository.instance.isActiveLD
+
+    val options: Options
+        get() = optionsLiveData.value ?: Options()
+
+    fun setMadgwickFilterMode(mode: MadgwickFilter.Mode) {
+        val options = options
+        options.madgwickMode = mode
+        touch(options)
+    }
+
+    fun setSeparatedCorrectionFilterMode(mode: SeparatedCorrectionFilter.Mode) {
+        val options = options
+        options.separatedCorrectionMode = mode
+        touch(options)
+    }
+
+    fun showFilter(method: Entries.Method, value: Boolean) {
+        val options: Options = options
+        @Suppress("NON_EXHAUSTIVE_WHEN")
+        when (method) {
+            Entries.Method.AccelerometerMagnetometer -> options.showAccelerometerMagnetometerFilter = value
+            Entries.Method.RotationVector -> options.showRotationVectorFilter = value
+            Entries.Method.ComplementaryFilter -> options.showComplementaryFilter = value
+            Entries.Method.MadgwickFilter -> options.showMadgwickFilter = value
+            Entries.Method.SeparatedCorrectionFilter -> options.showSeparatedCorrectionFilter = value
+            Entries.Method.KalmanFilter -> options.showKalmanFilter = value
+        }
+        touch(options)
+    }
+
+    private fun touch(options: Options) {
+        optionsLiveData.value = options
+        touch()
+    }
+
+    private fun touch() {
+        methodLiveData.postValue(method)
+    }
 
     fun reset() {
         methodLiveData.postValue(method)

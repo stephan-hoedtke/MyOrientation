@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.*
+import com.stho.myorientation.MainViewModel
 import com.stho.myorientation.Repository
 
 abstract class AbstractPlotView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
@@ -21,10 +22,17 @@ abstract class AbstractPlotView(context: Context?, attrs: AttributeSet?) : View(
     protected var startTime: Double = 0.0
         private set
 
+    protected var options: MainViewModel.Options = MainViewModel.Options()
+        private set
+
     private var listener: Listener? = null
 
     fun setListener(listener: Listener) {
         this.listener = listener
+    }
+
+    fun setOptions(options: MainViewModel.Options) {
+        this.options = options
     }
 
     private val scaleGestureDetector: ScaleGestureDetector by lazy {

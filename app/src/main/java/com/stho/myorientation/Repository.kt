@@ -4,8 +4,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.stho.myorientation.library.Timer
 import com.stho.myorientation.library.algebra.Orientation
+import com.stho.myorientation.library.filter.MadgwickFilter
+import com.stho.myorientation.library.filter.SeparatedCorrectionFilter
 
 class Repository private constructor() {
+
+    data class Options(
+        var madgwickMode: MadgwickFilter.Mode = MadgwickFilter.Mode.Default,
+        var separatedCorrectionMode: SeparatedCorrectionFilter.Mode = SeparatedCorrectionFilter.Mode.SCF,
+        var showAccelerometerMagnetometerFilter: Boolean = true,
+        var showRotationVectorFilter: Boolean = true,
+        var showMadgwickFilter: Boolean = true,
+        var showComplementaryFilter: Boolean = true,
+        var showSeparatedCorrectionFilter: Boolean = true,
+        var showKalmanFilter: Boolean = true,
+    )
 
     private var timer: Timer = Timer()
 

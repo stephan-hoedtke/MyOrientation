@@ -13,6 +13,7 @@ class Entries {
         ComplementaryFilter("Complementary Fusion Filter"),
         KalmanFilter("Kalman Filter"),
         MadgwickFilter("Madgwick Filter"),
+        SeparatedCorrectionFilter("Separated Correction Filter"),
         Composition("Composition Filter"),
         Damped("(Damped)");
 

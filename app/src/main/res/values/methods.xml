@@ -5,6 +5,7 @@
         <item>Rotation Vector</item>
         <item>Complementary Filter</item>
         <item>Madgwick Filter</item>
+        <item>Separated Correction Filter</item>
         <item>Kalman Filter</item>
         <item>Composition</item>
     </string-array>

@@ -199,19 +199,39 @@ object Rotation {
             }
         }
 
+    private const val FREE_FALL_GRAVITY_SQUARED = 0.01 * 9.81 * 9.81
+    private const val FREE_FALL_MAGNETOMETER_SQUARED = 0.01
 
-    /**
+    internal fun getRotationMatrixFromAccelerationMagnetometer(acceleration: Vector, magnetometer: Vector, defaultValue: Matrix): Matrix =
+        getRotationMatrixFromAccelerationMagnetometer(acceleration, magnetometer) ?: defaultValue
+
+        /**
      * Returns the rotation matrix M for a device defined by the gravity and the geomagnetic vector
+     *      in case of free fall or close to magnetic pole it returns null
+     *      as the rotation matrix cannot be calculated
      *
      * @param acceleration acceleration (a vector pointing upwards in default position)
      * @param magnetometer magnetic (a vector pointing down to the magnetic north)
      *
      * see also: SensorManager.getRotationMatrix()
      */
-    internal fun getRotationMatrixFromAccelerationMagnetometer(acceleration: Vector, magnetometer: Vector): Matrix {
-        val a = acceleration.normalize()
-        val h = Vector.cross(magnetometer, acceleration).normalize()
-        val m = Vector.cross(a, h).normalize()
+    internal fun getRotationMatrixFromAccelerationMagnetometer(acceleration: Vector, magnetometer: Vector): Matrix? {
+        val normSquareA = acceleration.normSquare()
+        if (normSquareA < FREE_FALL_GRAVITY_SQUARED) {
+            // free fall detected, typical values of gravity should be 9.81
+            return null
+        }
+
+        val hh = Vector.cross(magnetometer, acceleration)
+        val normSquareH = hh.normSquare()
+        if (normSquareH < FREE_FALL_MAGNETOMETER_SQUARED) {
+            // free fall or in space or close to magnetic north pole, typical values of magnetometer should be more than 100
+            return null
+        }
+
+        val h = hh / sqrt(normSquareH)
+        val a = acceleration / sqrt(normSquareA)
+        val m = Vector.cross(a, h)
         return Matrix(
             m11 = h.x, m12 = h.y, m13 = h.z,
             m21 = m.x, m22 = m.y, m23 = m.z,

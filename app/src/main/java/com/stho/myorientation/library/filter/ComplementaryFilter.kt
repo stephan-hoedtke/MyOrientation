@@ -6,6 +6,7 @@ import com.stho.myorientation.Measurements
 import com.stho.myorientation.library.*
 import com.stho.myorientation.library.algebra.Matrix
 import com.stho.myorientation.library.algebra.Quaternion
+import com.stho.myorientation.library.algebra.Vector
 import kotlin.math.sqrt
 
 
@@ -16,8 +17,7 @@ class ComplementaryFilter(accelerationFactor: Double = 0.7, filterCoefficient: D
     private val magnetometerReading = FloatArray(3)
     private val gyroscopeReading = FloatArray(3)
 
-    private var gyroDeltaRotation: Quaternion = Quaternion.default
-    private var gyroOrientation: Quaternion = Quaternion.default
+    private var estimate: Quaternion = Quaternion.default
     private var accelerationMagnetometerOrientation: Quaternion = Quaternion.default
 
     private var hasMagnetometer: Boolean = false
@@ -65,61 +65,33 @@ class ComplementaryFilter(accelerationFactor: Double = 0.7, filterCoefficient: D
 
         // If gyro is not initialized yet, do it now...
         if (!hasGyro) {
-            gyroOrientation = Quaternion.default * accelerationMagnetometerOrientation
+            estimate = Quaternion.default * accelerationMagnetometerOrientation
             hasGyro = true
         }
 
-        // Get updated Gyro delta rotation from gyroscope readings
-        getDeltaRotationFromGyroscope()
-
-        // update the gyro orientation
-        gyroOrientation *= gyroDeltaRotation
-
-        // update orientation
-        updateOrientationFromGyroOrientation()
-    }
-
-
-    /**
-     * updates deltaRotationQuaternion which represents the gyroscope rotation changes
-     */
-    private fun getDeltaRotationFromGyroscope() {
         val dt = timer.getNextTime()
         if (dt > 0) {
-            // Axis of the rotation sample, not normalized yet.
-            var x: Double = gyroscopeReading[0].toDouble() // rotation around x-axis: opposite to pitch (positive = front upwards)
-            var y: Double = gyroscopeReading[1].toDouble() // rotation around y-axis: opposite to roll (positive = left side upwards)
-            var z: Double = gyroscopeReading[2].toDouble() // rotation around z-axis: opposite to azimuth (positive = front westwards)
 
-            // Calculate the angular speed of the sample
-            val omegaMagnitude: Double = sqrt(x * x + y * y + z * z)
+            filterUpdate(dt)
 
-            // Normalize the rotation vector if it's big enough to get the axis
-            // (that is, EPSILON should represent your maximum allowable margin of error)
-            if (omegaMagnitude > EPSILON) {
-                x /= omegaMagnitude
-                y /= omegaMagnitude
-                z /= omegaMagnitude
-            }
-
-            // Integrate around this axis with the angular speed by the timestep
-            // in order to get a delta rotation from this sample over the timestep
-            // We will convert this axis-angle representation of the delta rotation
-            // into a quaternion before turning it into the rotation matrix.
-            //
-            // Quaternion integration:
-            // ds/dt = omega x s
-            // with s = q # s0 # q* follows
-            //      dq/dt = 0.5 * omega # q
-            //      q(t) = exp(0.5 * omega * (t - t0)) # q0
-            //      q(t) = cos(|v|) + v / |v| * sin(|v|) # q0 with v = 0.5 * omega * (t - t0)
-            //      this is equivalent to a rotation by theta around the rotation vector omega/|omega| with theta = |omega| * (t - t0)
-            val theta: Double = omegaMagnitude * dt
-            gyroDeltaRotation = Quaternion.forRotation(x, y, z, theta)
+            onOrientationAnglesChanged(estimate.toOrientation())
         }
     }
 
+    private fun filterUpdate(dt: Double) {
+
+        val omega = Vector.fromFloatArray(gyroscopeReading)
+
+        // Get updated Gyro delta rotation from gyroscope readings
+        val deltaRotation = AbstractOrientationFilter.getDeltaRotationFromGyroscope(omega, dt)
+
+        // update the gyro orientation
+        estimate *= deltaRotation
+    }
+
     override fun fuseSensors() {
+
+        // Fusion happens as a separate process to update the estimate using the accelerometer / magnetometer readings
         if (hasGyro && hasAccelerationMagnetometer) {
             calculateFusedOrientation()
         }
@@ -135,18 +107,7 @@ class ComplementaryFilter(accelerationFactor: Double = 0.7, filterCoefficient: D
      * fuse gyro with acceleration to overcome the gyro bias
      */
     private fun calculateFusedOrientation() {
-        gyroOrientation = Quaternion.interpolate(gyroOrientation, accelerationMagnetometerOrientation, interpolationFactor)
-    }
-
-    private fun updateOrientationFromGyroOrientation() {
-        val matrix = gyroOrientation.toRotationMatrix()
-        val adjustedRotationMatrix = Matrix.fromFloatArray(getAdjustedRotationMatrix(matrix.toFloatArray()))
-        val orientation = adjustedRotationMatrix.toOrientation()
-        onOrientationAnglesChanged(orientation)
-    }
-
-    companion object {
-        private const val EPSILON: Double = 0.000000001
+        estimate = Quaternion.interpolate(estimate, accelerationMagnetometerOrientation, interpolationFactor)
     }
 }
 

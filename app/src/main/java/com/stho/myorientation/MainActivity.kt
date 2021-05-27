@@ -94,7 +94,11 @@ class MainActivity : AppCompatActivity() {
                 orientationSensorListener.setFilter(orientationFilter)
             }
             Entries.Method.MadgwickFilter -> {
-                orientationFilter = MadgwickFilter(viewModel.accelerationFactor)
+                orientationFilter = MadgwickFilter(viewModel.options.madgwickMode, viewModel.accelerationFactor)
+                orientationSensorListener.setFilter(orientationFilter)
+            }
+            Entries.Method.SeparatedCorrectionFilter -> {
+                orientationFilter = SeparatedCorrectionFilter(viewModel.options.separatedCorrectionMode, viewModel.accelerationFactor)
                 orientationSensorListener.setFilter(orientationFilter)
             }
             Entries.Method.KalmanFilter -> {
@@ -102,7 +106,7 @@ class MainActivity : AppCompatActivity() {
                 orientationSensorListener.setFilter(orientationFilter)
             }
             Entries.Method.Composition -> {
-                orientationFilter = CompositionFilter(viewModel.accelerationFactor, viewModel.timeConstant, viewModel.filterCoefficient)
+                orientationFilter = CompositionFilter(viewModel.options, viewModel.accelerationFactor, viewModel.timeConstant, viewModel.filterCoefficient)
                 orientationSensorListener.setFilter(orientationFilter)
             }
             Entries.Method.Damped -> {

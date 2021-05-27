@@ -12,7 +12,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.stho.myorientation.databinding.FragmentSettingsBinding
 import com.stho.myorientation.library.Formatter
-import com.stho.myorientation.library.OrientationSensorListener
+import com.stho.myorientation.library.filter.MadgwickFilter
+import com.stho.myorientation.library.filter.SeparatedCorrectionFilter
 
 class SettingsFragment : Fragment() {
 
@@ -34,6 +35,7 @@ class SettingsFragment : Fragment() {
         viewModel.filterCoefficientLD.observe(viewLifecycleOwner, { filterCoefficient -> observeFilterCoefficient(filterCoefficient) })
         viewModel.propertyLD.observe(viewLifecycleOwner, { property -> observeProperty(property) })
         viewModel.methodLD.observe(viewLifecycleOwner, { mode -> observeMethod(mode) })
+        viewModel.optionsLD.observe(viewLifecycleOwner, { options -> observeOptions(options) })
 
         return binding.root
     }
@@ -111,6 +113,7 @@ class SettingsFragment : Fragment() {
         methods.add(Entries.Method.RotationVector)
         methods.add(Entries.Method.ComplementaryFilter)
         methods.add(Entries.Method.MadgwickFilter)
+        methods.add(Entries.Method.SeparatedCorrectionFilter)
         methods.add(Entries.Method.KalmanFilter)
         methods.add(Entries.Method.Composition)
 
@@ -127,6 +130,18 @@ class SettingsFragment : Fragment() {
                 viewModel.method = Entries.Method.AccelerometerMagnetometer
             }
         }
+
+        binding.radioButtonMadgwickDefault.setOnClickListener { viewModel.setMadgwickFilterMode(MadgwickFilter.Mode.Default) }
+        binding.radioButtonMadgwickOrthogonal.setOnClickListener { viewModel.setMadgwickFilterMode(MadgwickFilter.Mode.Orthogonal) }
+        binding.radioButtonMadgwickModified.setOnClickListener { viewModel.setMadgwickFilterMode(MadgwickFilter.Mode.Modified) }
+        binding.radioButtonSeparatedCorrectionDefault.setOnClickListener { viewModel.setSeparatedCorrectionFilterMode(SeparatedCorrectionFilter.Mode.SCF) }
+        binding.radioButtonSeparatedCorrectionModified.setOnClickListener { viewModel.setSeparatedCorrectionFilterMode(SeparatedCorrectionFilter.Mode.FSCF) }
+        binding.switchAccelerometerMagnetometerFilter.setOnCheckedChangeListener { _, isChecked -> viewModel.showFilter(Entries.Method.AccelerometerMagnetometer, isChecked) }
+        binding.switchRotationVectorFilter.setOnCheckedChangeListener { _, isChecked -> viewModel.showFilter(Entries.Method.RotationVector, isChecked) }
+        binding.switchComplementaryFilter.setOnCheckedChangeListener { _, isChecked -> viewModel.showFilter(Entries.Method.ComplementaryFilter, isChecked) }
+        binding.switchMadgwickFilter.setOnCheckedChangeListener { _, isChecked -> viewModel.showFilter(Entries.Method.MadgwickFilter, isChecked) }
+        binding.switchSeparatedCorrectionFilter.setOnCheckedChangeListener { _, isChecked -> viewModel.showFilter(Entries.Method.SeparatedCorrectionFilter, isChecked) }
+        binding.switchKalmanFilter.setOnCheckedChangeListener { _, isChecked -> viewModel.showFilter(Entries.Method.KalmanFilter, isChecked) }
     }
 
     private fun observeFactor(factor: Double) {
@@ -155,6 +170,31 @@ class SettingsFragment : Fragment() {
     private fun observeMethod(mode: Entries.Method) {
         val pos: Int = methodAdapter.getPosition(mode)
         binding.spinnerMethod.setSelection(pos)
+
+        binding.madgwickFilterOptions.visibility = visibilityFor(mode == Entries.Method.MadgwickFilter || mode == Entries.Method.Composition)
+        binding.separatedCorrectionFilterOptions.visibility = visibilityFor(mode == Entries.Method.SeparatedCorrectionFilter || mode == Entries.Method.Composition)
+        binding.compositionFilterOptions.visibility = visibilityFor(mode == Entries.Method.Composition)
+    }
+
+    private fun visibilityFor(value: Boolean) =
+        if (value) View.VISIBLE else View.GONE
+
+
+    private fun observeOptions(options: MainViewModel.Options) {
+        // Madgwick Filter Options
+        binding.radioButtonMadgwickDefault.isChecked = (options.madgwickMode == MadgwickFilter.Mode.Default)
+        binding.radioButtonMadgwickOrthogonal.isChecked = (options.madgwickMode == MadgwickFilter.Mode.Orthogonal)
+        binding.radioButtonMadgwickModified.isChecked = (options.madgwickMode == MadgwickFilter.Mode.Modified)
+        // Separated Filter Options
+        binding.radioButtonSeparatedCorrectionDefault.isChecked = (options.separatedCorrectionMode == SeparatedCorrectionFilter.Mode.SCF)
+        binding.radioButtonSeparatedCorrectionModified.isChecked = (options.separatedCorrectionMode == SeparatedCorrectionFilter.Mode.FSCF)
+        // Composition Filter Options
+        binding.switchAccelerometerMagnetometerFilter.isChecked = options.showAccelerometerMagnetometerFilter
+        binding.switchRotationVectorFilter.isChecked = options.showRotationVectorFilter
+        binding.switchComplementaryFilter.isChecked = options.showComplementaryFilter
+        binding.switchMadgwickFilter.isChecked = options.showMadgwickFilter
+        binding.switchSeparatedCorrectionFilter.isChecked = options.showSeparatedCorrectionFilter
+        binding.switchKalmanFilter.isChecked = options.showKalmanFilter
     }
 
     companion object {
