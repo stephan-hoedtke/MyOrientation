@@ -29,27 +29,6 @@ class ExtendedComplementaryFilterUnitTests : BaseUnitTestsHelper() {
         orthogonalError_isReducing_forCorrectRotation(eulerAngles.azimuth, eulerAngles.pitch, eulerAngles.roll)
     }
 
-    @Ignore
-    @Test fun orthogonalError_isReducing_forGivenQuaternions() {
-        val accelerometer = Vector(x=0.395324078540918, y=0.250380168299081, z=0.883758249889809)
-        val magnetometer = Vector(x=-0.404600601727002, y=0.134834041279978, z=-0.904498830510165)
-        val n = Vector(0.0, 18.00, -44.00).norm()
-        val b = MadgwickFilter.flux(accelerometer, magnetometer) * n
-        assertEquals("b.x", 0.0, b.x, EPS_E4)
-        assertEquals("b.y", 18.00, b.y, EPS_E4)
-        assertEquals("b.z", -44.00, b.z, EPS_E4)
-
-        val m = Rotation.getRotationMatrixFromAccelerationMagnetometer(accelerometer, magnetometer, Matrix.E)
-        val q = m.toQuaternion()
-        val q0 = Quaternion(s=0.651371582571452, x=0.113520265136051, y=-0.748603651235803, z=0.049201465204065)
-        val q1 = Quaternion(s=0.649697532222179, x=0.113401459989724, y=-0.750058022278358, z=0.049458959880766)
-        val q2 = Quaternion(s=0.649423545730012, x=0.113381984238781, y=-0.750295429443351, z=0.049501034918010)
-        val q3 = Quaternion(s=0.647936603046846, x=0.113276132371921, y=-0.751580800322904, z=0.049729034305475)
-        orthogonalError_isReducing_forCorrectRotation(q, q0, q1)
-        orthogonalError_isReducing_forCorrectRotation(q, q1, q2)
-        orthogonalError_isReducing_forCorrectRotation(q, q2, q3)
-    }
-
     private fun orthogonalError_isReducing_forCorrectRotation(azimuth: Double, pitch: Double, roll: Double) {
         val q = Quaternion.forEulerAngles(azimuth, pitch, roll)
         val q0 = Quaternion.forEulerAngles(azimuth = azimuth + 0.2, pitch = pitch + 0.2, roll = roll + 0.2)

@@ -84,16 +84,6 @@ class ExtendedComplementaryFilter(accelerationFactor: Double = 0.7) : AbstractOr
     private var estimate: Quaternion = Quaternion.default
 
     /**
-     * The adjustable gain ...
-     */
-    private var gain: Double = GAIN
-
-    /**
-     * Use the previous |error| to adjust the gain in each step...
-     */
-    private var previousErrorNormSquare: Double = 0.0
-
-    /**
      * Function to compute one filter iteration
      */
     private fun filterUpdate(dt: Double) {
@@ -113,37 +103,20 @@ class ExtendedComplementaryFilter(accelerationFactor: Double = 0.7) : AbstractOr
 
         val error = error(estimate, a, m)
 
-        adjustGain(w, error)
-
+        val gain = 0.01
         val omega = w - error * gain
         val qDot = estimate * omega.asQuaternion() * 0.5
         val delta = qDot * dt
         estimate = (estimate + delta).normalize()
 
         Log.d("ECF", "Gyro(x=${w.x.f11()}, y=${w.y.f11()}, z=${w.z.f11()}) " +
-                "Error(x=${error.x.f11()}, y=${error.y.f11()}, z=${error.z.f11()}) |e|=${error.norm().f11()} gain=${gain.f11()} " +
+                "Error(x=${error.x.f11()}, y=${error.y.f11()}, z=${error.z.f11()}) |e|=${error.norm().f11()} " +
                 "New Estimate: s=${estimate.s.f11()}, x=${estimate.x.f11()}, y=${estimate.y.f11()}, z=${estimate.z.f11()}")
 
         hasEstimate = true
     }
 
-    private fun adjustGain(w: Vector, error: Vector) {
-        val normSquare = error.normSquare()
-        if (hasNoGyroData(w)) {
-            when {
-                normSquare > previousErrorNormSquare + TOLERANCE -> gain /= 2
-                normSquare < previousErrorNormSquare && gain < GAIN -> gain *= 2
-            }
-        }
-        previousErrorNormSquare = normSquare
-    }
-
-    private fun hasNoGyroData(w: Vector): Boolean =
-        w.normSquare() < TOLERANCE
-
     companion object {
-        private const val GAIN: Double = 0.1
-        private const val TOLERANCE: Double = 0.00000001
 
         internal fun error(q: Quaternion, a: Vector, m: Vector): Vector {
             val aHat = a.normalize()

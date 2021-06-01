@@ -151,12 +151,6 @@
                     android:text="@string/label_default" />
 
                <RadioButton
-                   android:id="@+id/radioButtonMadgwickOrthogonal"
-                   android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"
-                   android:text="@string/label_orthogonal" />
-
-               <RadioButton
                     android:id="@+id/radioButtonMadgwickModified"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

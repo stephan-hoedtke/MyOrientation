@@ -133,7 +133,6 @@ class SettingsFragment : Fragment() {
         }
 
         binding.radioButtonMadgwickDefault.setOnClickListener { viewModel.setMadgwickFilterMode(MadgwickFilter.Mode.Default) }
-        binding.radioButtonMadgwickOrthogonal.setOnClickListener { viewModel.setMadgwickFilterMode(MadgwickFilter.Mode.Orthogonal) }
         binding.radioButtonMadgwickModified.setOnClickListener { viewModel.setMadgwickFilterMode(MadgwickFilter.Mode.Modified) }
         binding.radioButtonSeparatedCorrectionDefault.setOnClickListener { viewModel.setSeparatedCorrectionFilterMode(SeparatedCorrectionFilter.Mode.SCF) }
         binding.radioButtonSeparatedCorrectionModified.setOnClickListener { viewModel.setSeparatedCorrectionFilterMode(SeparatedCorrectionFilter.Mode.FSCF) }
@@ -185,7 +184,6 @@ class SettingsFragment : Fragment() {
     private fun observeOptions(options: MainViewModel.Options) {
         // Madgwick Filter Options
         binding.radioButtonMadgwickDefault.isChecked = (options.madgwickMode == MadgwickFilter.Mode.Default)
-        binding.radioButtonMadgwickOrthogonal.isChecked = (options.madgwickMode == MadgwickFilter.Mode.Orthogonal)
         binding.radioButtonMadgwickModified.isChecked = (options.madgwickMode == MadgwickFilter.Mode.Modified)
         // Separated Filter Options
         binding.radioButtonSeparatedCorrectionDefault.isChecked = (options.separatedCorrectionMode == SeparatedCorrectionFilter.Mode.SCF)
