@@ -234,7 +234,14 @@
                     android:text="@string/label_separated_correction_filter"
                     android:checked="false" />
 
-                <androidx.appcompat.widget.SwitchCompat
+               <androidx.appcompat.widget.SwitchCompat
+                   android:id="@+id/switchExtendedComplementaryFilter"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:text="@string/label_extended_complementary_filter"
+                   android:checked="false" />
+
+               <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/switchKalmanFilter"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

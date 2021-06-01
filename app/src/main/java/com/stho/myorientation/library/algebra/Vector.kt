@@ -16,6 +16,12 @@ data class Vector(val x: Double, val y: Double, val z: Double) {
     operator fun div(f: Double): Vector =
             Vector(x / f, y / f, z / f)
 
+    fun cross(v: Vector): Vector =
+        Vector.cross(this, v)
+
+    fun dot(v: Vector): Double =
+        Vector.dot(this, v)
+
     /**
      * Rotate this vector by q: returns q # this # q* (hamilton product)
      */

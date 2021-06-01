@@ -14,6 +14,7 @@ class Entries {
         KalmanFilter("Kalman Filter"),
         MadgwickFilter("Madgwick Filter"),
         SeparatedCorrectionFilter("Separated Correction Filter"),
+        ExtendedComplementaryFilter("Extended Complementary Filter"),
         Composition("Composition Filter"),
         Damped("(Damped)");
 

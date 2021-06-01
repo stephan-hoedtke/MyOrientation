@@ -80,7 +80,6 @@ class MainFragment : Fragment() {
         viewModel.accelerationFactorLD.observe(viewLifecycleOwner, { accelerationFactor -> observeFactor(accelerationFactor) })
         viewModel.methodLD.observe(viewLifecycleOwner, { method -> observeMethod(method) })
         viewModel.orientationLD.observe(viewLifecycleOwner, { orientation -> observeOrientation(orientation) })
-        viewModel.optionsLD.observe(viewLifecycleOwner, { options -> observeOptions(options) })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -122,10 +121,6 @@ class MainFragment : Fragment() {
         binding.property.setTextColor(getColorForProperty(property))
     }
 
-    private fun observeOptions(options: MainViewModel.Options) {
-        binding.mainView.setOptions(options = options)
-    }
-
     private fun getColorForProperty(property: Entries.Property): Int =
             resources.getColor(getColorResourceIdForProperty(property), null)
 
@@ -162,6 +157,7 @@ class MainFragment : Fragment() {
                 Entries.Method.ComplementaryFilter -> Color.CYAN
                 Entries.Method.MadgwickFilter -> Color.GREEN
                 Entries.Method.SeparatedCorrectionFilter -> Color.MAGENTA
+                Entries.Method.ExtendedComplementaryFilter -> Color.BLUE
                 Entries.Method.Composition -> Color.WHITE
                 Entries.Method.Damped -> Color.GRAY
             }

@@ -45,4 +45,5 @@
     <string name="label_separated_correction_filter">Separated Correction Filter</string>
     <string name="label_kalman_filter">Kalman Filter</string>
     <string name="label_orthogonal">Orthogonal</string>
+    <string name="label_extended_complementary_filter">Extended Complementary Filter</string>
 </resources>

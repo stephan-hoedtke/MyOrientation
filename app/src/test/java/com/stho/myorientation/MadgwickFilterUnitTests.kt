@@ -332,6 +332,89 @@ class MadgwickFilterUnitTests : BaseUnitTestsHelper() {
         return p0
     }
 
+
+    @Test
+    fun orthogonalGradientDescent_isCorrect() {
+        // Orientation: z-Rot=6.4, x-Rot=5.85, y-Rot=7.79
+        // Accelerometer (m/s2) x=-1.14, y=5.85, z=7.79
+        // Magnetometer (microTesla) x=9.06, y=-11.90, z=-45.12
+        orthogonalGradientDescent_isCorrect(
+            a = Vector(x = -1.14, y = 5.85, z = 7.79),
+            m = Vector(x = 9.06, y = -11.90, z = -45.12)
+        )
+    }
+
+    private fun orthogonalGradientDescent_isCorrect(a: Vector, m: Vector) {
+        val r = Rotation.getRotationMatrixFromAccelerationMagnetometer(a, m, Matrix.E)
+        val e = Quaternion.fromRotationMatrix(r)
+        val eulerAngles = e.toEulerAngles()
+        orthogonalGradientDescent_isCorrect(eulerAngles.azimuth, eulerAngles.pitch, eulerAngles.roll, a, m)
+    }
+
+    private fun orthogonalGradientDescent_isCorrect(azimuth: Double, pitch: Double, roll: Double, a: Vector, m: Vector, q: Quaternion = q0) {
+        orthogonalGradientDescentApproximatesOrientation(azimuth, pitch, roll, a, m, q)
+    }
+
+    /**
+     * calculate the approximation for acceleration a and magnetometer m and compare it with the given angles
+     */
+    private fun orthogonalGradientDescentApproximatesOrientation(azimuth: Double, pitch: Double, roll: Double, a: Vector, m: Vector, q: Quaternion) {
+
+        val e = Vector.cross(a, m)
+        val p = getApproximateOrientationFromOrthogonalGradientDescent(a, e, q)
+
+        val eulerAngles = p.toEulerAngles()
+
+        val p_azimuth = eulerAngles.azimuth
+        val p_pitch = eulerAngles.pitch
+        val p_roll = eulerAngles.roll
+
+        val eulerAngles2 = p.inverse().toEulerAngles()
+
+        val p_azimuth2 = eulerAngles2.azimuth
+        val p_pitch2 = eulerAngles2.pitch
+        val p_roll2 = eulerAngles2.roll
+
+        assertEquals("Azimuth", azimuth, p_azimuth, EPS_E3)
+        assertEquals("Pitch", pitch, p_pitch, EPS_E3)
+        assertEquals("Roll", roll, p_roll, EPS_E3)
+    }
+
+    private fun getApproximateOrientationFromOrthogonalGradientDescent(a: Vector, e: Vector, q: Quaternion): Quaternion {
+
+        val ee = e.normalize()
+        val aa = a.normalize()
+
+        var f = 1E-1
+        val limit = 1E-8
+
+        var p0 = q
+        var n0 = MadgwickFilter.orthogonalObjectiveFunction(q = p0, a = aa, e = ee).normSquare()
+
+        var gradient = MadgwickFilter.gradientAsJacobianTimesOrthogonalObjectiveFunction(q = p0, aa, ee)
+
+        while (f > limit) {
+
+            val p1 = (p0 - gradient.normalize() * f).normalize()
+            val n1 = MadgwickFilter.orthogonalObjectiveFunction(q = p1, a = aa, e = ee).normSquare()
+
+            if (n1 < n0) {
+                // another step with same step size f
+                p0 = p1
+                n0 = n1
+                gradient = MadgwickFilter.gradientAsJacobianTimesOrthogonalObjectiveFunction(p0, aa, ee)
+            }
+            else {
+                // reduce step size
+                f /= 10
+            }
+        }
+
+        return p0
+    }
+
+
+
     @Test
     fun objectiveFunction_isCorrect() {
         val e = Quaternion.forEulerAngles(7.0, -7.0, 7.0).normalize()

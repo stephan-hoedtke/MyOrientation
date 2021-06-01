@@ -7,22 +7,37 @@ import com.stho.myorientation.library.algebra.Degree
 import com.stho.myorientation.library.algebra.Orientation
 
 
-class CompositionFilter(options: MainViewModel.Options, accelerationFactor: Double = 0.7, timeConstant: Double = 0.2, filterCoefficient: Double = 0.98) : AbstractOrientationFilter(Entries.Method.Composition, accelerationFactor), OrientationFilter {
+class CompositionFilter(val options: MainViewModel.Options, accelerationFactor: Double = 0.7, timeConstant: Double = 0.2, filterCoefficient: Double = 0.98) : AbstractOrientationFilter(Entries.Method.Composition, accelerationFactor), OrientationFilter {
 
     private val accelerationMagnetometerFilter = AccelerationMagnetometerFilter(accelerationFactor, timeConstant)
     private val rotationVectorFilter = RotationVectorFilter(accelerationFactor)
     private val complementaryFilter = ComplementaryFilter(accelerationFactor, filterCoefficient)
     private val madgwickFilter = MadgwickFilter(options.madgwickMode, accelerationFactor)
     private val separatedCorrectionFilter = SeparatedCorrectionFilter(options.separatedCorrectionMode, accelerationFactor)
+    private val extendedComplementaryFilter = ExtendedComplementaryFilter(accelerationFactor)
     private val kalmanFilter = KalmanFilter(accelerationFactor)
 
     override fun updateReadings(type: Measurements.Type, values: FloatArray) {
-        accelerationMagnetometerFilter.updateReadings(type, values)
-        rotationVectorFilter.updateReadings(type, values)
-        complementaryFilter.updateReadings(type, values)
-        madgwickFilter.updateReadings(type, values)
-        separatedCorrectionFilter.updateReadings(type, values)
-        kalmanFilter.updateReadings(type, values)
+        if (options.showAccelerometerMagnetometerFilter)
+            accelerationMagnetometerFilter.updateReadings(type, values)
+
+        if (options.showRotationVectorFilter)
+            rotationVectorFilter.updateReadings(type, values)
+
+        if (options.showComplementaryFilter)
+            complementaryFilter.updateReadings(type, values)
+
+        if (options.showMadgwickFilter)
+            madgwickFilter.updateReadings(type, values)
+
+        if (options.showSeparatedCorrectionFilter)
+            separatedCorrectionFilter.updateReadings(type, values)
+
+        if (options.showExtendedComplementaryFilter)
+            extendedComplementaryFilter.updateReadings(type, values)
+
+        if (options.showKalmanFilter)
+            kalmanFilter.updateReadings(type, values)
     }
 
     override val currentOrientation: Orientation
@@ -34,6 +49,7 @@ class CompositionFilter(options: MainViewModel.Options, accelerationFactor: Doub
         complementaryFilter.reset()
         madgwickFilter.reset()
         separatedCorrectionFilter.reset()
+        extendedComplementaryFilter.reset()
         kalmanFilter.reset()
     }
 

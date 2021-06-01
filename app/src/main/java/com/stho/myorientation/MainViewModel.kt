@@ -13,13 +13,27 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     data class Options(
         var madgwickMode: MadgwickFilter.Mode = MadgwickFilter.Mode.Default,
         var separatedCorrectionMode: SeparatedCorrectionFilter.Mode = SeparatedCorrectionFilter.Mode.SCF,
-        var showAccelerometerMagnetometerFilter: Boolean = true,
+        var showAccelerometerMagnetometerFilter: Boolean = false,
         var showRotationVectorFilter: Boolean = true,
         var showMadgwickFilter: Boolean = true,
-        var showComplementaryFilter: Boolean = true,
-        var showSeparatedCorrectionFilter: Boolean = true,
-        var showKalmanFilter: Boolean = true,
-    )
+        var showComplementaryFilter: Boolean = false,
+        var showSeparatedCorrectionFilter: Boolean = false,
+        var showExtendedComplementaryFilter: Boolean = true,
+        var showKalmanFilter: Boolean = false,
+    ) {
+
+        internal fun show(method: Entries.Method): Boolean =
+            when (method) {
+                Entries.Method.AccelerometerMagnetometer -> showAccelerometerMagnetometerFilter
+                Entries.Method.RotationVector -> showRotationVectorFilter
+                Entries.Method.MadgwickFilter -> showMadgwickFilter
+                Entries.Method.ComplementaryFilter -> showComplementaryFilter
+                Entries.Method.SeparatedCorrectionFilter -> showSeparatedCorrectionFilter
+                Entries.Method.ExtendedComplementaryFilter -> showExtendedComplementaryFilter
+                Entries.Method.KalmanFilter -> showKalmanFilter
+                else -> true
+            }
+    }
 
     private val methodLiveData: MutableLiveData<Entries.Method> = MutableLiveData<Entries.Method>().apply { value = Entries.Method.Composition }
     private val zoomLiveData: MutableLiveData<Double> = MutableLiveData<Double>().apply { value = DEFAULT_ZOOM }
@@ -88,6 +102,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             Entries.Method.ComplementaryFilter -> options.showComplementaryFilter = value
             Entries.Method.MadgwickFilter -> options.showMadgwickFilter = value
             Entries.Method.SeparatedCorrectionFilter -> options.showSeparatedCorrectionFilter = value
+            Entries.Method.ExtendedComplementaryFilter -> options.showExtendedComplementaryFilter = value
             Entries.Method.KalmanFilter -> options.showKalmanFilter = value
         }
         touch(options)

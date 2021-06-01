@@ -114,6 +114,7 @@ class SettingsFragment : Fragment() {
         methods.add(Entries.Method.ComplementaryFilter)
         methods.add(Entries.Method.MadgwickFilter)
         methods.add(Entries.Method.SeparatedCorrectionFilter)
+        methods.add(Entries.Method.ExtendedComplementaryFilter)
         methods.add(Entries.Method.KalmanFilter)
         methods.add(Entries.Method.Composition)
 
@@ -141,6 +142,7 @@ class SettingsFragment : Fragment() {
         binding.switchComplementaryFilter.setOnCheckedChangeListener { _, isChecked -> viewModel.showFilter(Entries.Method.ComplementaryFilter, isChecked) }
         binding.switchMadgwickFilter.setOnCheckedChangeListener { _, isChecked -> viewModel.showFilter(Entries.Method.MadgwickFilter, isChecked) }
         binding.switchSeparatedCorrectionFilter.setOnCheckedChangeListener { _, isChecked -> viewModel.showFilter(Entries.Method.SeparatedCorrectionFilter, isChecked) }
+        binding.switchExtendedComplementaryFilter.setOnCheckedChangeListener { _, isChecked -> viewModel.showFilter(Entries.Method.ExtendedComplementaryFilter, isChecked) }
         binding.switchKalmanFilter.setOnCheckedChangeListener { _, isChecked -> viewModel.showFilter(Entries.Method.KalmanFilter, isChecked) }
     }
 
@@ -194,6 +196,7 @@ class SettingsFragment : Fragment() {
         binding.switchComplementaryFilter.isChecked = options.showComplementaryFilter
         binding.switchMadgwickFilter.isChecked = options.showMadgwickFilter
         binding.switchSeparatedCorrectionFilter.isChecked = options.showSeparatedCorrectionFilter
+        binding.switchExtendedComplementaryFilter.isChecked = options.showExtendedComplementaryFilter
         binding.switchKalmanFilter.isChecked = options.showKalmanFilter
     }
 

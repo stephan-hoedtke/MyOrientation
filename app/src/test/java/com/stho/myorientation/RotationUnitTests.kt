@@ -2,10 +2,13 @@ package com.stho.myorientation
 
 import com.stho.myorientation.library.algebra.Degree
 import com.stho.myorientation.library.algebra.*
+import com.stho.myorientation.library.filter.SeparatedCorrectionFilter
 import org.junit.Test
 
 import org.junit.Assert.*
 import kotlin.math.sign
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -40,6 +43,44 @@ class RotationUnitTests : BaseUnitTestsHelper() {
             o
 
         assertEquals(e, a)
+    }
+
+    @Test
+    fun orientationFromGyro_isCorrect() {
+        orientationFromGyro_isCorrect(omega = Vector(1.0, 2.0, 3.0), dt = 0.001)
+        orientationFromGyro_isCorrect(omega = Vector(3.0, 4.0, 5.0), dt = 0.002)
+    }
+
+    private fun orientationFromGyro_isCorrect(omega: Vector, dt: Double) {
+        val p = getRotationMethodA(omega, dt)
+        val q = getRotationMethodB(omega, dt)
+        val r = getRotationMethodC(omega, dt)
+        assertEquals(p, q, EPS_E6)
+        assertEquals(p, r, EPS_E6)
+    }
+
+    private fun getRotationMethodA(omega: Vector, dt: Double): Quaternion {
+        val alpha = omega.x * dt
+        val beta = omega.y * dt
+        val gamma = omega.z * dt
+
+        val qDotX = sin(alpha / 2)
+        val qDotY = sin(beta / 2)
+        val qDotZ = sin(gamma / 2)
+        val qDotS = sqrt(1 - qDotX * qDotX - qDotY * qDotY - qDotZ * qDotZ)
+        return Quaternion(s = qDotS, x = qDotX, y = qDotY, z = qDotZ)
+    }
+
+    private fun getRotationMethodB(omega: Vector, dt: Double): Quaternion {
+        val alpha = omega.x * dt
+        val beta = omega.y * dt
+        val gamma = omega.z * dt
+        return Quaternion(s = 1.0, x = alpha/2, y = beta/2, z = gamma/2).normalize()
+    }
+
+
+    private fun getRotationMethodC(omega: Vector, dt: Double): Quaternion {
+        return Rotation.getRotationFromGyro(omega, dt)
     }
 
     @Test

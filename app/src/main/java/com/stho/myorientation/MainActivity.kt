@@ -101,6 +101,10 @@ class MainActivity : AppCompatActivity() {
                 orientationFilter = SeparatedCorrectionFilter(viewModel.options.separatedCorrectionMode, viewModel.accelerationFactor)
                 orientationSensorListener.setFilter(orientationFilter)
             }
+            Entries.Method.ExtendedComplementaryFilter -> {
+                orientationFilter = ExtendedComplementaryFilter(viewModel.accelerationFactor)
+                orientationSensorListener.setFilter(orientationFilter)
+            }
             Entries.Method.KalmanFilter -> {
                 orientationFilter = KalmanFilter(viewModel.accelerationFactor)
                 orientationSensorListener.setFilter(orientationFilter)

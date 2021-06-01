@@ -7,6 +7,7 @@ import com.stho.myorientation.library.Timer
 import com.stho.myorientation.library.algebra.Matrix
 import com.stho.myorientation.library.algebra.Quaternion
 import com.stho.myorientation.library.algebra.Vector
+import com.stho.myorientation.library.f11
 import kotlin.math.PI
 import kotlin.math.sqrt
 
@@ -96,7 +97,7 @@ class MadgwickFilter(private val mode: Mode, accelerationFactor: Double = 0.7) :
 
             filterUpdate(dt)
 
-            onOrientationAnglesChanged(estimate.toOrientation())
+            super.onOrientationAnglesChanged(estimate.toOrientation())
         }
     }
 
@@ -115,26 +116,32 @@ class MadgwickFilter(private val mode: Mode, accelerationFactor: Double = 0.7) :
      */
     private fun filterUpdate(dt: Double) {
 
-        val a = Vector.fromFloatArray(accelerometerReading).normalize()
-        val m = Vector.fromFloatArray(magnetometerReading).normalize()
+        val aa = Vector.fromFloatArray(accelerometerReading).normalize()
+        val mm = Vector.fromFloatArray(magnetometerReading).normalize()
         val w = Vector.fromFloatArray(gyroscopeReading).asQuaternion()
+
+        Log.d("MGW", "Estimate: s=${estimate.s.f11()}, x=${estimate.x.f11()}, y=${estimate.y.f11()}, z=${estimate.z.f11()}")
 
         if (!hasEstimate) {
             estimate = super.getQuaternionFromAccelerometerMagnetometerReadings(accelerometerReading, magnetometerReading, Quaternion.default)
         }
 
+        Log.d("MGW", "Accelerometer: Reading(x=${aa.x.f11()}, y=${aa.y.f11()}, z=${aa.z.f11()}) ")
+        Log.d("MGW", "Magnetometer: Reading(x=${mm.x.f11()}, y=${mm.y.f11()}, z=${mm.z.f11()}) ")
+
         // compute the gradient (matrix multiplication) estimated direction of the gyroscope error
         val gradient: Quaternion = when (mode) {
             Mode.Default -> {
-                val b: Vector = flux(estimate, m)
-                gradientAsJacobianTimesObjectiveFunction(estimate, b.y, b.z, a, m)
+                val b: Vector = flux(estimate, mm)
+                gradientAsJacobianTimesObjectiveFunction(estimate, b.y, b.z, aa, mm)
             }
             Mode.Orthogonal -> {
-                gradientAsJacobianTimesOrthogonalObjectiveFunction(estimate, a, m)
+                val ee = Vector.cross(aa, mm).normalize()
+                gradientAsJacobianTimesOrthogonalObjectiveFunction(estimate, aa, ee)
             }
             Mode.Modified -> {
-                val b: Vector = flux(a, m)
-                getGradientAsTangentialApproximation(estimate, b.y, b.z, a, m)
+                val b: Vector = flux(aa, mm)
+                getGradientAsTangentialApproximation(estimate, b.y, b.z, aa, mm)
             }
         }
 
@@ -153,6 +160,10 @@ class MadgwickFilter(private val mode: Mode, accelerationFactor: Double = 0.7) :
         val qDot = qDotGyro - qDotCorrection
         val delta = qDot * dt
         estimate = (estimate + delta).normalize()
+
+        Log.d("MGW", "Gyro(x=${w.x.f11()}, y=${w.y.f11()}, z=${w.z.f11()}) " +
+                "Error: s=${qDotError.s.f11()} x=${qDotError.x.f11()} y=${qDotError.y.f11()} z=${qDotError.z.f11()} " +
+                "New Estimate: s=${estimate.s.f11()}, x=${estimate.x.f11()}, y=${estimate.y.f11()}, z=${estimate.z.f11()}")
 
         hasEstimate = true
     }
@@ -181,7 +192,6 @@ class MadgwickFilter(private val mode: Mode, accelerationFactor: Double = 0.7) :
                 )
     }
 
-
     companion object {
         private const val gyroMeasurementError: Double = PI * (5.0f / 180.0f) // gyroscope measurement error in rad/s (shown as 5 deg/s)
         private const val gyroMeasurementDrift: Double = PI * (0.2f / 180.0f) // gyroscope measurement error in rad/s/s (shown as 0.2f deg/s/s)
@@ -204,8 +214,8 @@ class MadgwickFilter(private val mode: Mode, accelerationFactor: Double = 0.7) :
          *      fa = q* # (0, 0, -1) # q - |a| for gravity
          *      fb = q* # (1, 0, 0) # q* - |a x m| for a vector e = |gravity x magnetic field|
           */
-        internal fun gradientAsJacobianTimesOrthogonalObjectiveFunction(q: Quaternion, a: Vector, m: Vector): Quaternion {
-            val f: ObjectiveFunction = orthogonalObjectiveFunction(q, a, m)
+        internal fun gradientAsJacobianTimesOrthogonalObjectiveFunction(q: Quaternion, a: Vector, e: Vector): Quaternion {
+            val f: ObjectiveFunction = orthogonalObjectiveFunction(q, a, e)
             val J: Jacobian = orthogonalJacobian(q)
             return J * f
         }
@@ -260,8 +270,7 @@ class MadgwickFilter(private val mode: Mode, accelerationFactor: Double = 0.7) :
          *      fb = q* # (-1, 0, 0) # q* - |a x m|  for e = |gravity x magnetic field|
          */
         @Suppress("SpellCheckingInspection")
-        internal fun orthogonalObjectiveFunction(q: Quaternion, a: Vector, m: Vector): ObjectiveFunction {
-            val e = Vector.cross(a, m).normalize()
+        internal fun orthogonalObjectiveFunction(q: Quaternion, a: Vector, e: Vector): ObjectiveFunction {
             return ObjectiveFunction(
                 f1 = q.m31 - a.x,
                 f2 = q.m32 - a.y,

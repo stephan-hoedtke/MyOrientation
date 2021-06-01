@@ -74,7 +74,7 @@ class ComplementaryFilter(accelerationFactor: Double = 0.7, filterCoefficient: D
 
             filterUpdate(dt)
 
-            onOrientationAnglesChanged(estimate.toOrientation())
+            super.onOrientationAnglesChanged(estimate.toOrientation())
         }
     }
 

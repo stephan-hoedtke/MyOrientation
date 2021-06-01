@@ -42,7 +42,7 @@ class AccelerationMagnetometerFilter(accelerationFactor: Double = 0.7, timeConst
         if (SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading)) {
             val adjustedRotationMatrix = Matrix.fromFloatArray(getAdjustedRotationMatrix(rotationMatrix))
             val orientation = adjustedRotationMatrix.toOrientation()
-            onOrientationAnglesChanged(orientation)
+            super.onOrientationAnglesChanged(orientation)
         }
     }
 
