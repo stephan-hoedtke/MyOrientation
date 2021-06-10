@@ -22,6 +22,7 @@
     <string name="label_acceleration_value">a = 0.70</string>
     <string name="label_time_constant_value">t = 0.40</string>
     <string name="label_filter_coefficient_value">f = 0.98</string>
+    <string name="label_processor_consumption_value">0.022</string>
     <string name="label_azimuth">Azimuth</string>
     <string name="label_acceleration_and_magnetometer"><![CDATA[Acceleration & Magnetometer]]></string>
     <string name="label_version_value">1.4.2</string>

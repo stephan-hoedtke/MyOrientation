@@ -4,10 +4,9 @@ import android.hardware.SensorManager
 import com.stho.myorientation.Entries
 import com.stho.myorientation.Measurements
 import com.stho.myorientation.library.*
-import com.stho.myorientation.library.algebra.Matrix
+import com.stho.myorientation.library.algebra.RotationMatrix
 import com.stho.myorientation.library.algebra.Quaternion
 import com.stho.myorientation.library.algebra.Vector
-import kotlin.math.sqrt
 
 
 class ComplementaryFilter(accelerationFactor: Double = 0.7, filterCoefficient: Double = 0.98): AbstractOrientationFilter(Entries.Method.ComplementaryFilter, accelerationFactor), OrientationFilter {
@@ -52,7 +51,7 @@ class ComplementaryFilter(accelerationFactor: Double = 0.7, filterCoefficient: D
         val rotationMatrix = FloatArray(9)
         if (SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading)) {
             // TODO: get quaternion from readings directly
-            val adjustedRotationMatrix = Matrix.fromFloatArray(getAdjustedRotationMatrix(rotationMatrix))
+            val adjustedRotationMatrix = RotationMatrix.fromFloatArray(getAdjustedRotationMatrix(rotationMatrix))
             accelerationMagnetometerOrientation = Quaternion.fromRotationMatrix( adjustedRotationMatrix)
             hasAccelerationMagnetometer = true
         }

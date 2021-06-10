@@ -74,6 +74,7 @@ class MadgwickFilter(private val mode: Mode, accelerationFactor: Double = 0.7) :
         hasMagnetometer = false
         hasAcceleration = false
         hasGyro = false
+        hasEstimate = false
     }
 
     private fun updateOrientationAnglesFromGyroscope() {

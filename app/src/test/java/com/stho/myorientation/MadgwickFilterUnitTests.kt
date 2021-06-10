@@ -203,7 +203,7 @@ class MadgwickFilterUnitTests : BaseUnitTestsHelper() {
     }
 
     private fun gradientDescent_isCorrect(a: Vector, m: Vector) {
-        val r = Rotation.getRotationMatrixFromAccelerationMagnetometer(a, m, Matrix.E)
+        val r = Rotation.getRotationMatrixFromAccelerationMagnetometer(a, m, RotationMatrix.E)
         val e = Quaternion.fromRotationMatrix(r)
         val eulerAngles = e.toEulerAngles()
         gradientDescent_isCorrect(eulerAngles.azimuth, eulerAngles.pitch, eulerAngles.roll, a, m)
@@ -238,7 +238,7 @@ class MadgwickFilterUnitTests : BaseUnitTestsHelper() {
     }
 
     private fun getOrientation(acceleration: Vector, magnetometer: Vector): EulerAngles {
-        val r = Rotation.getRotationMatrixFromAccelerationMagnetometer(acceleration, magnetometer, Matrix.E)
+        val r = Rotation.getRotationMatrixFromAccelerationMagnetometer(acceleration, magnetometer, RotationMatrix.E)
         return r.toEulerAngles()
     }
 
@@ -333,86 +333,86 @@ class MadgwickFilterUnitTests : BaseUnitTestsHelper() {
     }
 
 
-    @Test
-    fun orthogonalGradientDescent_isCorrect() {
-        // Orientation: z-Rot=6.4, x-Rot=5.85, y-Rot=7.79
-        // Accelerometer (m/s2) x=-1.14, y=5.85, z=7.79
-        // Magnetometer (microTesla) x=9.06, y=-11.90, z=-45.12
-        orthogonalGradientDescent_isCorrect(
-            a = Vector(x = -1.14, y = 5.85, z = 7.79),
-            m = Vector(x = 9.06, y = -11.90, z = -45.12)
-        )
-    }
-
-    private fun orthogonalGradientDescent_isCorrect(a: Vector, m: Vector) {
-        val r = Rotation.getRotationMatrixFromAccelerationMagnetometer(a, m, Matrix.E)
-        val e = Quaternion.fromRotationMatrix(r)
-        val eulerAngles = e.toEulerAngles()
-        orthogonalGradientDescent_isCorrect(eulerAngles.azimuth, eulerAngles.pitch, eulerAngles.roll, a, m)
-    }
-
-    private fun orthogonalGradientDescent_isCorrect(azimuth: Double, pitch: Double, roll: Double, a: Vector, m: Vector, q: Quaternion = q0) {
-        orthogonalGradientDescentApproximatesOrientation(azimuth, pitch, roll, a, m, q)
-    }
-
-    /**
-     * calculate the approximation for acceleration a and magnetometer m and compare it with the given angles
-     */
-    private fun orthogonalGradientDescentApproximatesOrientation(azimuth: Double, pitch: Double, roll: Double, a: Vector, m: Vector, q: Quaternion) {
-
-        val e = Vector.cross(a, m)
-        val p = getApproximateOrientationFromOrthogonalGradientDescent(a, e, q)
-
-        val eulerAngles = p.toEulerAngles()
-
-        val p_azimuth = eulerAngles.azimuth
-        val p_pitch = eulerAngles.pitch
-        val p_roll = eulerAngles.roll
-
-        val eulerAngles2 = p.inverse().toEulerAngles()
-
-        val p_azimuth2 = eulerAngles2.azimuth
-        val p_pitch2 = eulerAngles2.pitch
-        val p_roll2 = eulerAngles2.roll
-
-        assertEquals("Azimuth", azimuth, p_azimuth, EPS_E3)
-        assertEquals("Pitch", pitch, p_pitch, EPS_E3)
-        assertEquals("Roll", roll, p_roll, EPS_E3)
-    }
-
-    private fun getApproximateOrientationFromOrthogonalGradientDescent(a: Vector, e: Vector, q: Quaternion): Quaternion {
-
-        val ee = e.normalize()
-        val aa = a.normalize()
-
-        var f = 1E-1
-        val limit = 1E-8
-
-        var p0 = q
-        var n0 = MadgwickFilter.orthogonalObjectiveFunction(q = p0, a = aa, e = ee).normSquare()
-
-        var gradient = MadgwickFilter.gradientAsJacobianTimesOrthogonalObjectiveFunction(q = p0, aa, ee)
-
-        while (f > limit) {
-
-            val p1 = (p0 - gradient.normalize() * f).normalize()
-            val n1 = MadgwickFilter.orthogonalObjectiveFunction(q = p1, a = aa, e = ee).normSquare()
-
-            if (n1 < n0) {
-                // another step with same step size f
-                p0 = p1
-                n0 = n1
-                gradient = MadgwickFilter.gradientAsJacobianTimesOrthogonalObjectiveFunction(p0, aa, ee)
-            }
-            else {
-                // reduce step size
-                f /= 10
-            }
-        }
-
-        return p0
-    }
-
+//    @Test
+//    fun orthogonalGradientDescent_isCorrect() {
+//        // Orientation: z-Rot=6.4, x-Rot=5.85, y-Rot=7.79
+//        // Accelerometer (m/s2) x=-1.14, y=5.85, z=7.79
+//        // Magnetometer (microTesla) x=9.06, y=-11.90, z=-45.12
+//        orthogonalGradientDescent_isCorrect(
+//            a = Vector(x = -1.14, y = 5.85, z = 7.79),
+//            m = Vector(x = 9.06, y = -11.90, z = -45.12)
+//        )
+//    }
+//
+//    private fun orthogonalGradientDescent_isCorrect(a: Vector, m: Vector) {
+//        val r = Rotation.getRotationMatrixFromAccelerationMagnetometer(a, m, RotationMatrix.E)
+//        val e = Quaternion.fromRotationMatrix(r)
+//        val eulerAngles = e.toEulerAngles()
+//        orthogonalGradientDescent_isCorrect(eulerAngles.azimuth, eulerAngles.pitch, eulerAngles.roll, a, m)
+//    }
+//
+//    private fun orthogonalGradientDescent_isCorrect(azimuth: Double, pitch: Double, roll: Double, a: Vector, m: Vector, q: Quaternion = q0) {
+//        orthogonalGradientDescentApproximatesOrientation(azimuth, pitch, roll, a, m, q)
+//    }
+//
+//    /**
+//     * calculate the approximation for acceleration a and magnetometer m and compare it with the given angles
+//     */
+//    private fun orthogonalGradientDescentApproximatesOrientation(azimuth: Double, pitch: Double, roll: Double, a: Vector, m: Vector, q: Quaternion) {
+//
+//        val e = Vector.cross(a, m)
+//        val p = getApproximateOrientationFromOrthogonalGradientDescent(a, e, q)
+//
+//        val eulerAngles = p.toEulerAngles()
+//
+//        val p_azimuth = eulerAngles.azimuth
+//        val p_pitch = eulerAngles.pitch
+//        val p_roll = eulerAngles.roll
+//
+//        val eulerAngles2 = p.inverse().toEulerAngles()
+//
+//        val p_azimuth2 = eulerAngles2.azimuth
+//        val p_pitch2 = eulerAngles2.pitch
+//        val p_roll2 = eulerAngles2.roll
+//
+//        assertEquals("Azimuth", azimuth, p_azimuth, EPS_E3)
+//        assertEquals("Pitch", pitch, p_pitch, EPS_E3)
+//        assertEquals("Roll", roll, p_roll, EPS_E3)
+//    }
+//
+//    private fun getApproximateOrientationFromOrthogonalGradientDescent(a: Vector, e: Vector, q: Quaternion): Quaternion {
+//
+//        val ee = e.normalize()
+//        val aa = a.normalize()
+//
+//        var f = 1E-1
+//        val limit = 1E-8
+//
+//        var p0 = q
+//        var n0 = MadgwickFilter.orthogonalObjectiveFunction(q = p0, a = aa, e = ee).normSquare()
+//
+//        var gradient = MadgwickFilter.gradientAsJacobianTimesOrthogonalObjectiveFunction(q = p0, aa, ee)
+//
+//        while (f > limit) {
+//
+//            val p1 = (p0 - gradient.normalize() * f).normalize()
+//            val n1 = MadgwickFilter.orthogonalObjectiveFunction(q = p1, a = aa, e = ee).normSquare()
+//
+//            if (n1 < n0) {
+//                // another step with same step size f
+//                p0 = p1
+//                n0 = n1
+//                gradient = MadgwickFilter.gradientAsJacobianTimesOrthogonalObjectiveFunction(p0, aa, ee)
+//            }
+//            else {
+//                // reduce step size
+//                f /= 10
+//            }
+//        }
+//
+//        return p0
+//    }
+//
 
 
     @Test
@@ -573,3 +573,70 @@ class MadgwickFilterUnitTests : BaseUnitTestsHelper() {
     }
 }
 
+//         /**
+//         * Return the normalized gradient as the product of the Jacobian matrix with the objective function
+//         *      fa = q* # (0, 0, -1) # q - |a| for gravity
+//         *      fb = q* # (1, 0, 0) # q* - |a x m| for a vector e = |gravity x magnetic field|
+//          */
+//        internal fun gradientAsJacobianTimesOrthogonalObjectiveFunction(q: Quaternion, a: Vector, m: Vector): Quaternion {
+//            val f: ObjectiveFunction = orthogonalObjectiveFunction(q, a, m)
+//            val J: Jacobian = orthogonalJacobian(q)
+//            return J * f
+//        }
+//
+//         /**
+//         * return the objective function for the current estimate and the normalized acceleration
+//         *      fa = q* # ( 0, 0, 1) # q  - |a|      for gravity
+//         *      fb = q* # (-1, 0, 0) # q* - |a x m|  for e = |gravity x magnetic field|
+//         */
+//        @Suppress("SpellCheckingInspection")
+//        internal fun orthogonalObjectiveFunction(q: Quaternion, a: Vector, m: Vector): ObjectiveFunction {
+//            val e = Vector.cross(a, m).normalize()
+//            return ObjectiveFunction(
+//                f1 = q.m31 - a.x,
+//                f2 = q.m32 - a.y,
+//                f3 = q.m33 - a.z,
+//                f4 = -q.m11 - e.x,
+//                f5 = -q.m12 - e.y,
+//                f6 = -q.m13 - e.z,
+//            )
+//        }
+//
+//        @Suppress("SpellCheckingInspection")
+//        internal fun orthogonalJacobian(q: Quaternion): Jacobian {
+//            val qx2 = 2 * q.x
+//            val qy2 = 2 * q.y
+//            val qz2 = 2 * q.z
+//            val qs2 = 2 * q.s
+//            val qx4 = 4 * q.x
+//            val qy4 = 4 * q.y
+//            val qz4 = 4 * q.z
+//
+//            return Jacobian(
+//                df1ds = -qy2,
+//                df1dx = qz2,
+//                df1dy = -qs2,
+//                df1dz = qx2,
+//                df2ds = qx2,
+//                df2dx = qs2,
+//                df2dy = qz2,
+//                df2dz = qy2,
+//                df3ds = 0.0,
+//                df3dx = -qx4,
+//                df3dy = -qy4,
+//                df3dz = 0.0,
+//                df4ds = 0.0,
+//                df4dx = 0.0,
+//                df4dy = qy4,
+//                df4dz = qz4,
+//                df5ds = qz2,
+//                df5dx = +qy2,
+//                df5dy = +qx2,
+//                df5dz = qs2,
+//                df6ds = +qy2,
+//                df6dx = +qz2,
+//                df6dy = +qx2,
+//                df6dz = qs2,
+//            )
+//        }
+//

@@ -1,7 +1,7 @@
 package com.stho.myorientation
 
 import com.stho.myorientation.library.algebra.Degree
-import com.stho.myorientation.library.algebra.Matrix
+import com.stho.myorientation.library.algebra.RotationMatrix
 import com.stho.myorientation.library.algebra.Quaternion
 import com.stho.myorientation.library.algebra.Vector
 import org.junit.Test
@@ -108,7 +108,7 @@ class QuaternionUnitTests {
 
     private fun quaternion_rotation_equals_matrix_rotation(v: Vector, azimuth: Double, pitch: Double, roll: Double) {
 
-        val m = Matrix.fromEulerAngles(azimuth, pitch, roll)
+        val m = RotationMatrix.fromEulerAngles(azimuth, pitch, roll)
         val e = v.rotateBy(m)
 
         val q = Quaternion.fromRotationMatrix(m)
@@ -122,7 +122,7 @@ class QuaternionUnitTests {
     @Test
     fun default_isCorrect() {
         val a = Quaternion.default
-        val e = Quaternion.fromRotationMatrix(Matrix.E)
+        val e = Quaternion.fromRotationMatrix(RotationMatrix.E)
 
         assertEquals("ex.x", e.x, a.x, EPS_E5)
         assertEquals("ex.y", e.y, a.y, EPS_E5)

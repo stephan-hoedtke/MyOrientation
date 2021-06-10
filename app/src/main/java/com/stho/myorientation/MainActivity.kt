@@ -12,6 +12,7 @@ import android.view.Menu
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import com.stho.myorientation.library.OrientationSensorListener
+import com.stho.myorientation.library.ProcessorConsumptionMeter
 import com.stho.myorientation.library.filter.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +23,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var handler: Handler
     private lateinit var viewModel: MainViewModel
     private lateinit var orientationFilter: OrientationFilter
+    private lateinit var processorConsumptionMeter: ProcessorConsumptionMeter
     private lateinit var orientationSensorListener: OrientationSensorListener
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -38,7 +40,15 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
         orientationFilter = AccelerationMagnetometerFilter(viewModel.accelerationFactor, viewModel.timeConstant)
-        orientationSensorListener = OrientationSensorListener(this, orientationFilter)
+        processorConsumptionMeter = object : ProcessorConsumptionMeter {
+            override fun start() {
+                viewModel.startProcessorConsumptionMeasurement()
+            }
+            override fun stop() {
+                viewModel.stopProcessorConsumption()
+            }
+        }
+        orientationSensorListener = OrientationSensorListener(this, orientationFilter, processorConsumptionMeter)
 
         viewModel.isActiveLD.observe(this, { isActive -> observeIsActive(isActive) })
         viewModel.accelerationFactorLD.observe(this, { _ -> viewModel.reset() })

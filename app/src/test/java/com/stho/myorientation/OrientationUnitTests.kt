@@ -1,6 +1,6 @@
 package com.stho.myorientation
 
-import com.stho.myorientation.library.algebra.Matrix
+import com.stho.myorientation.library.algebra.RotationMatrix
 import com.stho.myorientation.library.algebra.Quaternion
 import com.stho.myorientation.library.algebra.Rotation
 import junit.framework.Assert.assertEquals
@@ -21,7 +21,7 @@ class OrientationUnitTests {
     }
 
     private fun orientation_isCorrect(azimuth: Double, pitch: Double, roll: Double, centerAzimuth: Double, centerAltitude: Double) {
-        val matrix = Matrix.fromEulerAngles(azimuth, pitch, roll)
+        val matrix = RotationMatrix.fromEulerAngles(azimuth, pitch, roll)
         val orientationRaw = matrix.toOrientation()
 
         val orientation = if (Rotation.requireAdjustmentForLookingAtThePhoneFromBelow(orientationRaw)) {

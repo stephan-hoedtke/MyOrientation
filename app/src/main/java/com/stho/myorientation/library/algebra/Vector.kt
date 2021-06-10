@@ -31,7 +31,7 @@ data class Vector(val x: Double, val y: Double, val z: Double) {
     /**
      * Returns m * this (matrix times vector multiplication)
      */
-    fun rotateBy(m: Matrix): Vector =
+    fun rotateBy(m: RotationMatrix): Vector =
             m * this
 
     internal fun norm(): Double =

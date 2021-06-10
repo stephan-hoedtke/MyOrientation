@@ -1,170 +1,223 @@
-package com.stho.myorientation.library.algebra
+package com.stho.myorientation.library.algebra;
 
-import kotlin.math.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import java.lang.Exception
 
+class Matrix(val rows: Int, val columns: Int) {
 
-data class Matrix (
-    override val m11: Double,
-    override val m12: Double,
-    override val m13: Double,
-    override val m21: Double,
-    override val m22: Double,
-    override val m23: Double,
-    override val m31: Double,
-    override val m32: Double,
-    override val m33: Double) : IRotation {
+    private val values: Array<DoubleArray> = Array<DoubleArray>(rows) { DoubleArray(columns) }
 
     operator fun times(m: Matrix): Matrix =
-        multiplyBy(m)
+        Matrix.multiply(this, m)
 
-    operator fun times(v: Vector): Vector =
-        multiplyBy(v)
+    operator fun times(v: DoubleArray): DoubleArray =
+        Matrix.multiply(this, v)
 
-    /**
-     * return a[3x3] times b[3x3] as [3x3]
-     */
-    private fun multiplyBy(m: Matrix): Matrix =
-        Matrix(
-            m11 = m11 * m.m11 + m12 * m.m21 + m13 * m.m31,
-            m12 = m11 * m.m12 + m12 * m.m22 + m13 * m.m32,
-            m13 = m11 * m.m13 + m12 * m.m23 + m13 * m.m33,
+    operator fun times(f: Double): Matrix =
+        Matrix.multiplyBy(this, f)
 
-            m21 = m21 * m.m11 + m22 * m.m21 + m23 * m.m31,
-            m22 = m21 * m.m12 + m22 * m.m22 + m23 * m.m32,
-            m23 = m21 * m.m13 + m22 * m.m23 + m23 * m.m33,
+    operator fun plus(m: Matrix): Matrix =
+        Matrix.add(this, m)
 
-            m31 = m31 * m.m11 + m32 * m.m21 + m33 * m.m31,
-            m32 = m31 * m.m12 + m32 * m.m22 + m33 * m.m32,
-            m33 = m31 * m.m13 + m32 * m.m23 + m33 * m.m33,
-        )
+    operator fun minus(m: Matrix): Matrix =
+        Matrix.substract(this, m)
 
-    /**
-     * v[3x3] := a[3x3] x b[3]
-     */
-    private fun multiplyBy(v: Vector): Vector =
-        Vector(
-            x = m11 * v.x + m12 * v.y + m13 * v.z,
-            y = m21 * v.x + m22 * v.y + m23 * v.z,
-            z = m31 * v.x + m32 * v.y + m33 * v.z,
-        )
-
-
-    /**
-     * m[3x3] := m[3x3]T note, for rotation matrix m.inverse() == m.transpose()
-     */
     fun transpose(): Matrix =
-        Matrix (
-            m11 = this.m11,
-            m12 = this.m21,
-            m13 = this.m31,
-            m21 = this.m12,
-            m22 = this.m22,
-            m23 = this.m32,
-            m31 = this.m13,
-            m32 = this.m23,
-            m33 = this.m33,
-        )
+        Matrix.transpose(this)
 
+    fun invert(): Matrix =
+        MatrixInverter.invert(this)
 
-    fun toQuaternion(): Quaternion {
-        // see: https://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
-        // mind, as both q and -q define the same rotation you may get q or -q, respectively
-
-        when {
-            m11 + m22 + m33 > 0 -> {
-                val fourS = 2.0 * sqrt(1.0 + m11 + m22 + m33) // 4s = 4 * q.s
-                return Quaternion(
-                    x = (m32 - m23) / fourS,
-                    y = (m13 - m31) / fourS,
-                    z = (m21 - m12) / fourS,
-                    s = 0.25 * fourS
-                )
-            }
-            m11 > m22 && m11 > m33 -> {
-                val fourX = 2.0 * sqrt(1.0 + m11 - m22 - m33) // 4x = 4 * q.x
-                return Quaternion(
-                    x = 0.25 * fourX,
-                    y = (m12 + m21) / fourX,
-                    z = (m13 + m31) / fourX,
-                    s = (m32 - m23) / fourX,
-                )
-            }
-            m22 > m33 -> {
-                val fourY = 2.0 * sqrt(1.0 + m22 - m11 - m33) // 4y = 4*q.y
-                return Quaternion(
-                    x = (m12 + m21) / fourY,
-                    y = 0.25 * fourY,
-                    z = (m23 + m32) / fourY,
-                    s = (m13 - m31) / fourY
-                )
-            }
-            else -> {
-                val fourZ = 2.0 * sqrt(1.0 + m33 - m11 - m22) // 4z = 4 * q.z
-                return Quaternion(
-                    x = (m13 + m31) / fourZ,
-                    y = (m23 + m32) / fourZ,
-                    z = 0.25 * fourZ,
-                    s = (m21 - m12) / fourZ
-                )
-            }
-        }
+    fun swapRows(i: Int, j: Int) {
+        val array = values[i]
+        values[i] = values[j]
+        values[j] = array
     }
 
+    fun clone(): Matrix {
+        val m = Matrix(rows, columns)
+        runBlocking(Dispatchers.Default) {
+            for (r in 0 until rows) {
+                launch {
+                    for (c in 0 until columns) {
+                        m.values[r][c] = values[r][c]
+                    }
 
-    /**
-     * Returns the euler angles in radians as a vector for a rotation matrix m
-     */
-    fun toEulerAngles(): EulerAngles =
-        Rotation.getEulerAnglesFor(this)
-
-    fun toOrientation(): Orientation =
-        Rotation.getOrientationFor(this)
-
-    fun toFloatArray(): FloatArray =
-        FloatArray(9).apply {
-            this[0] = m11.toFloat()
-            this[1] = m12.toFloat()
-            this[2] = m13.toFloat()
-            this[3] = m21.toFloat()
-            this[4] = m22.toFloat()
-            this[5] = m23.toFloat()
-            this[6] = m31.toFloat()
-            this[7] = m32.toFloat()
-            this[8] = m33.toFloat()
+                }
+            }
         }
+        return m
+    }
+
+    operator fun get(r: Int, c: Int): Double =
+        values[r][c]
+
+    operator fun set(r: Int, c: Int, value: Double) {
+        values[r][c] = value
+    }
 
     companion object {
 
-        @Suppress("PropertyName")
-        val E: Matrix =
-            Matrix(
-                1.0, 0.0, 0.0,
-                0.0, 1.0, 0.0,
-                0.0, 0.0, 1.0,
-            )
+        fun multiply(a: Matrix, b: Matrix): Matrix {
+            if (a.columns != b.rows) {
+                throw Exception("Invalid columns of a ${a.columns} and rows of b ${b.rows} for matrix product a * b")
+            }
+            val size = a.columns // = b.rows
+            val m = Matrix(a.rows, b.columns)
+            runBlocking(Dispatchers.Default) {
+                for (r in 0 until a.rows) {
+                    launch {
+                        for (c in 0 until b.columns) {
+                            var sum = 0.0
+                            for (n in 0 until size) {
+                                sum += a.values[r][n] * b.values[n][c]
+                            }
+                            m.values[r][c] = sum
+                        }
+                    }
+                }
+            }
+            return m
+        }
 
-        fun fromFloatArray(m: FloatArray) =
-            Matrix(
-                m11 = m[0].toDouble(),
-                m12 = m[1].toDouble(),
-                m13 = m[2].toDouble(),
-                m21 = m[3].toDouble(),
-                m22 = m[4].toDouble(),
-                m23 = m[5].toDouble(),
-                m31 = m[6].toDouble(),
-                m32 = m[7].toDouble(),
-                m33 = m[8].toDouble(),
-            )
+        fun multiply(a: Matrix, v: DoubleArray): DoubleArray {
+            if (a.columns != v.size) {
+                throw Exception("Invalid columns of a ${a.columns} for vector product a * v")
+            }
+            val size = a.columns // = v.size
+            val w = DoubleArray(a.rows)
+            runBlocking(Dispatchers.Default) {
+                for (r in 0 until a.rows) {
+                    launch {
+                        var sum = 0.0
+                        for (n in 0 until size) {
+                            sum += a.values[r][n] * v[n]
+                        }
+                        w[r] = sum
+                    }
+                }
+            }
+            return w
+        }
 
-        fun fromQuaternion(q: Quaternion): Matrix =
-                q.toRotationMatrix()
+        fun multiply(v: DoubleArray, a: Matrix): DoubleArray {
+            if (v.size != a.rows) {
+                throw Exception("Invalid rows of a ${a.columns} for vector product v * a")
+            }
+            val size = a.rows // = v.size
+            val w = DoubleArray(a.columns)
+            runBlocking(Dispatchers.Default) {
+                for (c in 0 until a.columns) {
+                    launch {
+                        var sum = 0.0
+                        for (n in 0 until a.rows) {
+                            sum += a.values[n][c] * v[n]
+                        }
+                        w[c] = sum
+                    }
+                }
+            }
+            return w
+        }
 
-        fun fromEulerAngles(azimuth: Double, pitch: Double, roll: Double): Matrix =
-            EulerAngles.fromAzimuthPitchRoll(
-                azimuth,
-                pitch,
-                roll
-            ).toRotationMatrix()
+        fun multiplyBy(a: Matrix, f: Double): Matrix {
+            val m = Matrix(a.rows, a.columns)
+            runBlocking(Dispatchers.Default) {
+                for (r in 0 until a.rows) {
+                    launch {
+                        for (c in 0 until a.columns) {
+                            m.values[r][c] = a.values[r][c] * f
+                        }
+                    }
+                }
+            }
+            return m
+        }
 
+        fun add(a: Matrix, b: Matrix): Matrix {
+            if (a.rows != b.rows || a.columns != b.columns) {
+                throw Exception("Invalid rows or columns ${a.columns} for matrix addition")
+            }
+            val m = Matrix(a.rows, a.columns)
+            runBlocking(Dispatchers.Default) {
+                for (r in 0 until a.rows) {
+                    launch {
+                        for (c in 0 until a.columns) {
+                            m.values[r][c] = a.values[r][c] + b.values[r][c]
+                        }
+                    }
+                }
+            }
+            return m
+        }
+
+        fun substract(a: Matrix, b: Matrix): Matrix {
+            if (a.rows != b.rows || a.columns != b.columns) {
+                throw Exception("Invalid rows or columns ${a.columns} for matrix addition")
+            }
+            val m = Matrix(a.rows, a.columns)
+            runBlocking(Dispatchers.Default) {
+                for (r in 0 until a.rows) {
+                    launch {
+                        for (c in 0 until a.columns) {
+                            m.values[r][c] = a.values[r][c] - b.values[r][c]
+                        }
+                    }
+                }
+            }
+            return m
+        }
+
+        fun transpose(m: Matrix): Matrix {
+            val t = Matrix(m.columns, m.rows)
+            runBlocking(Dispatchers.Default) {
+                for (r in 0 until m.rows) {
+                    launch {
+                        for (c in 0 until m.columns) {
+                            t.values[c][r] = m.values[r][c]
+                        }
+                    }
+                }
+            }
+            return t
+        }
+
+        @Suppress("FunctionName")
+        fun E(size: Int): Matrix {
+            val m = Matrix(size, size)
+            runBlocking(Dispatchers.Default) {
+                for (r in 0 until size) {
+                    launch {
+                        for (c in 0 until size) {
+                            m.values[c][r] = if (r == c) 1.0 else 0.0
+                        }
+                    }
+                }
+            }
+            return m
+        }
+
+        fun create(rows: Int, columns: Int, vararg values: Double): Matrix {
+            val m = Matrix(rows, columns)
+            for (r in 0 until rows) {
+                for (c in 0 until columns) {
+                    val n = r * columns + c
+                    if (n < values.size) {
+                        m.values[r][c] = values[n]
+                    }
+                }
+            }
+            return m
+        }
+
+        fun create(vararg values: Double): DoubleArray {
+            val v = DoubleArray(values.size)
+            for (n in values.indices) {
+                v[n] = values[n]
+            }
+            return v
+        }
     }
 }

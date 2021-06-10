@@ -34,7 +34,7 @@ data class EulerAngles(val x: Double, val y: Double, val z: Double) {
     fun toQuaternion(): Quaternion =
         Rotation.eulerAnglesToQuaternion(this)
 
-    fun toRotationMatrix(): Matrix =
+    fun toRotationMatrix(): RotationMatrix =
         Rotation.eulerAnglesToRotationMatrix(this)
 
     companion object {

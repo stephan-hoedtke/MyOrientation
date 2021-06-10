@@ -4,7 +4,7 @@ import android.hardware.SensorManager
 import com.stho.myorientation.Entries
 import com.stho.myorientation.Measurements
 import com.stho.myorientation.library.OrientationLowPassFilter
-import com.stho.myorientation.library.algebra.Matrix
+import com.stho.myorientation.library.algebra.RotationMatrix
 import com.stho.myorientation.library.algebra.Orientation
 
 
@@ -40,7 +40,7 @@ class AccelerationMagnetometerFilter(accelerationFactor: Double = 0.7, timeConst
             return
 
         if (SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading)) {
-            val adjustedRotationMatrix = Matrix.fromFloatArray(getAdjustedRotationMatrix(rotationMatrix))
+            val adjustedRotationMatrix = RotationMatrix.fromFloatArray(getAdjustedRotationMatrix(rotationMatrix))
             val orientation = adjustedRotationMatrix.toOrientation()
             super.onOrientationAnglesChanged(orientation)
         }

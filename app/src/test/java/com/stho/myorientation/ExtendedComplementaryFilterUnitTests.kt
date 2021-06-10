@@ -1,17 +1,11 @@
 package com.stho.myorientation
 
-import android.util.Log
-import com.stho.myorientation.library.algebra.Matrix
+import com.stho.myorientation.library.algebra.RotationMatrix
 import com.stho.myorientation.library.algebra.Quaternion
 import com.stho.myorientation.library.algebra.Rotation
 import com.stho.myorientation.library.algebra.Vector
-import com.stho.myorientation.library.f11
 import com.stho.myorientation.library.filter.ExtendedComplementaryFilter
-import com.stho.myorientation.library.filter.MadgwickFilter
-import junit.framework.Assert
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
-import org.junit.Ignore
 import org.junit.Test
 
 class ExtendedComplementaryFilterUnitTests : BaseUnitTestsHelper() {
@@ -24,7 +18,7 @@ class ExtendedComplementaryFilterUnitTests : BaseUnitTestsHelper() {
     @Test fun orthogonalError_isReducing_forAccelerometerMagnetometer() {
         val accelerometer = Vector(x=0.213333311103986, y=0.763796063555749, z=0.609183446648177)
         val magnetometer = Vector(x=-0.152875289501063, y=0.886600113489289, z=-0.436542534721126)
-        val m = Rotation.getRotationMatrixFromAccelerationMagnetometer(accelerometer, magnetometer, Matrix.E)
+        val m = Rotation.getRotationMatrixFromAccelerationMagnetometer(accelerometer, magnetometer, RotationMatrix.E)
         val eulerAngles = m.toEulerAngles()
         orthogonalError_isReducing_forCorrectRotation(eulerAngles.azimuth, eulerAngles.pitch, eulerAngles.roll)
     }

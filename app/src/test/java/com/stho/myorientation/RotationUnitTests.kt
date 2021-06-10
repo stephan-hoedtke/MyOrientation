@@ -2,11 +2,9 @@ package com.stho.myorientation
 
 import com.stho.myorientation.library.algebra.Degree
 import com.stho.myorientation.library.algebra.*
-import com.stho.myorientation.library.filter.SeparatedCorrectionFilter
 import org.junit.Test
 
 import org.junit.Assert.*
-import kotlin.math.sign
 import kotlin.math.sin
 import kotlin.math.sqrt
 
@@ -136,7 +134,7 @@ class RotationUnitTests : BaseUnitTestsHelper() {
         quaternionToEulerAnglesIsCorrect(azimuth, pitch, roll, q)
     }
 
-    private fun matrixFromEulerAngles_withValidation(azimuth: Double, pitch: Double, roll: Double): Matrix {
+    private fun matrixFromEulerAngles_withValidation(azimuth: Double, pitch: Double, roll: Double): RotationMatrix {
         val eulerAngles = EulerAngles.fromAzimuthPitchRoll(azimuth, pitch, roll)
         val m1 = eulerAngles.toRotationMatrix()
         val m2 = super.rotationMatrixForEulerAngles(eulerAngles)
@@ -156,7 +154,7 @@ class RotationUnitTests : BaseUnitTestsHelper() {
         return q1
     }
 
-    private fun quaternionRotation_equals_matrixRotation(m: Matrix, q: Quaternion) {
+    private fun quaternionRotation_equals_matrixRotation(m: RotationMatrix, q: Quaternion) {
 
         for (earth in vectors) {
             val e = earth.rotateBy(m)
@@ -165,7 +163,7 @@ class RotationUnitTests : BaseUnitTestsHelper() {
         }
     }
 
-    private fun matrixToEulerAnglesIsCorrect(azimuth: Double, pitch: Double, roll: Double, m: Matrix) {
+    private fun matrixToEulerAnglesIsCorrect(azimuth: Double, pitch: Double, roll: Double, m: RotationMatrix) {
         val eulerAngles = m.toEulerAngles()
         eulerAngles_areCorrect(azimuth, pitch, roll, eulerAngles)
     }

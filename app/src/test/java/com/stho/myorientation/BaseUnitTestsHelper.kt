@@ -1,7 +1,6 @@
 package com.stho.myorientation
 
 import com.stho.myorientation.library.algebra.*
-import org.junit.Test
 import org.junit.Assert.*
 import kotlin.math.sign
 
@@ -29,13 +28,13 @@ open class BaseUnitTestsHelper {
     /**
      * Returns a rotation matrix which rotates from sensor frame to earth frame
      */
-    internal fun rotationMatrixForEulerAngles(eulerAngles: EulerAngles): Matrix =
+    internal fun rotationMatrixForEulerAngles(eulerAngles: EulerAngles): RotationMatrix =
         rotationMatrixForRotation(eulerAngles.azimuth, eulerAngles.pitch, eulerAngles.roll)
 
     /**
      * Returns a rotation matrix which rotates from sensor frame to earth frame
      */
-    private fun rotationMatrixForRotation(azimuth: Double, pitch: Double, roll: Double): Matrix {
+    private fun rotationMatrixForRotation(azimuth: Double, pitch: Double, roll: Double): RotationMatrix {
 
         val mz = matrixForAzimuth(azimuth)
         val mx = matrixForPitch(pitch)
@@ -47,10 +46,10 @@ open class BaseUnitTestsHelper {
     /**
      * rotation matrix which rotates from earth frame to sensor frame
      */
-    private fun matrixForAzimuth(azimuth: Double): Matrix {
+    private fun matrixForAzimuth(azimuth: Double): RotationMatrix {
         val cosZ = Degree.cos(azimuth)
         val sinZ = Degree.sin(azimuth)
-        return Matrix(
+        return RotationMatrix(
             m11 = cosZ, m12 = -sinZ, m13 = 0.0,
             m21 = sinZ, m22 = cosZ,  m23 = 0.0,
             m31 = 0.0,  m32 = 0.0,   m33 = 1.0,
@@ -60,10 +59,10 @@ open class BaseUnitTestsHelper {
     /**
      * rotation matrix which rotates from earth frame to sensor frame
      */
-    private fun matrixForPitch(pitch: Double): Matrix {
+    private fun matrixForPitch(pitch: Double): RotationMatrix {
         val cosX = Degree.cos(pitch)
         val sinX = Degree.sin(pitch)
-        return Matrix(
+        return RotationMatrix(
             m11 = 1.0, m12 = 0.0,  m13 = 0.0,
             m21 = 0.0, m22 = cosX, m23 = -sinX,
             m31 = 0.0, m32 = sinX, m33 = cosX,
@@ -73,10 +72,10 @@ open class BaseUnitTestsHelper {
     /**
      * rotation matrix which rotates from earth frame to sensor frame
      */
-    private fun matrixForRoll(roll: Double): Matrix {
+    private fun matrixForRoll(roll: Double): RotationMatrix {
         val cosY = Degree.cos(roll)
         val sinY = Degree.sin(roll)
-        return Matrix(
+        return RotationMatrix(
             m11 = cosY,  m12 = 0.0, m13 = sinY,
             m21 = 0.0,   m22 = 1.0, m23 = 0.0,
             m31 = -sinY, m32 = 0.0, m33 = cosY,
@@ -116,7 +115,7 @@ open class BaseUnitTestsHelper {
             z = 0.0
         )
 
-    protected fun assertEquals(e: Matrix, a: Matrix, delta: Double = EPS_E8) {
+    protected fun assertEquals(e: RotationMatrix, a: RotationMatrix, delta: Double = EPS_E8) {
         assertEquals("M11", e.m11, a.m11, delta)
         assertEquals("M12", e.m12, a.m12, delta)
         assertEquals("M13", e.m13, a.m13, delta)
@@ -170,7 +169,7 @@ open class BaseUnitTestsHelper {
         }
     }
 
-    protected fun assertIsEqualRotation(e: Matrix, a: Quaternion, delta: Double = EPS_E8) {
+    protected fun assertIsEqualRotation(e: RotationMatrix, a: Quaternion, delta: Double = EPS_E8) {
         assertEquals("M11", e.m11, a.m11, delta)
         assertEquals("M12", e.m12, a.m12, delta)
         assertEquals("M13", e.m13, a.m13, delta)

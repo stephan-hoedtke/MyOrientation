@@ -16,6 +16,11 @@ object Formatter {
         maximumFractionDigits = 2
         minimumIntegerDigits = 1
     }
+    val df4: DecimalFormat = decimalFormat().apply {
+        minimumFractionDigits = 4
+        maximumFractionDigits = 4
+        minimumIntegerDigits = 1
+    }
     val df11: DecimalFormat = decimalFormat().apply {
         minimumFractionDigits = 15
         maximumFractionDigits = 15
@@ -30,5 +35,6 @@ object Formatter {
 
 fun Double.f0(): String = Formatter.df0.format(this)
 fun Double.f2(): String = Formatter.df2.format(this)
+fun Double.f4(): String = Formatter.df4.format(this)
 fun Double.f11(): String = Formatter.df11.format(this)
 

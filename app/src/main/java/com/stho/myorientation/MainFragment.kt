@@ -14,6 +14,7 @@ import com.stho.myorientation.library.Formatter
 import com.stho.myorientation.library.algebra.Orientation
 import com.stho.myorientation.library.f0
 import com.stho.myorientation.library.f2
+import com.stho.myorientation.library.f4
 import com.stho.myorientation.views.AbstractPlotView
 
 /**
@@ -80,6 +81,7 @@ class MainFragment : Fragment() {
         viewModel.accelerationFactorLD.observe(viewLifecycleOwner, { accelerationFactor -> observeFactor(accelerationFactor) })
         viewModel.methodLD.observe(viewLifecycleOwner, { method -> observeMethod(method) })
         viewModel.orientationLD.observe(viewLifecycleOwner, { orientation -> observeOrientation(orientation) })
+        viewModel.processorConsumptionLD.observe(viewLifecycleOwner, { consumption -> observeProcessorConsumption(consumption) })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -147,6 +149,10 @@ class MainFragment : Fragment() {
     private fun observeMethod(method: Entries.Method) {
         binding.method.text = method.toString()
         binding.method.setTextColor(getColorForMethod(method))
+    }
+
+    private fun observeProcessorConsumption(consumption: Double) {
+        binding.processorConsumption.text = consumption.f4()
     }
 
     private fun getColorForMethod(method: Entries.Method): Int =

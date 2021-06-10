@@ -1,5 +1,7 @@
 package com.stho.myorientation.library.algebra
 
+import android.view.inspector.InspectionCompanion
+import com.stho.myorientation.library.filter.MadgwickFilter
 import kotlin.math.*
 
 
@@ -9,7 +11,7 @@ object Rotation {
      * Returns the rotation matrix for given Euler angles, rotating a vector in sensor frame to earth frame
      *      v_earth = M(x,y,z) * v_sensor
      */
-    fun eulerAnglesToRotationMatrix(omega: EulerAngles): Matrix {
+    fun eulerAnglesToRotationMatrix(omega: EulerAngles): RotationMatrix {
         val cosX = cos(omega.x)
         val sinX = sin(omega.x)
         val cosY = cos(omega.y)
@@ -31,7 +33,7 @@ object Rotation {
         //  Mz = |  sin(Z)   cos(Z)   0 |
         //       |  0        0        1 |
 
-        return Matrix(
+        return RotationMatrix(
             m11 = sinX * sinY * sinZ + cosY * cosZ,
             m12 = cosX * sinZ,
             m13 = sinX * cosY * sinZ - sinY * cosZ,
@@ -202,7 +204,7 @@ object Rotation {
     private const val FREE_FALL_GRAVITY_SQUARED = 0.01 * 9.81 * 9.81
     private const val FREE_FALL_MAGNETOMETER_SQUARED = 0.01
 
-    internal fun getRotationMatrixFromAccelerationMagnetometer(acceleration: Vector, magnetometer: Vector, defaultValue: Matrix): Matrix =
+    internal fun getRotationMatrixFromAccelerationMagnetometer(acceleration: Vector, magnetometer: Vector, defaultValue: RotationMatrix): RotationMatrix =
         getRotationMatrixFromAccelerationMagnetometer(acceleration, magnetometer) ?: defaultValue
 
         /**
@@ -215,7 +217,7 @@ object Rotation {
      *
      * see also: SensorManager.getRotationMatrix()
      */
-    internal fun getRotationMatrixFromAccelerationMagnetometer(acceleration: Vector, magnetometer: Vector): Matrix? {
+    internal fun getRotationMatrixFromAccelerationMagnetometer(acceleration: Vector, magnetometer: Vector): RotationMatrix? {
         val normSquareA = acceleration.normSquare()
         if (normSquareA < FREE_FALL_GRAVITY_SQUARED) {
             // free fall detected, typical values of gravity should be 9.81
@@ -232,7 +234,7 @@ object Rotation {
         val h = hh / sqrt(normSquareH)
         val a = acceleration / sqrt(normSquareA)
         val m = Vector.cross(a, h)
-        return Matrix(
+        return RotationMatrix(
             m11 = h.x, m12 = h.y, m13 = h.z,
             m21 = m.x, m22 = m.y, m23 = m.z,
             m31 = a.x, m32 = a.y, m33 = a.z,
@@ -279,6 +281,53 @@ object Rotation {
             centerAltitude = orientation.centerAltitude,
         )
 
+    /**
+     * Jacobian Matrix for rotation by quaternion q:
+     *
+     *          f(q, v) = q* # v # q
+     *                  = q.rotationMatrix().transpose() * v
+     *
+     *          (rotate v from earth frame to body frame)
+     *
+     */
+    @Suppress("SpellCheckingInspection")
+    class Jacobian(
+        val dfxds: Double, val dfxdx: Double, val dfxdy: Double, val dfxdz: Double,
+        val dfyds: Double, val dfydx: Double, val dfydy: Double, val dfydz: Double,
+        val dfzds: Double, val dfzdx: Double, val dfzdy: Double, val dfzdz: Double,
+    ) {
+        companion object {
+            @Suppress("SpellCheckingInspection")
+            fun create(q: Quaternion, r: Vector): Jacobian {
+                val rxqs = 2 * r.x * q.s
+                val rxqx = 2 * r.x * q.x
+                val rxqy = 2 * r.x * q.y
+                val rxqz = 2 * r.x * q.z
+                val ryqs = 2 * r.y * q.s
+                val ryqx = 2 * r.y * q.x
+                val ryqy = 2 * r.y * q.y
+                val ryqz = 2 * r.y * q.z
+                val rzqs = 2 * r.z * q.s
+                val rzqx = 2 * r.z * q.x
+                val rzqy = 2 * r.z * q.y
+                val rzqz = 2 * r.z * q.z
+                return Jacobian(
+                    dfxds = ryqz - rzqy,
+                    dfxdx = ryqy + rzqz,
+                    dfxdy = -2 * rxqy + ryqx - rzqs,
+                    dfxdz = -2 * rxqz + ryqs + rzqx,
+                    dfyds = -rxqz + rzqx,
+                    dfydx = rxqy - 2 * ryqx + rzqs,
+                    dfydy = rxqx + rzqz,
+                    dfydz = -rxqs - 2 * ryqz + rzqy,
+                    dfzds = rxqy - ryqx,
+                    dfzdx = rxqz - ryqs - 2 * rzqx,
+                    dfzdy = rxqs + ryqz - 2 * rzqy,
+                    dfzdz = rxqx + ryqy,
+                )
+            }
+        }
+    }
 
     internal fun isPositiveGimbalLock(eulerAngles: EulerAngles) =
         Rotation.isGimbalLockForRadians(eulerAngles.x) && eulerAngles.x > 0

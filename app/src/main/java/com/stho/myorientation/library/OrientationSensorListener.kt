@@ -10,7 +10,7 @@ import com.stho.myorientation.Repository
 import com.stho.myorientation.library.filter.OrientationFilter
 
 
-class OrientationSensorListener(private val context: Context, private var filter: OrientationFilter) : SensorEventListener {
+class OrientationSensorListener(private val context: Context, private var filter: OrientationFilter, private val processorConsumptionMeter: ProcessorConsumptionMeter) : SensorEventListener {
 
     private val sensorManager: SensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
@@ -96,8 +96,10 @@ class OrientationSensorListener(private val context: Context, private var filter
                 filter.updateReadings(Measurements.Type.RotationVector, event.values)
             }
             Sensor.TYPE_GYROSCOPE -> {
+                processorConsumptionMeter.start()
                 Repository.instance.recordMeasurement(Measurements.Type.Gyroscope, event.values)
                 filter.updateReadings(Measurements.Type.Gyroscope, event.values)
+                processorConsumptionMeter.stop()
             }
         }
     }

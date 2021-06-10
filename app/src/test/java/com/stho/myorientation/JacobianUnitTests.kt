@@ -28,23 +28,23 @@ class JacobianUnitTests : BaseUnitTestsHelper() {
         }
     }
 
-    @Test
-    fun orthogonalObjectiveFunction_isCorrect() {
-        for (eulerAngles in list) {
-            val q = super.quaternionForEulerAngles(eulerAngles)
-            val i = q.inverse()
-            val a = Vector(0.0, 0.0, 1.0).rotateBy(i).normalize()
-            val m = Vector(0.0, 18.0, -44.0).rotateBy(i).normalize()
-            val e = Vector.cross(a, m).normalize()
-            val f = MadgwickFilter.orthogonalObjectiveFunction(q, a, e)
-            assertEquals("f1", 0.0, f.f1, EPS_E6)
-            assertEquals("f2", 0.0, f.f2, EPS_E6)
-            assertEquals("f3", 0.0, f.f3, EPS_E6)
-            assertEquals("f4", 0.0, f.f4, EPS_E6)
-            assertEquals("f5", 0.0, f.f5, EPS_E6)
-            assertEquals("f6", 0.0, f.f6, EPS_E6)
-        }
-    }
+//    @Test
+//    fun orthogonalObjectiveFunction_isCorrect() {
+//        for (eulerAngles in list) {
+//            val q = super.quaternionForEulerAngles(eulerAngles)
+//            val i = q.inverse()
+//            val a = Vector(0.0, 0.0, 1.0).rotateBy(i).normalize()
+//            val m = Vector(0.0, 18.0, -44.0).rotateBy(i).normalize()
+//            val e = Vector.cross(a, m).normalize()
+//            val f = MadgwickFilter.orthogonalObjectiveFunction(q, a, e)
+//            assertEquals("f1", 0.0, f.f1, EPS_E6)
+//            assertEquals("f2", 0.0, f.f2, EPS_E6)
+//            assertEquals("f3", 0.0, f.f3, EPS_E6)
+//            assertEquals("f4", 0.0, f.f4, EPS_E6)
+//            assertEquals("f5", 0.0, f.f5, EPS_E6)
+//            assertEquals("f6", 0.0, f.f6, EPS_E6)
+//        }
+//    }
 
 
     @Test

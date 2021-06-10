@@ -44,7 +44,7 @@ abstract class AbstractOrientationFilter(private val method: Entries.Method, acc
         centerAltitudeAcceleration.rotateTo(orientation.centerAltitude)
     }
 
-    internal fun getAdjustedRotationMatrix(rotationMatrix: Matrix): Matrix =
+    internal fun getAdjustedRotationMatrix(rotationMatrix: RotationMatrix): RotationMatrix =
         getAdjustedRotationMatrix(rotationMatrix, deviceRotation)
 
     internal fun getAdjustedRotationMatrix(rotationMatrix: FloatArray): FloatArray =
@@ -95,7 +95,7 @@ abstract class AbstractOrientationFilter(private val method: Entries.Method, acc
             if (!SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading)) {
                 return defaultValue
             }
-            val adjustedRotationMatrix = Matrix.fromFloatArray(getAdjustedRotationMatrix(rotationMatrix, deviceRotation))
+            val adjustedRotationMatrix = RotationMatrix.fromFloatArray(getAdjustedRotationMatrix(rotationMatrix, deviceRotation))
             return adjustedRotationMatrix.toQuaternion()
         }
 
@@ -109,9 +109,9 @@ abstract class AbstractOrientationFilter(private val method: Entries.Method, acc
             return adjustedRotationMatrix.toQuaternion()
         }
 
-        private fun getAdjustedRotationMatrix(rotationMatrix: Matrix, deviceRotation: Int): Matrix {
+        private fun getAdjustedRotationMatrix(rotationMatrix: RotationMatrix, deviceRotation: Int): RotationMatrix {
             val rotationMatrixAdjusted = getAdjustedRotationMatrix(rotationMatrix.toFloatArray(), deviceRotation)
-            return Matrix.fromFloatArray(rotationMatrixAdjusted)
+            return RotationMatrix.fromFloatArray(rotationMatrixAdjusted)
         }
 
         /**
