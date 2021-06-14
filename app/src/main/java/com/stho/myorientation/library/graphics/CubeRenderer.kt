@@ -97,40 +97,49 @@ class CubeRenderer : GLSurfaceView.Renderer {
         // Redraw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
-         // Calculate the projection and view transformation
-        val scratch = FloatArray(16)
+         android.opengl.Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
 
-        android.opengl.Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
-
-        // calculate a rotation matrix for the current orientation, given by the quaternion, which rotates from body to earth frame
-
-        val q = orientation.inverse()
-        val phi = 2 * Degree.arcCos(q.s)
-        val x = q.x
-        val y = q.y
-        val z = q.z
 
         // additionally rotate by the angles defined by touch events
         android.opengl.Matrix.setRotateM(rotationMatrix, 0, alpha, 0f, 1f, 0f)
         android.opengl.Matrix.rotateM(rotationMatrix, 0, beta, 1f, 0f, 0f)
 
-        if (x > 0.001 || y > 0.001 || z > 0.001) {
-            android.opengl.Matrix.rotateM(
-                rotationMatrix,
-                0,
-                phi.toFloat(),
-                x.toFloat(),
-                y.toFloat(),
-                z.toFloat()
-            )
-        }
+        // calculate a rotation matrix for the current orientation, given by the quaternion, which rotates from body to earth frame
+        val orientationRotationMatrix = toRotationMatrix16(orientation.inverse())
+        val final = FloatArray(16)
+        android.opengl.Matrix.multiplyMM(final, 0, orientationRotationMatrix, 0, rotationMatrix, 0)
+
 
         // Combine the rotation matrix with the projection and camera view
         // Note that the vPMatrix factor *must be first* in order
         // for the matrix multiplication product to be correct.
-        android.opengl.Matrix.multiplyMM(scratch, 0, vPMatrix, 0, rotationMatrix, 0)
+        // Calculate the projection and view transformation
+        val scratch = FloatArray(16)
+        android.opengl.Matrix.multiplyMM(scratch, 0, vPMatrix, 0, final, 0)
 
         cube.draw(scratch)
         triangle.draw(scratch)
+    }
+
+    private fun toRotationMatrix16(q: Quaternion): FloatArray {
+        val m = q.toRotationMatrix()
+        return FloatArray(16).apply {
+            this[0] = m.m11.toFloat()
+            this[1] = m.m12.toFloat()
+            this[2] = m.m13.toFloat()
+            this[3] = 0.0f
+            this[4] = m.m21.toFloat()
+            this[5] = m.m22.toFloat()
+            this[6] = m.m23.toFloat()
+            this[7] = 0.0f
+            this[8] = m.m31.toFloat()
+            this[9] = m.m32.toFloat()
+            this[10] = m.m33.toFloat()
+            this[11] = 0.0f
+            this[12] = 0.0f
+            this[13] = 0.0f
+            this[14] = 0.0f
+            this[15] = 1.0f
+        }
     }
 }
