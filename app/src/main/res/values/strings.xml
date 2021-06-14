@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">MyOrientation</string>
+    <string name="app_name">Orientation</string>
     <string name="action_settings">Settings</string>
+    <string name="action_cube">Cube</string>
     <string name="main_fragment_label">Main Fragment</string>
     <string name="settings_fragment_label">Settings Fragment</string>
     <string name="label_name_value">%s = %s</string>
@@ -47,4 +48,8 @@
     <string name="label_kalman_filter">Kalman Filter</string>
     <string name="label_orthogonal">Orthogonal</string>
     <string name="label_extended_complementary_filter">Extended Complementary Filter</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="label_cube_fragment">Cube Fragment</string>
+    <string name="default_angle">0°</string>
 </resources>

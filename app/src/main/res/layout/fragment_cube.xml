@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".CubeFragment">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontal_guideline_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="100dp" />
+
+    <com.stho.myorientation.views.CubeView
+        android:id="@+id/cubeView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <TextView
+        android:id="@+id/method"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="@dimen/fab_margin"
+        android:textColor="@color/design_default_color_on_primary"
+        android:textSize="18sp"
+        android:text="@string/label_acceleration_and_magnetometer" />
+
+    <TextView
+        android:id="@+id/alpha"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/horizontal_guideline_1"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="@dimen/fab_margin"
+        android:textColor="@color/design_default_color_on_primary"
+        android:textSize="18sp"
+        android:text="@string/default_angle" />
+
+    <TextView
+        android:id="@+id/beta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/horizontal_guideline_1"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="@dimen/fab_margin"
+        android:textColor="@color/design_default_color_on_primary"
+        android:textSize="18sp"
+        android:text="@string/default_angle" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

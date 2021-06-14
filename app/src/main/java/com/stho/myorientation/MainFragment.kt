@@ -87,12 +87,18 @@ class MainFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_settings -> onSettings();
+            R.id.action_cube -> onCube()
             else -> super.onOptionsItemSelected(item)
         }
     }
 
     private fun onSettings(): Boolean {
         findNavController().navigate(R.id.action_MainFragment_to_SettingsFragment)
+        return true
+    }
+
+    private fun onCube(): Boolean {
+        findNavController().navigate(R.id.action_MainFragment_to_CubeFragment)
         return true
     }
 

@@ -38,6 +38,10 @@ data class EulerAngles(val x: Double, val y: Double, val z: Double) {
         Rotation.eulerAnglesToRotationMatrix(this)
 
     companion object {
+
+        val default: EulerAngles =
+            EulerAngles(0.0, 0.0, 0.0)
+
         fun fromAzimuthPitchRoll(azimuth: Double, pitch: Double, roll: Double): EulerAngles =
             EulerAngles(
                 x = Math.toRadians(pitch),

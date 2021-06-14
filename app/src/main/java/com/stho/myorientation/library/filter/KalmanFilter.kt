@@ -33,18 +33,15 @@ class KalmanFilter(accelerationFactor: Double = 0.7) : AbstractOrientationFilter
             Measurements.Type.Magnetometer -> {
                 System.arraycopy(values, 0, magnetometerReading, 0, magnetometerReading.size)
                 hasMagnetometer = true
-                Log.d("Magnetometer", "Readings")
             }
             Measurements.Type.Accelerometer -> {
                 System.arraycopy(values, 0, accelerometerReading, 0, accelerometerReading.size)
                 hasAcceleration = true
-                Log.d("Accelerometer", "Readings")
                 updateOrientationAnglesFromAcceleration()
             }
             Measurements.Type.Gyroscope -> {
                 System.arraycopy(values, 0, gyroscopeReading, 0, gyroscopeReading.size)
                 hasGyro = true
-                Log.d("Gyro", "Readings")
                 updateOrientationAnglesFromGyroscope()
             }
         }

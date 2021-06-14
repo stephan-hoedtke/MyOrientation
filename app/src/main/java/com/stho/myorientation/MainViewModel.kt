@@ -5,6 +5,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.stho.myorientation.library.Timer
+import com.stho.myorientation.library.algebra.Degree
+import com.stho.myorientation.library.algebra.EulerAngles
 import com.stho.myorientation.library.algebra.Orientation
 import com.stho.myorientation.library.filter.MadgwickFilter
 import com.stho.myorientation.library.filter.SeparatedCorrectionFilter
@@ -46,6 +48,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val filterCoefficientLiveData: MutableLiveData<Double> = MutableLiveData<Double>().apply { value = DEFAULT_FILTER_COEFFICIENT }
     private val orientationLiveData: MutableLiveData<Orientation> = MutableLiveData<Orientation>().apply { value = Orientation(0.0, 0.0, 0.0, 0.0, 0.0) }
     private val optionsLiveData: MutableLiveData<Options> = MutableLiveData<Options>().apply { value = Options()}
+    private val cubeOrientationLiveData: MutableLiveData<EulerAngles> = MutableLiveData<EulerAngles>().apply { value = EulerAngles.default }
     private val processorConsumptionLiveData: MutableLiveData<Double> = MutableLiveData<Double>().apply { value = 0.0 }
     private val processorConsumptionTimer = Timer()
 
@@ -84,6 +87,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     val processorConsumptionLD: LiveData<Double>
         get() = processorConsumptionLiveData
+
+    val cubeOrientationLD: LiveData<EulerAngles>
+        get() = cubeOrientationLiveData
+
+    fun rotateCube(alpha: Double, beta: Double) {
+        val eulerAngles = cubeOrientationLiveData.value ?: EulerAngles.default
+        val newEulerAngles = EulerAngles.fromAzimuthPitchRoll(
+            azimuth = Degree.normalizeTo180(eulerAngles.azimuth + alpha),
+            pitch = Degree.normalizeTo180(eulerAngles.pitch + beta),
+            roll = 0.0)
+        cubeOrientationLiveData.postValue(newEulerAngles)
+    }
 
     val options: Options
         get() = optionsLiveData.value ?: Options()

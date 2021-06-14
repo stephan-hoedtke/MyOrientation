@@ -14,7 +14,13 @@
         <action
             android:id="@+id/action_MainFragment_to_SettingsFragment"
             app:destination="@id/SettingsFragment" />
+
+        <action
+            android:id="@+id/action_MainFragment_to_CubeFragment"
+            app:destination="@id/CubeFragment" />
+
     </fragment>
+
     <fragment
         android:id="@+id/SettingsFragment"
         android:name="com.stho.myorientation.SettingsFragment"
@@ -24,5 +30,14 @@
         <action
             android:id="@+id/action_SettingsFragment_to_MainFragment"
             app:destination="@id/MainFragment" />
+
     </fragment>
+
+    <fragment
+        android:id="@+id/CubeFragment"
+        android:name="com.stho.myorientation.CubeFragment"
+        android:label="@string/label_cube_fragment"
+        tools:layout="@layout/fragment_cube">
+    </fragment>
+
 </navigation>

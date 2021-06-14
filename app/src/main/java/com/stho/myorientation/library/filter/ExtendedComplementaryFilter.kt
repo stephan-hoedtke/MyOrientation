@@ -38,17 +38,14 @@ class ExtendedComplementaryFilter(accelerationFactor: Double = 0.7) : AbstractOr
             Measurements.Type.Magnetometer -> {
                 System.arraycopy(values, 0, magnetometerReading, 0, magnetometerReading.size)
                 hasMagnetometer = true
-                Log.d("Magnetometer", "Readings")
             }
             Measurements.Type.Accelerometer -> {
                 System.arraycopy(values, 0, accelerometerReading, 0, accelerometerReading.size)
                 hasAcceleration = true
-                Log.d("Accelerometer", "Readings")
             }
             Measurements.Type.Gyroscope -> {
                 System.arraycopy(values, 0, gyroscopeReading, 0, gyroscopeReading.size)
                 hasGyro = true
-                Log.d("Gyro", "Readings")
                 updateOrientationAnglesFromGyroscope()
             }
         }
@@ -92,14 +89,14 @@ class ExtendedComplementaryFilter(accelerationFactor: Double = 0.7) : AbstractOr
         val m = Vector.fromFloatArray(magnetometerReading)
         val w = Vector.fromFloatArray(gyroscopeReading)
 
-        Log.d("ECF", "Estimate: s=${estimate.s.f11()}, x=${estimate.x.f11()}, y=${estimate.y.f11()}, z=${estimate.z.f11()}")
+        //Log.d("ECF", "Estimate: s=${estimate.s.f11()}, x=${estimate.x.f11()}, y=${estimate.y.f11()}, z=${estimate.z.f11()}")
 
         if (!hasEstimate) {
             estimate = super.getQuaternionFromAccelerometerMagnetometerReadings(accelerometerReading, magnetometerReading, Quaternion.default)
         }
 
-        Log.d("ECF", "Accelerometer: Reading(x=${a.x.f11()}, y=${a.y.f11()}, z=${a.z.f11()}) ")
-        Log.d("ECF", "Magnetometer: Reading(x=${m.x.f11()}, y=${m.y.f11()}, z=${m.z.f11()}) ")
+        //Log.d("ECF", "Accelerometer: Reading(x=${a.x.f11()}, y=${a.y.f11()}, z=${a.z.f11()}) ")
+        //Log.d("ECF", "Magnetometer: Reading(x=${m.x.f11()}, y=${m.y.f11()}, z=${m.z.f11()}) ")
 
         val error = error(estimate, a, m)
 
@@ -109,9 +106,9 @@ class ExtendedComplementaryFilter(accelerationFactor: Double = 0.7) : AbstractOr
         val delta = qDot * dt
         estimate = (estimate + delta).normalize()
 
-        Log.d("ECF", "Gyro(x=${w.x.f11()}, y=${w.y.f11()}, z=${w.z.f11()}) " +
-                "Error(x=${error.x.f11()}, y=${error.y.f11()}, z=${error.z.f11()}) |e|=${error.norm().f11()} " +
-                "New Estimate: s=${estimate.s.f11()}, x=${estimate.x.f11()}, y=${estimate.y.f11()}, z=${estimate.z.f11()}")
+        //Log.d("ECF", "Gyro(x=${w.x.f11()}, y=${w.y.f11()}, z=${w.z.f11()}) " +
+        //        "Error(x=${error.x.f11()}, y=${error.y.f11()}, z=${error.z.f11()}) |e|=${error.norm().f11()} " +
+        //        "New Estimate: s=${estimate.s.f11()}, x=${estimate.x.f11()}, y=${estimate.y.f11()}, z=${estimate.z.f11()}")
 
         hasEstimate = true
     }
