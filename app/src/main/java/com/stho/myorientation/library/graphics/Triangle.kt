@@ -7,15 +7,15 @@ import java.nio.FloatBuffer
  */
 class Triangle : BaseShape() {
 
-    private var triangleCoordinates = floatArrayOf( // in counterclockwise order:
+    private var vertices = floatArrayOf( // in counterclockwise order:
         // @formatter:off
-         0.5f, -0.288675f, -1.03f,
-        -0.5f, -0.288675f, -1.03f,
-         0.0f,  0.577350f, -1.03f
+         -0.5f, -0.288675f, 1.01f,
+          0.5f, -0.288675f, 1.01f,
+          0.0f,  0.577350f, 1.01f,
         // @formatter:on
     )
 
-    private var triangleColors = floatArrayOf(
+    private var colors = floatArrayOf(
         // @formatter:off
         0.80f,  0.3f,  0.1f,  0.3f,
         0.80f,  0.1f,  0.3f,  0.3f,
@@ -24,11 +24,11 @@ class Triangle : BaseShape() {
     )
 
     private val vertexBuffer: FloatBuffer by lazy {
-        BaseShape.asFloatBuffer(triangleCoordinates.size, triangleCoordinates)
+        BaseShape.asFloatBuffer(vertices.size, vertices)
     }
 
     private val colorBuffer: FloatBuffer by lazy {
-        BaseShape.asFloatBuffer(triangleColors.size, triangleColors)
+        BaseShape.asFloatBuffer(colors.size, colors)
     }
 
     fun draw(rotationMatrix: FloatArray) {

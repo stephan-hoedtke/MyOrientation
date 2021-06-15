@@ -18,6 +18,7 @@ import javax.microedition.khronos.opengles.GL10
 class CubeRenderer : GLSurfaceView.Renderer {
 
     private lateinit var triangle: Triangle
+    private lateinit var pointer: Pointer
     private lateinit var cube: Cube
 
     // vPMatrix is an abbreviation for "Model View Projection Matrix"
@@ -46,6 +47,7 @@ class CubeRenderer : GLSurfaceView.Renderer {
         android.opengl.Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, -7f, 0f, 0f, 0f, 0f, 1.0f, 0.0f)
 
         triangle = Triangle()
+        pointer = Pointer()
         cube = Cube()
 
         /*
@@ -97,49 +99,58 @@ class CubeRenderer : GLSurfaceView.Renderer {
         // Redraw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
-         android.opengl.Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
-
-
-        // additionally rotate by the angles defined by touch events
-        android.opengl.Matrix.setRotateM(rotationMatrix, 0, alpha, 0f, 1f, 0f)
-        android.opengl.Matrix.rotateM(rotationMatrix, 0, beta, 1f, 0f, 0f)
-
-        // calculate a rotation matrix for the current orientation, given by the quaternion, which rotates from body to earth frame
-        val orientationRotationMatrix = toRotationMatrix16(orientation.inverse())
-        val final = FloatArray(16)
-        android.opengl.Matrix.multiplyMM(final, 0, orientationRotationMatrix, 0, rotationMatrix, 0)
-
-
-        // Combine the rotation matrix with the projection and camera view
-        // Note that the vPMatrix factor *must be first* in order
-        // for the matrix multiplication product to be correct.
-        // Calculate the projection and view transformation
-        val scratch = FloatArray(16)
-        android.opengl.Matrix.multiplyMM(scratch, 0, vPMatrix, 0, final, 0)
+        val m1 = matrixMultiply(orientation.toRotationMatrixOpenGL(), getRotationMatrixFor(alpha, beta))
+        val m2 = matrixMultiply(viewMatrix, m1)
+        val scratch = matrixMultiply(projectionMatrix, m2)
 
         cube.draw(scratch)
+        pointer.draw(scratch)
         triangle.draw(scratch)
     }
 
-    private fun toRotationMatrix16(q: Quaternion): FloatArray {
-        val m = q.toRotationMatrix()
-        return FloatArray(16).apply {
-            this[0] = m.m11.toFloat()
-            this[1] = m.m12.toFloat()
-            this[2] = m.m13.toFloat()
-            this[3] = 0.0f
-            this[4] = m.m21.toFloat()
-            this[5] = m.m22.toFloat()
-            this[6] = m.m23.toFloat()
-            this[7] = 0.0f
-            this[8] = m.m31.toFloat()
-            this[9] = m.m32.toFloat()
-            this[10] = m.m33.toFloat()
-            this[11] = 0.0f
-            this[12] = 0.0f
-            this[13] = 0.0f
-            this[14] = 0.0f
-            this[15] = 1.0f
-        }
+    companion object {
+        private fun getRotationMatrixFor(alpha: Float, beta: Float): FloatArray =
+            FloatArray(16).also { matrix ->
+                android.opengl.Matrix.setIdentityM(matrix, 0)
+                android.opengl.Matrix.rotateM(matrix, 0, alpha, 0f, 1f, 0f)
+                android.opengl.Matrix.rotateM(matrix, 0, beta, 1f, 0f, 0f)
+            }
+
+        private fun matrixMultiply(lhs: FloatArray, rhs: FloatArray): FloatArray =
+            FloatArray(16).also { matrix ->
+                android.opengl.Matrix.multiplyMM(matrix, 0, lhs, 0, rhs, 0)
+            }
     }
 }
+
+/**
+ * Returns M2 * M1 with
+ *  M1 = M(q0).transpose()
+ *  M2 = M(OpenGL -> Device) = (-1, 1, -1, 0) : x -> -x, y -> y, z -> -z for x and z directions are opposite
+ *  q0 := q(y -> -y) for rotation angle around y is opposite
+ *
+ *  v_earth = M(q) * v_device
+ *  v_device = M
+ *  The rotation around y is in opposite direction:
+ */
+private fun Quaternion.toRotationMatrixOpenGL(): FloatArray =
+    Quaternion(s = s, x = x, y = -y, z = z).run {
+        FloatArray(16).also {
+            it[0] = -m11.toFloat()
+            it[1] = -m21.toFloat()
+            it[2] = -m31.toFloat()
+            it[3] = 0.0f
+            it[4] = m12.toFloat()
+            it[5] = m22.toFloat()
+            it[6] = m32.toFloat()
+            it[7] = 0.0f
+            it[8] = -m13.toFloat()
+            it[9] = -m23.toFloat()
+            it[10] = -m33.toFloat()
+            it[11] = 0.0f
+            it[12] = 0.0f
+            it[13] = 0.0f
+            it[14] = 0.0f
+            it[15] = 1.0f
+        }
+    }
