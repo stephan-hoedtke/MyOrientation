@@ -223,8 +223,8 @@ abstract class BaseShape {
                 verifyShader(shader)
             }
 
-        internal fun asFloatBuffer(size: Int, array: FloatArray): FloatBuffer =
-            ByteBuffer.allocateDirect(Float.SIZE_BYTES * size).run {
+        internal fun asFloatBuffer(array: FloatArray): FloatBuffer =
+            ByteBuffer.allocateDirect(array.size * Float.SIZE_BYTES).run {
                 order(ByteOrder.nativeOrder())
                 asFloatBuffer().apply {
                     put(array)
@@ -232,7 +232,7 @@ abstract class BaseShape {
                 }
             }
 
-        internal fun asShortBuffer(size: Int, array: ShortArray): ShortBuffer =
+        internal fun asShortBuffer(array: ShortArray): ShortBuffer =
             // (# of coordinate values * 2 bytes per short)
             ByteBuffer.allocateDirect(array.size * Short.SIZE_BYTES).run {
                 order(ByteOrder.nativeOrder())
@@ -242,8 +242,8 @@ abstract class BaseShape {
                 }
             }
 
-        internal fun asByteBuffer(size: Int, array: ByteArray): ByteBuffer =
-            ByteBuffer.allocateDirect(size).apply {
+        internal fun asByteBuffer(array: ByteArray): ByteBuffer =
+            ByteBuffer.allocateDirect(array.size).apply {
                 put(array)
                 position(0)
             }

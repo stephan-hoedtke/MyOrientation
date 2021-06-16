@@ -1,21 +1,20 @@
 package com.stho.myorientation.library.filter
 
-import com.stho.myorientation.Entries
-import com.stho.myorientation.MainViewModel
-import com.stho.myorientation.Measurements
+import com.stho.myorientation.*
 import com.stho.myorientation.library.algebra.Degree
 import com.stho.myorientation.library.algebra.Orientation
 
 
-class CompositionFilter(val options: MainViewModel.Options, accelerationFactor: Double = 0.7, timeConstant: Double = 0.2, filterCoefficient: Double = 0.98) : AbstractOrientationFilter(Entries.Method.Composition, accelerationFactor), OrientationFilter {
+class CompositionFilter(private val options: ICompositionFilterOptions) :
+    AbstractOrientationFilter(Method.Composition, options) {
 
-    private val accelerationMagnetometerFilter = AccelerationMagnetometerFilter(accelerationFactor, timeConstant)
-    private val rotationVectorFilter = RotationVectorFilter(accelerationFactor)
-    private val complementaryFilter = ComplementaryFilter(accelerationFactor, filterCoefficient)
-    private val madgwickFilter = MadgwickFilter(options.madgwickMode, accelerationFactor)
-    private val separatedCorrectionFilter = SeparatedCorrectionFilter(options.separatedCorrectionMode, accelerationFactor)
-    private val extendedComplementaryFilter = ExtendedComplementaryFilter(accelerationFactor)
-    private val kalmanFilter = KalmanFilter(accelerationFactor)
+    private val accelerationMagnetometerFilter = AccelerationMagnetometerFilter(options)
+    private val rotationVectorFilter = RotationVectorFilter(options)
+    private val complementaryFilter = ComplementaryFilter(options)
+    private val madgwickFilter = MadgwickFilter(options)
+    private val separatedCorrectionFilter = SeparatedCorrectionFilter(options)
+    private val extendedComplementaryFilter = ExtendedComplementaryFilter(options)
+    private val kalmanFilter = KalmanFilter(options)
 
     override fun updateReadings(type: Measurements.Type, values: FloatArray) {
         if (options.showAccelerometerMagnetometerFilter)
@@ -41,7 +40,7 @@ class CompositionFilter(val options: MainViewModel.Options, accelerationFactor: 
     }
 
     override val currentOrientation: Orientation
-        get() = rotationVectorFilter.currentOrientation
+        get() = rotationVectorFilter.currentOrientation // TODO: use average?
 
     override fun reset() {
         accelerationMagnetometerFilter.reset()

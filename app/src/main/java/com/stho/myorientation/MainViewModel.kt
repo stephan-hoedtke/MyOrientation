@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import com.stho.myorientation.library.Timer
 import com.stho.myorientation.library.algebra.Degree
 import com.stho.myorientation.library.algebra.EulerAngles
@@ -14,45 +15,17 @@ import kotlin.math.abs
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    data class Options(
-        var madgwickMode: MadgwickFilter.Mode = MadgwickFilter.Mode.Default,
-        var separatedCorrectionMode: SeparatedCorrectionFilter.Mode = SeparatedCorrectionFilter.Mode.SCF,
-        var showAccelerometerMagnetometerFilter: Boolean = false,
-        var showRotationVectorFilter: Boolean = true,
-        var showMadgwickFilter: Boolean = true,
-        var showComplementaryFilter: Boolean = false,
-        var showSeparatedCorrectionFilter: Boolean = false,
-        var showExtendedComplementaryFilter: Boolean = true,
-        var showKalmanFilter: Boolean = false,
-    ) {
-
-        internal fun show(method: Entries.Method): Boolean =
-            when (method) {
-                Entries.Method.AccelerometerMagnetometer -> showAccelerometerMagnetometerFilter
-                Entries.Method.RotationVector -> showRotationVectorFilter
-                Entries.Method.MadgwickFilter -> showMadgwickFilter
-                Entries.Method.ComplementaryFilter -> showComplementaryFilter
-                Entries.Method.SeparatedCorrectionFilter -> showSeparatedCorrectionFilter
-                Entries.Method.ExtendedComplementaryFilter -> showExtendedComplementaryFilter
-                Entries.Method.KalmanFilter -> showKalmanFilter
-                else -> true
-            }
-    }
-
-    private val methodLiveData: MutableLiveData<Entries.Method> = MutableLiveData<Entries.Method>().apply { value = Entries.Method.Composition }
+    private val methodLiveData: MutableLiveData<Method> = MutableLiveData<Method>().apply { value = Method.Composition }
+    private val optionsLiveData: MutableLiveData<Options> = MutableLiveData<Options>().apply { value = Options() }
     private val zoomLiveData: MutableLiveData<Double> = MutableLiveData<Double>().apply { value = DEFAULT_ZOOM }
+    private val propertyLiveData: MutableLiveData<Property> = MutableLiveData<Property>().apply { value = Property.CenterAzimuth}
     private val startTimeLiveData: MutableLiveData<Double> = MutableLiveData<Double>().apply { value = DEFAULT_START_TIME }
-    private val propertyLiveData: MutableLiveData<Entries.Property> = MutableLiveData<Entries.Property>().apply { value = Entries.Property.CenterAzimuth}
-    private val accelerationFactorLiveData: MutableLiveData<Double> = MutableLiveData<Double>().apply { value = DEFAULT_ACCELERATION_FACTOR }
-    private val timeConstantLiveData: MutableLiveData<Double> = MutableLiveData<Double>().apply { value = DEFAULT_TIME_CONSTANT }
-    private val filterCoefficientLiveData: MutableLiveData<Double> = MutableLiveData<Double>().apply { value = DEFAULT_FILTER_COEFFICIENT }
-    private val orientationLiveData: MutableLiveData<Orientation> = MutableLiveData<Orientation>().apply { value = Orientation(0.0, 0.0, 0.0, 0.0, 0.0) }
-    private val optionsLiveData: MutableLiveData<Options> = MutableLiveData<Options>().apply { value = Options()}
+    private val orientationLiveData: MutableLiveData<Orientation> = MutableLiveData<Orientation>().apply { value = Orientation.default }
     private val cubeOrientationLiveData: MutableLiveData<EulerAngles> = MutableLiveData<EulerAngles>().apply { value = EulerAngles.default }
     private val processorConsumptionLiveData: MutableLiveData<Double> = MutableLiveData<Double>().apply { value = 0.0 }
     private val processorConsumptionTimer = Timer()
 
-    val methodLD: LiveData<Entries.Method>
+    val methodLD: LiveData<Method>
         get() = methodLiveData
 
     val zoomLD: LiveData<Double>
@@ -61,26 +34,30 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val startTimeLD: LiveData<Double>
         get() = startTimeLiveData
 
-    val propertyLD: LiveData<Entries.Property>
+    val propertyLD: LiveData<Property>
         get() = propertyLiveData
 
+    val optionsLD: LiveData<Options>
+        get() = optionsLiveData
+
+    var options: Options
+        get() = optionsLiveData.value ?: Options()
+        set(value) { optionsLiveData.postValue(value) }
+
     val accelerationFactorLD: LiveData<Double>
-        get() = accelerationFactorLiveData
+        get() = Transformations.map(optionsLiveData) { params -> params.accelerationFactor }
 
     val timeConstantLD: LiveData<Double>
-        get() = timeConstantLiveData
+        get() = Transformations.map(optionsLiveData) { params -> params.timeConstant }
 
     val filterCoefficientLD: LiveData<Double>
-        get() = filterCoefficientLiveData
+        get() = Transformations.map(optionsLiveData) { params -> params.filterCoefficient }
 
     val orientationLD: LiveData<Orientation>
         get() = orientationLiveData
 
     val versionLD: LiveData<Long>
         get() = Repository.instance.versionLD
-
-    val optionsLD: LiveData<Options>
-        get() = optionsLiveData
 
     val isActiveLD: LiveData<Boolean>
         get() = Repository.instance.isActiveLD
@@ -100,38 +77,38 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         cubeOrientationLiveData.postValue(newEulerAngles)
     }
 
-    val options: Options
-        get() = optionsLiveData.value ?: Options()
+    val isActive: Boolean
+        get() = Repository.instance.isActive
 
     fun setMadgwickFilterMode(mode: MadgwickFilter.Mode) {
-        val options = options
-        options.madgwickMode = mode
-        touch(options)
+        touch(options.apply {
+            madgwickMode = mode
+        })
     }
 
     fun setSeparatedCorrectionFilterMode(mode: SeparatedCorrectionFilter.Mode) {
-        val options = options
-        options.separatedCorrectionMode = mode
-        touch(options)
+        touch(options.apply {
+            separatedCorrectionMode = mode
+        })
     }
 
-    fun showFilter(method: Entries.Method, value: Boolean) {
-        val options: Options = options
-        @Suppress("NON_EXHAUSTIVE_WHEN")
-        when (method) {
-            Entries.Method.AccelerometerMagnetometer -> options.showAccelerometerMagnetometerFilter = value
-            Entries.Method.RotationVector -> options.showRotationVectorFilter = value
-            Entries.Method.ComplementaryFilter -> options.showComplementaryFilter = value
-            Entries.Method.MadgwickFilter -> options.showMadgwickFilter = value
-            Entries.Method.SeparatedCorrectionFilter -> options.showSeparatedCorrectionFilter = value
-            Entries.Method.ExtendedComplementaryFilter -> options.showExtendedComplementaryFilter = value
-            Entries.Method.KalmanFilter -> options.showKalmanFilter = value
-        }
-        touch(options)
+    fun showFilter(method: Method, value: Boolean) {
+        touch(options.apply {
+            @Suppress("NON_EXHAUSTIVE_WHEN")
+            when (method) {
+                Method.AccelerometerMagnetometer -> showAccelerometerMagnetometerFilter = value
+                Method.RotationVector -> showRotationVectorFilter = value
+                Method.ComplementaryFilter -> showComplementaryFilter = value
+                Method.MadgwickFilter -> showMadgwickFilter = value
+                Method.SeparatedCorrectionFilter -> showSeparatedCorrectionFilter = value
+                Method.ExtendedComplementaryFilter -> showExtendedComplementaryFilter = value
+                Method.KalmanFilter -> showKalmanFilter = value
+            }
+        })
     }
 
-    private fun touch(options: Options) {
-        optionsLiveData.value = options
+    internal fun touch(filterParameters: Options) {
+        optionsLiveData.value = filterParameters
         touch()
     }
 
@@ -146,18 +123,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun resetDefaultValues() {
-        filterCoefficient = DEFAULT_FILTER_COEFFICIENT
-        accelerationFactor = DEFAULT_ACCELERATION_FACTOR
-        timeConstant = DEFAULT_TIME_CONSTANT
+        touch(options.apply {
+            resetDefaultValues()
+        })
     }
 
-    var method: Entries.Method
-        set(value) {
-            methodLiveData.postValue(value)
-        }
-        get() {
-            return methodLiveData.value ?: Entries.Method.AccelerometerMagnetometer
-        }
+    var method: Method
+        get() = methodLiveData.value ?: Method.AccelerometerMagnetometer
+        set(value) { methodLiveData.postValue(value) }
 
     fun onZoom(f: Double) {
         val zoom: Double = zoomLiveData.value ?: DEFAULT_ZOOM
@@ -171,40 +144,60 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         startTimeLiveData.postValue(startTime + dx / zoom)
     }
 
-    var property: Entries.Property
-        set(value) {
-            propertyLiveData.postValue(value)
-        }
-        get() {
-            return propertyLiveData.value ?: Entries.Property.Azimuth
-        }
+    var property: Property
+        get() = propertyLiveData.value ?: Property.Azimuth
+        set(value) { propertyLiveData.postValue(value) }
 
     var filterCoefficient: Double
+        get() = options.filterCoefficient
         set(value) {
-            filterCoefficientLiveData.postValue(value)
-        }
-        get() {
-            return filterCoefficientLiveData.value ?: DEFAULT_FILTER_COEFFICIENT
+            touch(options.apply {
+                filterCoefficient = value.coerceIn(0.0, 1.0)
+            })
         }
 
     var timeConstant: Double
+        get() = options.timeConstant
         set(value) {
-            timeConstantLiveData.postValue(value.coerceIn(0.01, 10.0))
-        }
-        get() {
-            return timeConstantLiveData.value ?: DEFAULT_TIME_CONSTANT
+            touch(options.apply {
+                timeConstant = value.coerceIn(0.01, 10.0)
+            })
         }
 
     var accelerationFactor: Double
+        get() = options.accelerationFactor
         set(value) {
-            accelerationFactorLiveData.postValue(value.coerceIn(0.01, 10.0))
+            touch(options.apply {
+                accelerationFactor = value.coerceIn(0.01, 10.0)
+            })
         }
-        get() {
-            return accelerationFactorLiveData.value ?: DEFAULT_ACCELERATION_FACTOR
+
+    var varianceAccelerometer: Double
+        get() = options.varianceAccelerometer
+        set(value) {
+            touch(options.apply {
+                varianceAccelerometer = value.coerceIn(0.0, 1.0)
+            })
+        }
+
+    var varianceMagnetometer: Double
+        get() = options.varianceMagnetometer
+        set(value) {
+            touch(options.apply {
+                varianceMagnetometer = value.coerceIn(0.0, 1.0)
+            })
+        }
+
+    var varianceGyroscope: Double
+        get() = options.varianceGyroscope
+        set(value) {
+            touch(options.apply {
+                varianceGyroscope = value.coerceIn(0.0, 1.0)
+            })
         }
 
     fun onUpdateOrientation(orientation: Orientation) {
-        Repository.instance.recordEntry(Entries.Method.Damped, orientation)
+        Repository.instance.recordEntry(Method.Damped, orientation)
         orientationLiveData.postValue(orientation)
     }
 
@@ -239,9 +232,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
         private const val DEFAULT_ZOOM = 100.0
         private const val DEFAULT_START_TIME = 0.0
-        private const val DEFAULT_ACCELERATION_FACTOR = 0.7
-        private const val DEFAULT_TIME_CONSTANT = 0.4
-        private const val DEFAULT_FILTER_COEFFICIENT = 0.98
     }
 }
 

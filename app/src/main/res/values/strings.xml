@@ -1,20 +1,19 @@
 <resources>
     <string name="app_name">Orientation</string>
+    <string name="action_statistics">Statistics</string>
     <string name="action_settings">Settings</string>
     <string name="action_cube">Cube</string>
-    <string name="main_fragment_label">Main Fragment</string>
-    <string name="settings_fragment_label">Settings Fragment</string>
+    <string name="label_fragment_statistics">Statistics Fragment</string>
+    <string name="label_fragment_main">Main Fragment</string>
+    <string name="label_fragment_settings">Settings Fragment</string>
     <string name="label_name_value">%s = %s</string>
     <string name="label_value_degree">%s°</string>
     <string name="label_done">Done</string>
     <string name="label_reset_default_values">Reset Default Values</string>
     <string name="label_method">Method</string>
     <string name="label_property">Property</string>
-    <string name="default_acceleration_factor">0.8</string>
     <string name="label_acceleration_factor">Acceleration Factor (Critical Damped Rotation)</string>
-    <string name="default_filter_coefficient">0.98</string>
     <string name="label_filter_coefficient">Filter Coefficient (Sensor Fusion)</string>
-    <string name="default_time_constant">0.2</string>
     <string name="label_time_constant">Time Constant (Low Pass Filter)</string>
     <string name="label_parameters">Parameters</string>
     <string name="label_accelerometer">Accelerometer</string>
@@ -22,19 +21,17 @@
     <string name="label_gyroscope">Gyroscope</string>
     <string name="label_acceleration_value">a = 0.70</string>
     <string name="label_time_constant_value">t = 0.40</string>
+    <string name="label_variance_accelerometer">Accelerometer Variance</string>
+    <string name="label_variance_magnetometer">Magnetometer Variance</string>
+    <string name="label_variance_gyroscope">Gyroscope Variance</string>
     <string name="label_filter_coefficient_value">f = 0.98</string>
     <string name="label_processor_consumption_value">0.022</string>
     <string name="label_azimuth">Azimuth</string>
     <string name="label_acceleration_and_magnetometer"><![CDATA[Acceleration & Magnetometer]]></string>
     <string name="label_version_value">1.4.2</string>
-    <string name="default_azimuth">32°</string>
-    <string name="default_pitch">32°</string>
     <string name="label_pitch">Pitch</string>
-    <string name="default_roll">32°</string>
     <string name="label_roll">Roll</string>
-    <string name="default_center_azimuth">32°</string>
     <string name="label_center_azimuth">Center\nAzimuth</string>
-    <string name="default_center_altitude">32°</string>
     <string name="label_center_altitude">Center\nAltitude</string>
     <string name="label_madgwick">Madgwick</string>
     <string name="label_separated_correction">Separated Correction</string>
@@ -48,8 +45,26 @@
     <string name="label_kalman_filter">Kalman Filter</string>
     <string name="label_orthogonal">Orthogonal</string>
     <string name="label_extended_complementary_filter">Extended Complementary Filter</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="label_cube_fragment">Cube Fragment</string>
+    <string name="label_mean">Mean</string>
+    <string name="label_variance">Variance</string>
+    <string name="label_standard_deviation">Std. Deviation</string>
+    <string name="label_x">X</string>
+    <string name="label_z">Z</string>
+    <string name="label_y">Y</string>
+    <string name="default_method">Rotation Vector</string>
+    <string name="default_mean">0.45</string>
+    <string name="default_variance">0.023</string>
+    <string name="default_acceleration_factor">0.8</string>
+    <string name="default_center_altitude">32°</string>
+    <string name="default_center_azimuth">32°</string>
+    <string name="default_roll">32°</string>
+    <string name="default_azimuth">32°</string>
+    <string name="default_pitch">32°</string>
+    <string name="default_filter_coefficient">0.98</string>
+    <string name="default_time_constant">0.2</string>
     <string name="default_angle">0°</string>
+    <string name="default_deviation">0.51</string>
+    <string name="label_angle_param">%s°</string>
 </resources>
+

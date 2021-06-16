@@ -106,7 +106,6 @@ class Matrix(val rows: Int, val columns: Int) {
             if (v.size != a.rows) {
                 throw Exception("Invalid rows of a ${a.columns} for vector product v * a")
             }
-            val size = a.rows // = v.size
             val w = DoubleArray(a.columns)
             runBlocking(Dispatchers.Default) {
                 for (c in 0 until a.columns) {

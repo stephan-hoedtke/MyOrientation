@@ -38,11 +38,11 @@ class Pointer : BaseShape() {
     )
 
     private val vertexBuffer: FloatBuffer by lazy {
-        BaseShape.asFloatBuffer(vertices.size, vertices)
+        BaseShape.asFloatBuffer(vertices)
     }
 
     private val colorBuffer: FloatBuffer by lazy {
-        BaseShape.asFloatBuffer(colors.size, colors)
+        BaseShape.asFloatBuffer(colors)
     }
 
     fun draw(rotationMatrix: FloatArray) {

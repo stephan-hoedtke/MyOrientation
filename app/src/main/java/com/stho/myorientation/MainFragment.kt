@@ -1,16 +1,18 @@
 package com.stho.myorientation
 
+
+
 import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.stho.myorientation.databinding.FragmentMainBinding
-import com.stho.myorientation.library.Formatter
 import com.stho.myorientation.library.algebra.Orientation
 import com.stho.myorientation.library.f0
 import com.stho.myorientation.library.f2
@@ -35,7 +37,6 @@ class MainFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
         binding = FragmentMainBinding.inflate(inflater, container, false)
 
         binding.mainView.setListener(object : AbstractPlotView.Listener {
@@ -61,11 +62,11 @@ class MainFragment : Fragment() {
         binding.magnetometerView.setType(Measurements.Type.Magnetometer)
         binding.property.setOnClickListener { onSettings() }
         binding.method.setOnClickListener { onSettings() }
-        binding.azimuth.setOnClickListener { onChangeProperty(Entries.Property.Azimuth) }
-        binding.pitch.setOnClickListener { onChangeProperty(Entries.Property.Pitch) }
-        binding.roll.setOnClickListener { onChangeProperty(Entries.Property.Roll) }
-        binding.centerAzimuth.setOnClickListener { onChangeProperty(Entries.Property.CenterAzimuth) }
-        binding.centerAltitude.setOnClickListener { onChangeProperty(Entries.Property.CenterAltitude) }
+        binding.azimuth.setOnClickListener { onChangeProperty(Property.Azimuth) }
+        binding.pitch.setOnClickListener { onChangeProperty(Property.Pitch) }
+        binding.roll.setOnClickListener { onChangeProperty(Property.Roll) }
+        binding.centerAzimuth.setOnClickListener { onChangeProperty(Property.CenterAzimuth) }
+        binding.centerAltitude.setOnClickListener { onChangeProperty(Property.CenterAltitude) }
 
         return binding.root
     }
@@ -84,12 +85,23 @@ class MainFragment : Fragment() {
         viewModel.processorConsumptionLD.observe(viewLifecycleOwner, { consumption -> observeProcessorConsumption(consumption) })
     }
 
+    override fun onStart() {
+        super.onStart()
+        updateActionBar()
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.action_statistics -> onStatistics()
             R.id.action_settings -> onSettings();
             R.id.action_cube -> onCube()
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun onStatistics(): Boolean {
+        findNavController().navigate(R.id.action_MainFragment_to_StatisticsFragment)
+        return true
     }
 
     private fun onSettings(): Boolean {
@@ -123,22 +135,22 @@ class MainFragment : Fragment() {
         binding.accelerometerView.setStartTime(startTime)
     }
 
-    private fun observeProperty(property: Entries.Property) {
+    private fun observeProperty(property: Property) {
         binding.mainView.setProperty(property);
         binding.property.text = property.toString()
         binding.property.setTextColor(getColorForProperty(property))
     }
 
-    private fun getColorForProperty(property: Entries.Property): Int =
+    private fun getColorForProperty(property: Property): Int =
             resources.getColor(getColorResourceIdForProperty(property), null)
 
-    private fun getColorResourceIdForProperty(property: Entries.Property): Int =
+    private fun getColorResourceIdForProperty(property: Property): Int =
         when (property) {
-            Entries.Property.Azimuth -> android.R.color.holo_red_light
-            Entries.Property.Pitch -> android.R.color.holo_blue_bright
-            Entries.Property.Roll -> android.R.color.holo_green_light
-            Entries.Property.CenterAzimuth -> android.R.color.holo_orange_dark
-            Entries.Property.CenterAltitude -> android.R.color.holo_blue_dark
+            Property.Azimuth -> android.R.color.holo_red_light
+            Property.Pitch -> android.R.color.holo_blue_bright
+            Property.Roll -> android.R.color.holo_green_light
+            Property.CenterAzimuth -> android.R.color.holo_orange_dark
+            Property.CenterAltitude -> android.R.color.holo_blue_dark
         }
 
     private fun observeTimeConstant(timeConstant: Double) {
@@ -152,7 +164,7 @@ class MainFragment : Fragment() {
         binding.accelerationFactor.text = getString(R.string.label_name_value, "a", accelerationFactor.f2())
     }
 
-    private fun observeMethod(method: Entries.Method) {
+    private fun observeMethod(method: Method) {
         binding.method.text = method.toString()
         binding.method.setTextColor(getColorForMethod(method))
     }
@@ -161,17 +173,17 @@ class MainFragment : Fragment() {
         binding.processorConsumption.text = consumption.f4()
     }
 
-    private fun getColorForMethod(method: Entries.Method): Int =
+    private fun getColorForMethod(method: Method): Int =
             when (method) {
-                Entries.Method.AccelerometerMagnetometer -> Color.RED
-                Entries.Method.RotationVector -> Color.YELLOW
-                Entries.Method.KalmanFilter -> Color.rgb(0xFC, 0x0F, 0xC0);
-                Entries.Method.ComplementaryFilter -> Color.CYAN
-                Entries.Method.MadgwickFilter -> Color.GREEN
-                Entries.Method.SeparatedCorrectionFilter -> Color.MAGENTA
-                Entries.Method.ExtendedComplementaryFilter -> Color.BLUE
-                Entries.Method.Composition -> Color.WHITE
-                Entries.Method.Damped -> Color.GRAY
+                Method.AccelerometerMagnetometer -> Color.RED
+                Method.RotationVector -> Color.YELLOW
+                Method.KalmanFilter -> Color.rgb(0xFC, 0x0F, 0xC0);
+                Method.ComplementaryFilter -> Color.CYAN
+                Method.MadgwickFilter -> Color.GREEN
+                Method.SeparatedCorrectionFilter -> Color.MAGENTA
+                Method.ExtendedComplementaryFilter -> Color.BLUE
+                Method.Composition -> Color.WHITE
+                Method.Damped -> Color.GRAY
             }
 
 
@@ -183,8 +195,23 @@ class MainFragment : Fragment() {
         binding.centerAltitude.text = getString(R.string.label_value_degree, orientation.centerAltitude.f0())
     }
 
-    private fun onChangeProperty(newProperty: Entries.Property) {
+    private fun onChangeProperty(newProperty: Property) {
         viewModel.property = newProperty
     }
+
+    /**
+     * Mind: MainFragment.onViewCreated() is called from inside MainActivity.onCreate(), hence before the actionBar is set
+     */
+    private fun updateActionBar() {
+        actionBar?.apply {
+            setHomeButtonEnabled(true)
+            setDisplayHomeAsUpEnabled(false)
+            title = "Sensor Fusion"
+        }
+    }
+
+    private val actionBar
+        get() = (requireActivity() as AppCompatActivity).supportActionBar
+
 }
 

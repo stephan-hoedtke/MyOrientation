@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".StatisticsFragment">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontal_guideline_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="80dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontal_guideline_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="220dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/horizontal_guideline_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="360dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/vertical_guideline_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="30dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/vertical_guideline_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="100dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/vertical_guideline_3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="200dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/vertical_guideline_4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="300dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/method"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_2"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/label_mean" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/method"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_3"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/label_variance" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/method"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_4"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/label_standard_deviation" />
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/horizontal_guideline_1"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/label_gyroscope" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/horizontal_guideline_1"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_1"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/label_x" />
+
+    <TextView
+        android:id="@+id/gyroscope_mean_x"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/horizontal_guideline_1"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_2"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_mean" />
+
+    <TextView
+        android:id="@+id/gyroscope_variance_x"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/horizontal_guideline_1"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_3"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_variance" />
+
+    <TextView
+        android:id="@+id/gyroscope_deviation_x"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/horizontal_guideline_1"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_4"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_deviation" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/gyroscope_mean_x"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_1"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/label_y" />
+
+    <TextView
+        android:id="@+id/gyroscope_mean_y"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/gyroscope_mean_x"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_2"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_mean" />
+
+    <TextView
+        android:id="@+id/gyroscope_variance_y"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/gyroscope_mean_x"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_3"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_variance" />
+
+    <TextView
+        android:id="@+id/gyroscope_deviation_y"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/gyroscope_mean_x"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_4"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_deviation" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/gyroscope_mean_y"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_1"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/label_z" />
+
+    <TextView
+        android:id="@+id/gyroscope_mean_z"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/gyroscope_mean_y"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_2"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_mean" />
+
+    <TextView
+        android:id="@+id/gyroscope_variance_z"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/gyroscope_mean_y"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_3"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_variance" />
+
+    <TextView
+        android:id="@+id/gyroscope_deviation_z"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/gyroscope_mean_y"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_4"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_deviation" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/horizontal_guideline_2"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/label_accelerometer" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/horizontal_guideline_2"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_1"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/label_x" />
+
+    <TextView
+        android:id="@+id/accelerometer_mean_x"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/horizontal_guideline_2"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_2"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_mean" />
+
+    <TextView
+        android:id="@+id/accelerometer_variance_x"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/horizontal_guideline_2"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_3"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_variance" />
+
+    <TextView
+        android:id="@+id/accelerometer_deviation_x"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/horizontal_guideline_2"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_4"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_deviation" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/accelerometer_mean_x"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_1"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/label_y" />
+
+    <TextView
+        android:id="@+id/accelerometer_mean_y"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/accelerometer_mean_x"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_2"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_mean" />
+
+    <TextView
+        android:id="@+id/accelerometer_variance_y"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/accelerometer_mean_x"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_3"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_variance" />
+
+    <TextView
+        android:id="@+id/accelerometer_deviation_y"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/accelerometer_mean_x"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_4"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_deviation" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/accelerometer_mean_y"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_1"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/label_z" />
+
+    <TextView
+        android:id="@+id/accelerometer_mean_z"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/accelerometer_mean_y"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_2"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_mean" />
+
+    <TextView
+        android:id="@+id/accelerometer_variance_z"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/accelerometer_mean_y"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_3"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_variance" />
+
+    <TextView
+        android:id="@+id/accelerometer_deviation_z"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/accelerometer_mean_y"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_4"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_deviation" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/horizontal_guideline_3"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/label_magnetometer" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/horizontal_guideline_3"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_1"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/label_x" />
+
+    <TextView
+        android:id="@+id/magnetometer_mean_x"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/horizontal_guideline_3"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_2"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_mean" />
+
+    <TextView
+        android:id="@+id/magnetometer_variance_x"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/horizontal_guideline_3"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_3"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_variance" />
+
+    <TextView
+        android:id="@+id/magnetometer_deviation_x"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/horizontal_guideline_3"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_4"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_deviation" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/magnetometer_mean_x"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_1"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/label_y" />
+
+    <TextView
+        android:id="@+id/magnetometer_mean_y"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/magnetometer_mean_x"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_2"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_mean" />
+
+    <TextView
+        android:id="@+id/magnetometer_variance_y"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/magnetometer_mean_x"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_3"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_variance" />
+
+    <TextView
+        android:id="@+id/magnetometer_deviation_y"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/magnetometer_mean_x"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_4"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_deviation" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/magnetometer_mean_y"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_1"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/label_z" />
+
+    <TextView
+        android:id="@+id/magnetometer_mean_z"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/magnetometer_mean_y"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_2"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_mean" />
+
+    <TextView
+        android:id="@+id/magnetometer_variance_z"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/magnetometer_mean_y"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_3"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_variance" />
+
+    <TextView
+        android:id="@+id/magnetometer_deviation_z"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/magnetometer_mean_y"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_4"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_deviation" />
+
+    <TextView
+        android:id="@+id/method"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="@dimen/text_margin"
+        android:text="@string/default_method" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

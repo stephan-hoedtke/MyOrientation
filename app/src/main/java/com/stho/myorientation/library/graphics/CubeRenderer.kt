@@ -21,11 +21,8 @@ class CubeRenderer : GLSurfaceView.Renderer {
     private lateinit var pointer: Pointer
     private lateinit var cube: Cube
 
-    // vPMatrix is an abbreviation for "Model View Projection Matrix"
-    private val vPMatrix = FloatArray(16)
     private val projectionMatrix = FloatArray(16)
     private val viewMatrix = FloatArray(16)
-    private val rotationMatrix = FloatArray(16)
 
 
     @Volatile

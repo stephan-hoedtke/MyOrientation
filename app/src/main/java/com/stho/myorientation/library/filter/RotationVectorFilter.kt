@@ -1,12 +1,13 @@
 package com.stho.myorientation.library.filter
 
 import android.hardware.SensorManager
-import com.stho.myorientation.Entries
+import com.stho.myorientation.IFilterOptions
 import com.stho.myorientation.Measurements
+import com.stho.myorientation.Method
 import com.stho.myorientation.library.algebra.RotationMatrix
 
 
-class RotationVectorFilter(accelerationFactor: Double = 0.7): AbstractOrientationFilter(Entries.Method.RotationVector, accelerationFactor), OrientationFilter {
+class RotationVectorFilter(options: IFilterOptions): AbstractOrientationFilter(Method.RotationVector, options), IOrientationFilter {
 
     private val rotationVectorReading = FloatArray(5)
 

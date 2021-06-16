@@ -1,8 +1,6 @@
 package com.stho.myorientation.library.filter
 
-import android.util.Log
-import com.stho.myorientation.Entries
-import com.stho.myorientation.Measurements
+import com.stho.myorientation.*
 import com.stho.myorientation.library.Timer
 import com.stho.myorientation.library.algebra.*
 import kotlin.math.sqrt
@@ -14,16 +12,22 @@ import kotlin.math.sqrt
  *
  * see also: https://thepoorengineer.com/en/ekf-impl/
  */
-class KalmanFilter(accelerationFactor: Double = 0.7) : AbstractOrientationFilter(Entries.Method.KalmanFilter, accelerationFactor), OrientationFilter {
+class KalmanFilter(options: IKalmanFilterOptions) :
+    AbstractOrientationFilter(Method.KalmanFilter, options) {
 
     private val accelerometerReading = FloatArray(3)
     private val magnetometerReading = FloatArray(3)
     private val gyroscopeReading = FloatArray(3)
-    private var timer: Timer = Timer()
+
     private var hasMagnetometer: Boolean = false
     private var hasAcceleration: Boolean = false
     private var hasGyro: Boolean = false
     private var hasEstimate: Boolean = false
+
+    private val timer: Timer = Timer()
+    private val varianceAccelerometer = options.varianceAccelerometer
+    private val varianceMagnetometer = options.varianceMagnetometer
+    private val varianceGyroscope = options.varianceGyroscope
 
     private var b: Vector = Vector(0.0, 18.00, -44.00).normalize()
 
@@ -195,7 +199,7 @@ class KalmanFilter(accelerationFactor: Double = 0.7) : AbstractOrientationFilter
         val W = W(estimate, dt) // Matrix [4 x 3]
         val prediction = predictState(estimate, omega, dt) // Quaternion
         val covariancePrediction =
-            F * covariance * F.transpose() + W * W.transpose() * SIGMA_SQUARE_GYRO // Matrix [4 x 4]
+            F * covariance * F.transpose() + W * W.transpose() * varianceGyroscope // Matrix [4 x 4]
 
         // Correction
         val g = Vector(0.0, 0.0, 1.0)
@@ -218,12 +222,12 @@ class KalmanFilter(accelerationFactor: Double = 0.7) : AbstractOrientationFilter
         val PH = covariancePrediction * H.transpose() // Matrix [4 x 6]
         val S = H * PH // Matrix [6 x 6]
         // plus R (sigma square a * I, sigma square m *I)
-        S[0, 0] += SIGMA_SQUARE_ACCELEROMETER
-        S[1, 1] += SIGMA_SQUARE_ACCELEROMETER
-        S[2, 2] += SIGMA_SQUARE_ACCELEROMETER
-        S[3, 3] += SIGMA_SQUARE_MAGNETOMETER
-        S[4, 4] += SIGMA_SQUARE_MAGNETOMETER
-        S[5, 5] += SIGMA_SQUARE_MAGNETOMETER
+        S[0, 0] += varianceAccelerometer
+        S[1, 1] += varianceAccelerometer
+        S[2, 2] += varianceAccelerometer
+        S[3, 3] += varianceMagnetometer
+        S[4, 4] += varianceMagnetometer
+        S[5, 5] += varianceMagnetometer
 
         val K = PH * S.invert() // Matrix [4 x 6]
 
@@ -243,9 +247,6 @@ class KalmanFilter(accelerationFactor: Double = 0.7) : AbstractOrientationFilter
     companion object {
 
         private const val LOW_PASS_GAIN = 0.1
-        private const val SIGMA_SQUARE_GYRO = 0.3 * 0.3
-        private const val SIGMA_SQUARE_ACCELEROMETER = 0.5 * 0.5
-        private const val SIGMA_SQUARE_MAGNETOMETER = 0.8 * 0.8
 
 
         /**

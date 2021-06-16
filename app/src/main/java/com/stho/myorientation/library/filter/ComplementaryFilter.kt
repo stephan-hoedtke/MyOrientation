@@ -1,17 +1,19 @@
 package com.stho.myorientation.library.filter
 
 import android.hardware.SensorManager
-import com.stho.myorientation.Entries
+import com.stho.myorientation.IComplementaryFilterOptions
 import com.stho.myorientation.Measurements
+import com.stho.myorientation.Method
 import com.stho.myorientation.library.*
 import com.stho.myorientation.library.algebra.RotationMatrix
 import com.stho.myorientation.library.algebra.Quaternion
 import com.stho.myorientation.library.algebra.Vector
 
 
-class ComplementaryFilter(accelerationFactor: Double = 0.7, filterCoefficient: Double = 0.98): AbstractOrientationFilter(Entries.Method.ComplementaryFilter, accelerationFactor), OrientationFilter {
+class ComplementaryFilter(options: IComplementaryFilterOptions) :
+    AbstractOrientationFilter(Method.ComplementaryFilter, options) {
 
-    private val interpolationFactor = 1 - filterCoefficient
+    private val interpolationFactor = 1 - options.filterCoefficient
     private val accelerometerReading = FloatArray(3)
     private val magnetometerReading = FloatArray(3)
     private val gyroscopeReading = FloatArray(3)
@@ -23,7 +25,7 @@ class ComplementaryFilter(accelerationFactor: Double = 0.7, filterCoefficient: D
     private var hasAccelerationMagnetometer: Boolean = false
     private var hasGyro: Boolean = false
 
-    private var timer: Timer = Timer()
+    private val timer: Timer = Timer()
 
     override fun updateReadings(type: Measurements.Type, values: FloatArray) {
         @Suppress("NON_EXHAUSTIVE_WHEN")

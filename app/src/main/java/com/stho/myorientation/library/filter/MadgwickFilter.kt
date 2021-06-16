@@ -1,12 +1,9 @@
 package com.stho.myorientation.library.filter
 
-import android.util.Log
-import com.stho.myorientation.Entries
-import com.stho.myorientation.Measurements
+import com.stho.myorientation.*
 import com.stho.myorientation.library.Timer
 import com.stho.myorientation.library.algebra.Quaternion
 import com.stho.myorientation.library.algebra.Vector
-import com.stho.myorientation.library.f11
 import kotlin.math.PI
 import kotlin.math.sqrt
 
@@ -18,10 +15,8 @@ import kotlin.math.sqrt
  *
  *      implementation sample: https://github.com/Josef4Sci/AHRS_Filter/blob/master/Filters/MadgwickAHRS3.m
  */
-class MadgwickFilter(private val mode: Mode, accelerationFactor: Double = 0.7) : AbstractOrientationFilter(
-    Entries.Method.MadgwickFilter,
-    accelerationFactor
-), OrientationFilter {
+class MadgwickFilter(options: IMadgwickFilterOptions) :
+    AbstractOrientationFilter(Method.MadgwickFilter,options) {
 
     enum class Mode {
         /**
@@ -46,7 +41,8 @@ class MadgwickFilter(private val mode: Mode, accelerationFactor: Double = 0.7) :
     private var hasGyro: Boolean = false
     private var hasEstimate: Boolean = false
 
-    private var timer: Timer = Timer()
+    private val timer: Timer = Timer()
+    private val mode = options.madgwickMode
 
     override fun updateReadings(type: Measurements.Type, values: FloatArray) {
         @Suppress("NON_EXHAUSTIVE_WHEN")

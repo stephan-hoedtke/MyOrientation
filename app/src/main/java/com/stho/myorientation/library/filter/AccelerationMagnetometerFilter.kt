@@ -1,22 +1,21 @@
 package com.stho.myorientation.library.filter
 
 import android.hardware.SensorManager
-import com.stho.myorientation.Entries
+import com.stho.myorientation.IAccelerationMagnetometerFilterOptions
+import com.stho.myorientation.IFilterOptions
 import com.stho.myorientation.Measurements
-import com.stho.myorientation.library.OrientationLowPassFilter
+import com.stho.myorientation.Method
 import com.stho.myorientation.library.algebra.RotationMatrix
-import com.stho.myorientation.library.algebra.Orientation
 
 
-class AccelerationMagnetometerFilter(accelerationFactor: Double = 0.7, timeConstant: Double = 0.2) : AbstractOrientationFilter(Entries.Method.AccelerometerMagnetometer, accelerationFactor), OrientationFilter {
+class AccelerationMagnetometerFilter(options: IFilterOptions) :
+    AbstractOrientationFilter(Method.AccelerometerMagnetometer, options) {
 
     private val accelerometerReading = FloatArray(3)
     private val magnetometerReading = FloatArray(3)
     private val rotationMatrix = FloatArray(9) { 0f }
 
     private var hasMagnetometer: Boolean = false
-
-    private val lowPassFilter: OrientationLowPassFilter = OrientationLowPassFilter(timeConstant)
 
     override fun updateReadings(type: Measurements.Type, values: FloatArray) {
         @Suppress("NON_EXHAUSTIVE_WHEN")
@@ -44,14 +43,6 @@ class AccelerationMagnetometerFilter(accelerationFactor: Double = 0.7, timeConst
             val orientation = adjustedRotationMatrix.toOrientation()
             super.onOrientationAnglesChanged(orientation)
         }
-    }
-
-    /**
-     * use a low pass filter before changing orientation
-     */
-    override fun onOrientationAnglesChanged(orientation: Orientation) {
-        lowPassFilter.onUpdateOrientation(orientation)
-        super.onOrientationAnglesChanged(lowPassFilter.orientation)
     }
 
     override fun reset() {

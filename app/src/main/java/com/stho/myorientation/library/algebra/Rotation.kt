@@ -1,9 +1,6 @@
 package com.stho.myorientation.library.algebra
 
-import android.view.inspector.InspectionCompanion
-import com.stho.myorientation.library.filter.MadgwickFilter
 import kotlin.math.*
-
 
 object Rotation {
 
@@ -167,6 +164,7 @@ object Rotation {
                     roll = roll,
                     centerAzimuth = 180 - roll,
                     centerAltitude = 0.0,
+                    rotation = r,
                 )
             } else { // pitch -90°
                 val roll = Degree.arcTan2(-r.m21, -r.m23)
@@ -176,6 +174,7 @@ object Rotation {
                     roll = roll,
                     centerAzimuth = roll,
                     centerAltitude = 0.0,
+                    rotation = r,
                 )
             }
         } else {
@@ -187,7 +186,8 @@ object Rotation {
                     pitch = Degree.arcSin(-r.m32),
                     roll = roll,
                     centerAzimuth = azimuth,
-                    centerAltitude = roll - 90
+                    centerAltitude = roll - 90,
+                    rotation = r,
                 )
             }
             else {
@@ -196,7 +196,8 @@ object Rotation {
                     pitch = Degree.arcSin(-r.m32),
                     roll = Degree.arcTan2(r.m31, r.m33),
                     centerAzimuth = Degree.arcTan2(-r.m13, -r.m23),
-                    centerAltitude = Degree.arcSin(-r.m33)
+                    centerAltitude = Degree.arcSin(-r.m33),
+                    rotation = r,
                 )
             }
         }
@@ -279,6 +280,7 @@ object Rotation {
             roll = Degree.normalizeTo180(180 - orientation.roll),
             centerAzimuth = orientation.centerAzimuth,
             centerAltitude = orientation.centerAltitude,
+            rotation = orientation.rotation,
         )
 
     /**

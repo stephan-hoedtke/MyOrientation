@@ -1,8 +1,8 @@
 package com.stho.myorientation.library.filter
 
-import android.util.Log
-import com.stho.myorientation.Entries
+import com.stho.myorientation.ISeparatedCorrectionOptions
 import com.stho.myorientation.Measurements
+import com.stho.myorientation.Method
 import com.stho.myorientation.library.Timer
 import com.stho.myorientation.library.algebra.Quaternion
 import com.stho.myorientation.library.algebra.Vector
@@ -13,10 +13,8 @@ import kotlin.math.*
  * Fast AHRS Filter for Accelerometer, Magnetometer, and Gyroscope Combination with Separated Sensor Corrections
  *      by Josef Justa, Vaclav Smidl, Alex Hamacek, April 2020
  */
-class SeparatedCorrectionFilter(private val mode: Mode, accelerationFactor: Double = 0.7) : AbstractOrientationFilter(
-    Entries.Method.SeparatedCorrectionFilter,
-    accelerationFactor
-), OrientationFilter {
+class SeparatedCorrectionFilter(options: ISeparatedCorrectionOptions) :
+    AbstractOrientationFilter(Method.SeparatedCorrectionFilter, options) {
 
     enum class Mode {
         /**
@@ -39,7 +37,8 @@ class SeparatedCorrectionFilter(private val mode: Mode, accelerationFactor: Doub
     private var hasGyro: Boolean = false
     private var hasEstimate: Boolean = false
 
-    private var timer: Timer = Timer()
+    private val timer: Timer = Timer()
+    private val mode: Mode = options.separatedCorrectionMode
 
     override fun updateReadings(type: Measurements.Type, values: FloatArray) {
         @Suppress("NON_EXHAUSTIVE_WHEN")

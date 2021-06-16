@@ -1,13 +1,11 @@
 package com.stho.myorientation.library.filter
 
-import android.util.Log
-import com.stho.myorientation.Entries
+import com.stho.myorientation.IFilterOptions
 import com.stho.myorientation.Measurements
+import com.stho.myorientation.Method
 import com.stho.myorientation.library.Timer
 import com.stho.myorientation.library.algebra.Quaternion
 import com.stho.myorientation.library.algebra.Vector
-import com.stho.myorientation.library.f11
-import kotlin.math.min
 
 
 /**
@@ -16,10 +14,8 @@ import kotlin.math.min
  *      Jane Burridge, Christos Kapatos and Ravi Vaidyananthan,
  *      August 2020
  */
-class ExtendedComplementaryFilter(accelerationFactor: Double = 0.7) : AbstractOrientationFilter(
-    Entries.Method.ExtendedComplementaryFilter,
-    accelerationFactor
-), OrientationFilter {
+class ExtendedComplementaryFilter(options: IFilterOptions) :
+    AbstractOrientationFilter(Method.ExtendedComplementaryFilter, options) {
 
     private val accelerometerReading = FloatArray(3)
     private val magnetometerReading = FloatArray(3)
@@ -30,7 +26,7 @@ class ExtendedComplementaryFilter(accelerationFactor: Double = 0.7) : AbstractOr
     private var hasGyro: Boolean = false
     private var hasEstimate: Boolean = false
 
-    private var timer: Timer = Timer()
+    private val timer: Timer = Timer()
 
     override fun updateReadings(type: Measurements.Type, values: FloatArray) {
         @Suppress("NON_EXHAUSTIVE_WHEN")

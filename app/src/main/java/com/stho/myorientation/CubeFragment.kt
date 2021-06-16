@@ -1,11 +1,11 @@
 package com.stho.myorientation
 
 import android.os.Bundle
+import android.view.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.stho.myorientation.databinding.FragmentCubeBinding
 import com.stho.myorientation.library.algebra.EulerAngles
 import com.stho.myorientation.library.algebra.Orientation
@@ -44,19 +44,66 @@ class CubeFragment : Fragment() {
         viewModel.cubeOrientationLD.observe(viewLifecycleOwner, { eulerAngles -> observeCubeOrientation(eulerAngles) })
     }
 
-    private fun observeMethod(method: Entries.Method) {
+    override fun onStart() {
+        super.onStart()
+        updateActionBar()
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu){
+        super.onPrepareOptionsMenu(menu)
+        menu.findItem(R.id.action_cube).isVisible = false
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_settings -> onSettings()
+            R.id.action_statistics -> onStatistics()
+            android.R.id.home -> onHome()
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun onHome(): Boolean {
+        findNavController().popBackStack()
+        return true
+    }
+
+    private fun onSettings(): Boolean {
+        findNavController().navigate(R.id.action_CubeFragment_to_SettingsFragment)
+        return true
+    }
+
+    private fun onStatistics(): Boolean {
+        findNavController().navigate(R.id.action_CubeFragment_to_StatisticsFragment)
+        return true
+    }
+
+    private fun observeMethod(method: Method) {
         binding.method.text = method.toString()
     }
 
     private fun observeOrientation(orientation: Orientation) {
-        binding.cubeView.setOrientation(orientation)
+        if (viewModel.isActive) {
+            binding.cubeView.setOrientation(orientation)
+        }
     }
 
     private fun observeCubeOrientation(eulerAngles: EulerAngles) {
         val alpha = eulerAngles.azimuth
         val beta = eulerAngles.pitch
-        binding.alpha.text = alpha.f0()
-        binding.beta.text = beta.f0()
+        binding.alpha.text = getString(R.string.label_angle_param, alpha.f0())
+        binding.beta.text = getString(R.string.label_angle_param, beta.f0())
         binding.cubeView.setAngles(alpha, beta)
     }
+
+    private fun updateActionBar() {
+        actionBar?.apply {
+            setHomeButtonEnabled(true)
+            setDisplayHomeAsUpEnabled(true)
+            title = "Orientation"
+        }
+    }
+
+    private val actionBar
+        get() = (requireActivity() as AppCompatActivity).supportActionBar
 }

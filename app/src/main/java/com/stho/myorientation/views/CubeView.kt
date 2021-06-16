@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import com.stho.myorientation.library.algebra.Degree
 import com.stho.myorientation.library.algebra.Orientation
+import com.stho.myorientation.library.algebra.Quaternion
 import com.stho.myorientation.library.graphics.CubeRenderer
 import java.lang.Math.atan2
 
@@ -74,7 +75,7 @@ class CubeView(context: Context, attr: AttributeSet): GLSurfaceView(context, att
     }
 
     fun setOrientation(orientation: Orientation) {
-        renderer.orientation = orientation.toEulerAngles().toQuaternion()
+        renderer.orientation = Quaternion.fromRotationMatrix(orientation.rotation)
         requestRender()
     }
 

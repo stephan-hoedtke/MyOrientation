@@ -7,14 +7,14 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import com.stho.myorientation.Measurements
 import com.stho.myorientation.Repository
-import com.stho.myorientation.library.filter.OrientationFilter
+import com.stho.myorientation.library.filter.IOrientationFilter
 
 
-class OrientationSensorListener(private val context: Context, private var filter: OrientationFilter, private val processorConsumptionMeter: ProcessorConsumptionMeter) : SensorEventListener {
+class OrientationSensorListener(private val context: Context, private var filter: IOrientationFilter, private val processorConsumptionMeter: ProcessorConsumptionMeter) : SensorEventListener {
 
     private val sensorManager: SensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
-    internal fun setFilter(filter: OrientationFilter) {
+    internal fun setFilter(filter: IOrientationFilter) {
         context.display?.let { filter.deviceRotation = it.rotation }
         this.filter = filter
     }

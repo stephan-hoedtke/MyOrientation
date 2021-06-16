@@ -106,15 +106,15 @@ class Cube : BaseShape() {
      )
 
     private val vertexBuffer: FloatBuffer by lazy {
-        BaseShape.asFloatBuffer(vertices.size, vertices)
+        BaseShape.asFloatBuffer(vertices)
     }
 
     private val colorBuffer: FloatBuffer by lazy {
-        BaseShape.asFloatBuffer(colors.size, colors)
+        BaseShape.asFloatBuffer(colors)
     }
 
     private val indexBuffer: ShortBuffer by lazy {
-        BaseShape.asShortBuffer(indices.size, indices)
+        BaseShape.asShortBuffer(indices)
     }
 
     fun draw(rotationMatrix: FloatArray) {

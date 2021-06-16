@@ -1,12 +1,13 @@
 package com.stho.myorientation
 
+import com.stho.myorientation.library.algebra.EulerAngles
 import com.stho.myorientation.library.algebra.RotationMatrix
 import com.stho.myorientation.library.algebra.Quaternion
 import com.stho.myorientation.library.algebra.Rotation
 import junit.framework.Assert.assertEquals
 import org.junit.Test
 
-class OrientationUnitTests {
+class OrientationUnitTests : BaseUnitTestsHelper() {
 
     @Test
     fun orientation_isCorrect() {
@@ -106,6 +107,40 @@ class OrientationUnitTests {
         val mz = Quaternion.forRotation(0.0, 0.0, 1.0, Math.toRadians(-zRot))
         return (mz * my * mx * m0)
     }
+
+
+    @Test
+    fun adjustForLookingAtThePhoneFromBelow_isCorrect_A_fromAbove() {
+        adjustForLookingAtThePhoneFromBelow_isCorrect(45.0, 60.0, 6.0)
+    }
+
+    @Test
+    fun adjustForLookingAtThePhoneFromBelow_isCorrect_B_fromBelow() {
+        adjustForLookingAtThePhoneFromBelow_isCorrect(230.0, 107.0, 7.0)
+    }
+
+    @Test
+    fun adjustForLookingAtThePhoneFromBelow_isCorrect_C_fromBelow() {
+        adjustForLookingAtThePhoneFromBelow_isCorrect(25.0, 68.0, 173.0)
+    }
+
+    private fun adjustForLookingAtThePhoneFromBelow_isCorrect(azimuth: Double, pitch: Double, roll: Double) {
+
+        val eulerAngles = EulerAngles.fromAzimuthPitchRoll(azimuth, pitch, roll)
+        val q: Quaternion = eulerAngles.toQuaternion()
+        val orientation = q.toOrientation()
+
+        val adjustedOrientation = if (Rotation.requireAdjustmentForLookingAtThePhoneFromBelow(orientation)) {
+            Rotation.adjustForLookingAtThePhoneFromBelow(orientation)
+        } else {
+            orientation
+        }
+
+        val p = adjustedOrientation.toEulerAngles().toQuaternion()
+
+        assertEquals(p, q, EPS_E8)
+    }
+
 
     companion object {
         private const val EPS_E8 = 0.000000001

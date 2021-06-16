@@ -15,7 +15,7 @@ package com.stho.myorientation.library.algebra
  *
  * see also: EulerAngles for exact definition of azimuth, pitch and roll
  */
-data class Orientation(val azimuth: Double, val pitch: Double, val roll: Double, val centerAzimuth: Double, val centerAltitude: Double) {
+data class Orientation(val azimuth: Double, val pitch: Double, val roll: Double, val centerAzimuth: Double, val centerAltitude: Double, val rotation: IRotation) {
 
     /**
      * Altitude (top edge of the device pointing upwards) is the opposite of pitch (top edge of the device pointing downwards)
@@ -25,30 +25,15 @@ data class Orientation(val azimuth: Double, val pitch: Double, val roll: Double,
     fun toEulerAngles(): EulerAngles =
         EulerAngles.fromAzimuthPitchRoll(azimuth, pitch, roll)
 
-    operator fun times(f: Double): Orientation =
-        Orientation(
-            azimuth = azimuth * f,
-            pitch = pitch * f,
-            roll = roll * f,
-            centerAzimuth = centerAzimuth * f,
-            centerAltitude = centerAltitude * f,
-        )
-
-    operator fun plus(orientation: Orientation) =
-        Orientation(
-            azimuth = Degree.normalizeTo180(azimuth + orientation.azimuth),
-            pitch = Degree.normalizeTo180(pitch + orientation.pitch),
-            roll = Degree.normalizeTo180(roll + orientation.roll),
-            centerAzimuth = Degree.normalizeTo180(centerAzimuth + orientation.centerAzimuth),
-            centerAltitude = Degree.normalizeTo180(centerAltitude + orientation.centerAltitude),
-        )
-
-    operator fun minus(orientation: Orientation) =
-        Orientation(
-            azimuth = Degree.normalizeTo180(azimuth - orientation.azimuth),
-            pitch = Degree.normalizeTo180(pitch - orientation.pitch),
-            roll = Degree.normalizeTo180(roll - orientation.roll),
-            centerAzimuth = Degree.normalizeTo180(centerAzimuth - orientation.centerAzimuth),
-            centerAltitude = Degree.normalizeTo180(centerAltitude - orientation.centerAltitude),
-        )
+    companion object {
+        val default: Orientation =
+            Orientation(
+                azimuth = 0.0,
+                pitch = 0.0,
+                roll = 0.0,
+                centerAzimuth = 0.0,
+                centerAltitude = -90.0,
+                rotation = Quaternion.default
+            )
+    }
 }

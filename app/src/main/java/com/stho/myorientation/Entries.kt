@@ -7,32 +7,6 @@ import com.stho.myorientation.library.algebra.Orientation
 @Suppress("ReplaceWithEnumMap")
 class Entries {
 
-    enum class Method(private val description: String) {
-        AccelerometerMagnetometer("Accelerometer & Magnetometer"),
-        RotationVector("Rotation Vector"),
-        ComplementaryFilter("Complementary Fusion Filter"),
-        KalmanFilter("Kalman Filter"),
-        MadgwickFilter("Madgwick Filter"),
-        SeparatedCorrectionFilter("Separated Correction Filter"),
-        ExtendedComplementaryFilter("Extended Complementary Filter"),
-        Composition("Composition Filter"),
-        Damped("(Damped)");
-
-        override fun toString(): String =
-                description
-    }
-
-    enum class Property(private val description: String) {
-        Azimuth("Azimuth"),
-        Pitch("Pitch"),
-        Roll("Roll"),
-        CenterAzimuth("Center Azimuth"),
-        CenterAltitude("Center Altitude");
-
-        override fun toString(): String =
-                description
-    }
-
     data class Entry(val time: Double, val orientation: Orientation) {
 
         operator fun get(property: Property): Double =

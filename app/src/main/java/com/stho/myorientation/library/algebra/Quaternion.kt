@@ -200,10 +200,52 @@ data class Quaternion(val v: Vector, val s: Double) : IRotation {
             )
         }
 
-        fun fromRotationMatrix(m: RotationMatrix): Quaternion =
-                m.toQuaternion()
+        fun fromRotationMatrix(m: IRotation): Quaternion {
+            // see: https://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/
+            // mind, as both q and -q define the same rotation you may get q or -q, respectively
+            m.run {
+                when {
+                    m11 + m22 + m33 > 0 -> {
+                        val fourS = 2.0 * sqrt(1.0 + m11 + m22 + m33) // 4s = 4 * q.s
+                        return Quaternion(
+                            x = (m32 - m23) / fourS,
+                            y = (m13 - m31) / fourS,
+                            z = (m21 - m12) / fourS,
+                            s = 0.25 * fourS
+                        )
+                    }
+                    m11 > m22 && m11 > m33 -> {
+                        val fourX = 2.0 * sqrt(1.0 + m11 - m22 - m33) // 4x = 4 * q.x
+                        return Quaternion(
+                            x = 0.25 * fourX,
+                            y = (m12 + m21) / fourX,
+                            z = (m13 + m31) / fourX,
+                            s = (m32 - m23) / fourX,
+                        )
+                    }
+                    m22 > m33 -> {
+                        val fourY = 2.0 * sqrt(1.0 + m22 - m11 - m33) // 4y = 4*q.y
+                        return Quaternion(
+                            x = (m12 + m21) / fourY,
+                            y = 0.25 * fourY,
+                            z = (m23 + m32) / fourY,
+                            s = (m13 - m31) / fourY
+                        )
+                    }
+                    else -> {
+                        val fourZ = 2.0 * sqrt(1.0 + m33 - m11 - m22) // 4z = 4 * q.z
+                        return Quaternion(
+                            x = (m13 + m31) / fourZ,
+                            y = (m23 + m32) / fourZ,
+                            z = 0.25 * fourZ,
+                            s = (m21 - m12) / fourZ
+                        )
+                    }
+                }
+            }
+        }
 
-        fun dot(a: Quaternion, b: Quaternion): Double =
+        private fun dot(a: Quaternion, b: Quaternion): Double =
                 a.x * b.x + a.y * b.y + a.z * b.z + a.s * b.s
 
         private const val COS_THETA_THRESHOLD: Double = 0.9995

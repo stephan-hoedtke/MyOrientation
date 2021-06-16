@@ -4,17 +4,15 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
 import android.util.Log
-import com.stho.myorientation.Entries
-import com.stho.myorientation.Measurements
-import com.stho.myorientation.MyCollection
+import com.stho.myorientation.*
 
 class PlotDrawer(private val w: Int, private val h: Int, private val frameTime: Double, private val zoom: Double, private val canvas: Canvas) {
 
-    fun draw(entries: Entries, method: Entries.Method, property: Entries.Property, color: Paint) {
+    fun draw(entries: Entries, method: Method, property: Property, color: Paint) {
         draw(entries[method], property, color)
     }
 
-    private fun draw(entries: MyCollection<Entries.Entry>, property: Entries.Property, color: Paint) {
+    private fun draw(entries: MyCollection<Entries.Entry>, property: Property, color: Paint) {
         val path: Path = Path()
         var f = true
         val scaleFactor = 0.9 / 360

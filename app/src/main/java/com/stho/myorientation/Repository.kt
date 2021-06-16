@@ -9,22 +9,11 @@ import com.stho.myorientation.library.filter.SeparatedCorrectionFilter
 
 class Repository private constructor() {
 
-    data class Options(
-        var madgwickMode: MadgwickFilter.Mode = MadgwickFilter.Mode.Default,
-        var separatedCorrectionMode: SeparatedCorrectionFilter.Mode = SeparatedCorrectionFilter.Mode.SCF,
-        var showAccelerometerMagnetometerFilter: Boolean = true,
-        var showRotationVectorFilter: Boolean = true,
-        var showMadgwickFilter: Boolean = true,
-        var showComplementaryFilter: Boolean = true,
-        var showSeparatedCorrectionFilter: Boolean = true,
-        var showKalmanFilter: Boolean = true,
-    )
-
-    private var timer: Timer = Timer()
+    private val timer: Timer = Timer()
 
     private val isActiveLiveData: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply { value = true }
 
-    private val isActive: Boolean
+    val isActive: Boolean
         get() = isActiveLiveData.value ?: true
 
     val isActiveLD: LiveData<Boolean>
@@ -79,7 +68,7 @@ class Repository private constructor() {
         }
     }
 
-    internal fun recordEntry(method: Entries.Method, orientation: Orientation) {
+    internal fun recordEntry(method: Method, orientation: Orientation) {
         if (isActive) {
             entries.add(timer.getTime(), method, orientation)
             touch()

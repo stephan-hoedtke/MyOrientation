@@ -22,8 +22,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var handler: Handler
     private lateinit var viewModel: MainViewModel
-    private lateinit var orientationFilter: OrientationFilter
-    private lateinit var processorConsumptionMeter: ProcessorConsumptionMeter
+    private lateinit var orientationFilter: IOrientationFilter
     private lateinit var orientationSensorListener: OrientationSensorListener
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -39,15 +38,7 @@ class MainActivity : AppCompatActivity() {
         handler = Handler(Looper.getMainLooper())
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
-        orientationFilter = AccelerationMagnetometerFilter(viewModel.accelerationFactor, viewModel.timeConstant)
-        processorConsumptionMeter = object : ProcessorConsumptionMeter {
-            override fun start() {
-                viewModel.startProcessorConsumptionMeasurement()
-            }
-            override fun stop() {
-                viewModel.stopProcessorConsumption()
-            }
-        }
+        orientationFilter = AccelerationMagnetometerFilter(viewModel.options)
         orientationSensorListener = OrientationSensorListener(this, orientationFilter, processorConsumptionMeter)
 
         viewModel.isActiveLD.observe(this, { isActive -> observeIsActive(isActive) })
@@ -55,14 +46,31 @@ class MainActivity : AppCompatActivity() {
         viewModel.timeConstantLD.observe(this, { _ -> viewModel.reset() })
         viewModel.methodLD.observe(this, { method -> observeMethod(method) })
 
-        // TODO: google says its not good to lock the orientation, wo why...
+        // TODO: google says its not good to lock the orientation, so why...
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
 
+    private val processorConsumptionMeter by lazy {
+        object : ProcessorConsumptionMeter {
+            override fun start() {
+                viewModel.startProcessorConsumptionMeasurement()
+            }
+
+            override fun stop() {
+                viewModel.stopProcessorConsumption()
+            }
+        }
+    }
+
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
+    }
+
+    override fun onStart() {
+        super.onStart()
+        OptionsManager(this).load(viewModel)
     }
 
     override fun onResume() {
@@ -84,46 +92,51 @@ class MainActivity : AppCompatActivity() {
         orientationSensorListener.onPause()
     }
 
+    override fun onStop() {
+        super.onStop()
+        OptionsManager(this).save(viewModel)
+    }
+
     private fun observeIsActive(isActive: Boolean) {
         val fab: FloatingActionButton = findViewById<FloatingActionButton>(R.id.fab)
         fab.setImageResource(if (isActive) android.R.drawable.ic_media_pause else android.R.drawable.ic_media_play)
     }
 
-    private fun observeMethod(method: Entries.Method) {
+    private fun observeMethod(method: Method) {
         when (method) {
-            Entries.Method.AccelerometerMagnetometer -> {
-                orientationFilter = AccelerationMagnetometerFilter(viewModel.accelerationFactor, viewModel.timeConstant)
+            Method.AccelerometerMagnetometer -> {
+                orientationFilter = AccelerationMagnetometerFilter(viewModel.options)
                 orientationSensorListener.setFilter(orientationFilter)
             }
-            Entries.Method.RotationVector -> {
-                orientationFilter = RotationVectorFilter(viewModel.accelerationFactor)
+            Method.RotationVector -> {
+                orientationFilter = RotationVectorFilter(viewModel.options)
                 orientationSensorListener.setFilter(orientationFilter)
             }
-            Entries.Method.ComplementaryFilter -> {
-                orientationFilter = ComplementaryFilter(viewModel.accelerationFactor, viewModel.filterCoefficient)
+            Method.ComplementaryFilter -> {
+                orientationFilter = ComplementaryFilter(viewModel.options)
                 orientationSensorListener.setFilter(orientationFilter)
             }
-            Entries.Method.MadgwickFilter -> {
-                orientationFilter = MadgwickFilter(viewModel.options.madgwickMode, viewModel.accelerationFactor)
+            Method.MadgwickFilter -> {
+                orientationFilter = MadgwickFilter(viewModel.options)
                 orientationSensorListener.setFilter(orientationFilter)
             }
-            Entries.Method.SeparatedCorrectionFilter -> {
-                orientationFilter = SeparatedCorrectionFilter(viewModel.options.separatedCorrectionMode, viewModel.accelerationFactor)
+            Method.SeparatedCorrectionFilter -> {
+                orientationFilter = SeparatedCorrectionFilter(viewModel.options)
                 orientationSensorListener.setFilter(orientationFilter)
             }
-            Entries.Method.ExtendedComplementaryFilter -> {
-                orientationFilter = ExtendedComplementaryFilter(viewModel.accelerationFactor)
+            Method.ExtendedComplementaryFilter -> {
+                orientationFilter = ExtendedComplementaryFilter(viewModel.options)
                 orientationSensorListener.setFilter(orientationFilter)
             }
-            Entries.Method.KalmanFilter -> {
-                orientationFilter = KalmanFilter(viewModel.accelerationFactor)
+            Method.KalmanFilter -> {
+                orientationFilter = KalmanFilter(viewModel.options)
                 orientationSensorListener.setFilter(orientationFilter)
             }
-            Entries.Method.Composition -> {
-                orientationFilter = CompositionFilter(viewModel.options, viewModel.accelerationFactor, viewModel.timeConstant, viewModel.filterCoefficient)
+            Method.Composition -> {
+                orientationFilter = CompositionFilter(viewModel.options)
                 orientationSensorListener.setFilter(orientationFilter)
             }
-            Entries.Method.Damped -> {
+            Method.Damped -> {
                 // do nothing...
             }
         }
@@ -166,14 +179,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun stopHandler() =
-            handler.removeCallbacksAndMessages(null)
+        handler.removeCallbacksAndMessages(null)
 
     private fun showSnackbar(message: String) {
         val container: View = findViewById<View>(R.id.toolbar)
         Snackbar.make(container, message, Snackbar.LENGTH_LONG)
-                .setBackgroundTint(getColor(R.color.design_default_color_secondary))
-                .setTextColor(getColor(R.color.design_default_color_on_secondary))
-                .show()
+            .setBackgroundTint(getColor(R.color.design_default_color_secondary))
+            .setTextColor(getColor(R.color.design_default_color_on_secondary))
+            .show()
     }
 }
 

@@ -2,28 +2,17 @@ package com.stho.myorientation.library.filter
 
 import android.hardware.SensorManager
 import android.view.Surface
-import com.stho.myorientation.Entries
-import com.stho.myorientation.Repository
-import com.stho.myorientation.library.Acceleration
+import com.stho.myorientation.*
+import com.stho.myorientation.library.QuaternionAcceleration
 import com.stho.myorientation.library.algebra.*
 
 
-abstract class AbstractOrientationFilter(private val method: Entries.Method, accelerationFactor: Double) : OrientationFilter {
+abstract class AbstractOrientationFilter(private val method: Method, options: IFilterOptions) : IOrientationFilter {
 
-    private val azimuthAcceleration: Acceleration = Acceleration(accelerationFactor)
-    private val pitchAcceleration: Acceleration = Acceleration(accelerationFactor)
-    private val rollAcceleration: Acceleration = Acceleration(accelerationFactor)
-    private val centerAzimuthAcceleration: Acceleration = Acceleration(accelerationFactor)
-    private val centerAltitudeAcceleration: Acceleration = Acceleration(accelerationFactor)
+    private val acceleration: QuaternionAcceleration = QuaternionAcceleration(options.accelerationFactor)
 
     override val currentOrientation: Orientation
-        get() = Orientation(
-                azimuth = Degree.normalize(azimuthAcceleration.position),
-                pitch = Degree.normalizeTo180(pitchAcceleration.position),
-                roll = Degree.normalizeTo180(rollAcceleration.position),
-                centerAzimuth = Degree.normalize(centerAzimuthAcceleration.position),
-                centerAltitude = Degree.normalizeTo180(centerAltitudeAcceleration.position)
-        )
+        get() = acceleration.position.toOrientation()
 
     override var deviceRotation: Int = Surface.ROTATION_0
 
@@ -37,11 +26,7 @@ abstract class AbstractOrientationFilter(private val method: Entries.Method, acc
 
     private fun setOrientation(orientation: Orientation) {
         Repository.instance.recordEntry(method, orientation)
-        azimuthAcceleration.rotateTo(orientation.azimuth)
-        pitchAcceleration.rotateTo(orientation.pitch)
-        rollAcceleration.rotateTo(orientation.roll)
-        centerAzimuthAcceleration.rotateTo(orientation.centerAzimuth)
-        centerAltitudeAcceleration.rotateTo(orientation.centerAltitude)
+        acceleration.rotateTo(orientation.rotation)
     }
 
     internal fun getAdjustedRotationMatrix(rotationMatrix: RotationMatrix): RotationMatrix =
@@ -153,7 +138,6 @@ abstract class AbstractOrientationFilter(private val method: Entries.Method, acc
                 }
             }
         }
-
     }
 }
 
