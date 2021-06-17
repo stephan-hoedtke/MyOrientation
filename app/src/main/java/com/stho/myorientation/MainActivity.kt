@@ -43,7 +43,6 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.isActiveLD.observe(this, { isActive -> observeIsActive(isActive) })
         viewModel.accelerationFactorLD.observe(this, { _ -> viewModel.reset() })
-        viewModel.timeConstantLD.observe(this, { _ -> viewModel.reset() })
         viewModel.methodLD.observe(this, { method -> observeMethod(method) })
 
         // TODO: google says its not good to lock the orientation, so why...
@@ -77,8 +76,8 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
 
         try {
-            executeHandlerToUpdateOrientation()
-            executeHandlerToFuseSensors()
+            executeHandlerToUpdateOrientation(viewModel.updateOrientationDelay)
+            executeHandlerToFuseSensors(viewModel.updateSensorFusionDelay)
             executeHandlerToCleanupHistory()
             orientationSensorListener.onResume()
         } catch (ex: Exception) {

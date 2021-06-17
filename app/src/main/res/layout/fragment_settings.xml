@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/fab_margin"
-    tools:context=".SettingsFragment">
+    android:layout_margin="@dimen/fab_margin">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -52,12 +51,18 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/spinner_method"
+                    android:layout_marginTop="@dimen/text_margin"
                     android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/label_madgwick" />
+
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
 
                     <RadioButton
                         android:id="@+id/radioButtonMadgwickDefault"
@@ -87,6 +92,11 @@
                         android:layout_height="wrap_content"
                         android:text="@string/label_separated_correction" />
 
+                    <Space
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+
                     <RadioButton
                         android:id="@+id/radioButtonSeparatedCorrectionDefault"
                         android:layout_width="wrap_content"
@@ -97,7 +107,7 @@
                         android:id="@+id/radioButtonSeparatedCorrectionModified"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/label_modified" />
+                         android:text="@string/label_modified" />
 
                 </RadioGroup>
 
@@ -186,39 +196,15 @@
             <!-- Filter Parameters -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/text_margin">
 
-                <TextView
-                    android:id="@+id/label_time_constant"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginTop="@dimen/fab_margin"
-                    android:text="@string/label_time_constant" />
-
-                <TextView
-                    android:id="@+id/time_constant"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/label_time_constant"
-                    android:text="@string/default_time_constant" />
-
-                <SeekBar
-                    android:id="@+id/seekbar_time_constant"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@id/label_time_constant"
-                    android:max="100"
-                    android:progress="20" />
-
-                <TextView
+                 <TextView
                     android:id="@+id/label_filter_coefficient"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/seekbar_time_constant"
+                    app:layout_constraintTop_toTopOf="parent"
                     android:layout_marginTop="@dimen/fab_margin"
                     android:text="@string/label_filter_coefficient" />
 
@@ -342,6 +328,61 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/label_update_orientation_delay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginTop="@dimen/fab_margin"
+                    android:text="@string/label_update_orientation_delay" />
+
+                <TextView
+                    android:id="@+id/update_orientation_delay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/label_update_orientation_delay"
+                    android:text="@string/default_delay" />
+
+                <SeekBar
+                    android:id="@+id/seekbar_update_orientation_delay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/label_update_orientation_delay"
+                    android:max="100"
+                    android:progress="20" />
+
+                <TextView
+                    android:id="@+id/label_update_sensor_fusion_delay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/seekbar_update_orientation_delay"
+                    android:layout_marginTop="@dimen/fab_margin"
+                    android:text="@string/label_update_sensor_fusion_delay" />
+
+                <TextView
+                    android:id="@+id/update_sensor_fusion_delay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/label_update_sensor_fusion_delay"
+                    android:text="@string/default_delay" />
+
+                <SeekBar
+                    android:id="@+id/seekbar_update_sensor_fusion_delay"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/label_update_sensor_fusion_delay"
+                    android:max="100"
+                    android:progress="20" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
             <!-- Buttons -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_reset"

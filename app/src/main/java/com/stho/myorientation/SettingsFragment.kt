@@ -13,6 +13,7 @@ import com.stho.myorientation.databinding.FragmentSettingsBinding
 import com.stho.myorientation.library.Formatter
 import com.stho.myorientation.library.filter.MadgwickFilter
 import com.stho.myorientation.library.filter.SeparatedCorrectionFilter
+import kotlin.math.sqrt
 
 class SettingsFragment : Fragment() {
 
@@ -56,24 +57,29 @@ class SettingsFragment : Fragment() {
                 viewModel.filterCoefficient = progressToValue(progress, MAX_FILTER_COEFFICIENT)
             }
         })
-        binding.seekbarTimeConstant.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                viewModel.timeConstant = progressToValue(progress, MAX_TIME_CONSTANT)
-            }
-        })
         binding.seekbarVarianceAcceleration.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                viewModel.varianceAccelerometer = progressToValue(progress, MAX_VARIANCE)
+                viewModel.varianceAccelerometer = progressToValue(progress, MAX_STANDARD_DEVIATION).square()
             }
         })
         binding.seekbarVarianceMagnetometer.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                viewModel.varianceMagnetometer = progressToValue(progress, MAX_VARIANCE)
+                viewModel.varianceMagnetometer = progressToValue(progress, MAX_STANDARD_DEVIATION).square()
             }
         })
         binding.seekbarVarianceGyroscope.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                viewModel.varianceGyroscope = progressToValue(progress, MAX_VARIANCE)
+                viewModel.varianceGyroscope = progressToValue(progress, MAX_STANDARD_DEVIATION).square()
+            }
+        })
+        binding.seekbarUpdateOrientationDelay.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                viewModel.updateOrientationDelay = progressToValue(progress, MAX_DELAY)
+            }
+        })
+        binding.seekbarUpdateSensorFusionDelay.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                viewModel.updateSensorFusionDelay = progressToValue(progress, MAX_DELAY)
             }
         })
         val properties: MutableList<Property> = ArrayList()
@@ -207,11 +213,6 @@ class SettingsFragment : Fragment() {
         binding.seekbarAccelerationFactor.max = 100
         binding.seekbarAccelerationFactor.progress = valueToProgress(options.accelerationFactor, MAX_ACCELERATION_FACTOR)
 
-        // Time Constant
-        binding.timeConstant.text = Formatter.df2.format(options.timeConstant)
-        binding.seekbarTimeConstant.max = 100
-        binding.seekbarTimeConstant.progress = valueToProgress(options.timeConstant, MAX_TIME_CONSTANT)
-
         // Filter Coefficient
         binding.filterCoefficient.text = Formatter.df2.format(options.filterCoefficient)
         binding.seekbarFilterCoefficient.max = 100
@@ -220,15 +221,24 @@ class SettingsFragment : Fragment() {
         // Variance
         binding.varianceAcceleration.text = Formatter.df4.format(options.varianceAccelerometer)
         binding.seekbarVarianceAcceleration.max = 100
-        binding.seekbarVarianceAcceleration.progress = valueToProgress(options.varianceAccelerometer, MAX_VARIANCE)
+        binding.seekbarVarianceAcceleration.progress = valueToProgress(options.varianceAccelerometer.squareRoot(), MAX_STANDARD_DEVIATION)
 
         binding.varianceMagnetometer.text = Formatter.df4.format(options.varianceMagnetometer)
         binding.seekbarVarianceMagnetometer.max = 100
-        binding.seekbarVarianceMagnetometer.progress = valueToProgress(options.varianceMagnetometer, MAX_VARIANCE)
+        binding.seekbarVarianceMagnetometer.progress = valueToProgress(options.varianceMagnetometer.squareRoot(), MAX_STANDARD_DEVIATION)
 
         binding.varianceGyroscope.text = Formatter.df4.format(options.varianceGyroscope)
         binding.seekbarVarianceGyroscope.max = 100
-        binding.seekbarVarianceGyroscope.progress = valueToProgress(options.varianceGyroscope, MAX_VARIANCE)
+        binding.seekbarVarianceGyroscope.progress = valueToProgress(options.varianceGyroscope.squareRoot(), MAX_STANDARD_DEVIATION)
+
+        // Delay
+        binding.updateOrientationDelay.text = options.updateOrientationDelay.toString()
+        binding.seekbarUpdateOrientationDelay.max = 100
+        binding.seekbarUpdateOrientationDelay.progress = valueToProgress(options.updateOrientationDelay, MAX_DELAY)
+
+        binding.updateSensorFusionDelay.text = options.updateSensorFusionDelay.toString()
+        binding.seekbarUpdateSensorFusionDelay.max = 100
+        binding.seekbarUpdateSensorFusionDelay.progress = valueToProgress(options.updateSensorFusionDelay, MAX_DELAY)
     }
 
     private fun updateActionBar() {
@@ -244,16 +254,25 @@ class SettingsFragment : Fragment() {
 
     companion object {
 
-        private const val MAX_TIME_CONSTANT = 2.0
-        private const val MAX_FILTER_COEFFICIENT = 1.0
-        private const val MAX_ACCELERATION_FACTOR = 1.5
-        private const val MAX_VARIANCE = 1.0
+        private const val MAX_TIME_CONSTANT: Double = 2.0
+        private const val MAX_FILTER_COEFFICIENT: Double = 1.0
+        private const val MAX_ACCELERATION_FACTOR: Double = 1.5
+        private const val MAX_STANDARD_DEVIATION: Double = 1.0
+        private const val MAX_DELAY: Long = 300
 
         private fun valueToProgress(value: Double, maxValue: Double): Int =
             (100.0 * value / maxValue + 0.5).toInt()
 
         private fun progressToValue(progress: Int, maxValue: Double): Double =
             maxValue * progress / 100.0
+
+        private fun valueToProgress(value: Long, maxValue: Long): Int =
+            (100.0 * value / maxValue + 0.5).toInt()
+
+        private fun progressToValue(progress: Int, maxValue: Long): Long =
+            (maxValue * progress / 100.0).toLong()
     }
 }
 
+private fun Double.square() = this * this
+private fun Double.squareRoot() = sqrt(this)

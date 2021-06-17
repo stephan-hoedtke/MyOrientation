@@ -49,6 +49,8 @@
     <string name="label_mean">Mean</string>
     <string name="label_variance">Variance</string>
     <string name="label_standard_deviation">Std. Deviation</string>
+    <string name="label_update_orientation_delay">Update Orientation (ms)</string>
+    <string name="label_update_sensor_fusion_delay">Update Sensor Fusion (ms)</string>
     <string name="label_x">X</string>
     <string name="label_z">Z</string>
     <string name="label_y">Y</string>
@@ -65,6 +67,7 @@
     <string name="default_time_constant">0.2</string>
     <string name="default_angle">0°</string>
     <string name="default_deviation">0.51</string>
+    <string name="default_delay">200</string>
     <string name="label_angle_param">%s°</string>
 </resources>
 

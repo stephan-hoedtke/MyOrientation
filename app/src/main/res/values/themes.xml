@@ -12,6 +12,7 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="android:textViewStyle">@style/MyTextViewStyle</item>
     </style>
 
     <style name="Theme.MyOrientation.NoActionBar">
@@ -22,4 +23,21 @@
     <style name="Theme.MyOrientation.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.MyOrientation.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <!-- Style to use for ALL text views (including FontTextView) -->
+    <!-- Use a different parent if you don't want Holo Light -->
+    <style name="MyTextViewStyle" parent="@android:style/Widget.Holo.Light.TextView">
+        <item name="android:textAppearance">@style/MyTextAppearance</item>
+    </style>
+
+    <!-- Text appearance to use for ALL text views (including FontTextView) -->
+    <!-- Use a different parent if you don't want Holo Light -->
+    <style name="MyTextAppearance" parent="@android:style/TextAppearance.Holo">
+        <!-- Alternatively, reference this font with the name "aspergit" -->
+        <!-- Note that only our own TextView's will use the font attribute -->
+        <item name="android:textStyle">bold|italic</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
 </resources>

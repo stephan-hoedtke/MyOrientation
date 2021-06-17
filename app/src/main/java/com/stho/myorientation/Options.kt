@@ -8,7 +8,6 @@ interface IFilterOptions {
 }
 
 interface IAccelerationMagnetometerFilterOptions : IFilterOptions {
-    val timeConstant: Double
 }
 
 interface IComplementaryFilterOptions : IFilterOptions {
@@ -45,11 +44,15 @@ interface ICompositionFilterOptions :
     var showKalmanFilter: Boolean
 }
 
+interface ISettings {
+    var updateSensorFusionDelay: Long
+    var updateOrientationDelay: Long
+}
+
 data class Options(
     override var madgwickMode: MadgwickFilter.Mode = MadgwickFilter.Mode.Default,
     override var separatedCorrectionMode: SeparatedCorrectionFilter.Mode = SeparatedCorrectionFilter.Mode.SCF,
     override var accelerationFactor: Double = DEFAULT_ACCELERATION_FACTOR,
-    override var timeConstant: Double = DEFAULT_TIME_CONSTANT,
     override var filterCoefficient: Double = DEFAULT_FILTER_COEFFICIENT,
     override var varianceAccelerometer: Double = DEFAULT_VARIANCE_ACCELEROMETER,
     override var varianceMagnetometer: Double = DEFAULT_VARIANCE_MAGNETOMETER,
@@ -61,19 +64,20 @@ data class Options(
     override var showSeparatedCorrectionFilter: Boolean = false,
     override var showExtendedComplementaryFilter: Boolean = true,
     override var showKalmanFilter: Boolean = false,
-
+    override var updateSensorFusionDelay: Long = 150,
+    override var updateOrientationDelay: Long = 200,
     ) : IAccelerationMagnetometerFilterOptions,
         IComplementaryFilterOptions,
         IMadgwickFilterOptions,
         ISeparatedCorrectionOptions,
         IKalmanFilterOptions,
+        ICompositionFilterOptions,
         IFilterOptions,
-        ICompositionFilterOptions {
+        ISettings {
 
     fun resetDefaultValues() {
         filterCoefficient = DEFAULT_FILTER_COEFFICIENT
         accelerationFactor = DEFAULT_ACCELERATION_FACTOR
-        timeConstant = DEFAULT_TIME_CONSTANT
         varianceAccelerometer = DEFAULT_VARIANCE_ACCELEROMETER
         varianceMagnetometer = DEFAULT_VARIANCE_MAGNETOMETER
         varianceGyroscope = DEFAULT_VARIANCE_GYROSCOPE
@@ -81,7 +85,6 @@ data class Options(
 
     companion object {
         private const val DEFAULT_ACCELERATION_FACTOR = 0.7
-        private const val DEFAULT_TIME_CONSTANT = 0.4
         private const val DEFAULT_FILTER_COEFFICIENT = 0.98
         private const val DEFAULT_VARIANCE_GYROSCOPE = 0.3 * 0.3
         private const val DEFAULT_VARIANCE_ACCELEROMETER = 0.5 * 0.5

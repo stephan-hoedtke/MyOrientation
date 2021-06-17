@@ -18,7 +18,6 @@ class OptionsManager(val context: Context) {
             editor.putString(MADGWICK_MODE, madgwickMode.toString())
             editor.putString(SEPARATED_CORRECTION_MODE, separatedCorrectionMode.toString())
             editor.putDouble(ACCELERATION_FACTOR, accelerationFactor)
-            editor.putDouble(TIME_CONSTANT, timeConstant)
             editor.putDouble(FILTER_COEFFICIENT, filterCoefficient)
             editor.putDouble(VARIANCE_ACCELERATION, varianceAccelerometer)
             editor.putDouble(VARIANCE_MAGNETOMETER, varianceMagnetometer)
@@ -30,6 +29,8 @@ class OptionsManager(val context: Context) {
             editor.putBoolean(SHOW_SEPARATED_CORRECTION_FILTER, showSeparatedCorrectionFilter)
             editor.putBoolean(SHOW_EXTENDED_COMPLEMENTARY_FILTER, showExtendedComplementaryFilter)
             editor.putBoolean(SHOW_KALMAN_FILTER, showKalmanFilter)
+            editor.putLong(UPDATE_ORIENTATION_DELAY, updateOrientationDelay)
+            editor.putLong(UPDATE_SENSOR_FUSION_DELAY, updateSensorFusionDelay)
         }
         editor.apply()
     }
@@ -45,8 +46,6 @@ class OptionsManager(val context: Context) {
                 preferences.parseSeparatedCorrectionMode(SEPARATED_CORRECTION_MODE, separatedCorrectionMode)
             accelerationFactor =
                 preferences.getDouble(ACCELERATION_FACTOR, accelerationFactor)
-            timeConstant =
-                preferences.getDouble(TIME_CONSTANT, timeConstant)
             filterCoefficient =
                 preferences.getDouble(FILTER_COEFFICIENT, filterCoefficient)
             varianceAccelerometer =
@@ -69,6 +68,11 @@ class OptionsManager(val context: Context) {
                 preferences.getBoolean(SHOW_EXTENDED_COMPLEMENTARY_FILTER, showExtendedComplementaryFilter)
             showKalmanFilter =
                 preferences.getBoolean(SHOW_KALMAN_FILTER, showKalmanFilter)
+            updateOrientationDelay =
+                preferences.getLong(UPDATE_ORIENTATION_DELAY, updateOrientationDelay)
+            updateSensorFusionDelay =
+                preferences.getLong(UPDATE_SENSOR_FUSION_DELAY, updateSensorFusionDelay)
+
         })
     }
 
@@ -78,7 +82,6 @@ class OptionsManager(val context: Context) {
         private const val MADGWICK_MODE = "MadgwickMode"
         private const val SEPARATED_CORRECTION_MODE = "SeparatedCorrectionMode"
         private const val ACCELERATION_FACTOR = "AccelerationFactor"
-        private const val TIME_CONSTANT = "TimeConstant"
         private const val FILTER_COEFFICIENT = "FilterCoefficient"
         private const val VARIANCE_ACCELERATION = "VarianceAccelerometer"
         private const val VARIANCE_MAGNETOMETER = "VarianceMagnetometer"
@@ -90,39 +93,8 @@ class OptionsManager(val context: Context) {
         private const val SHOW_SEPARATED_CORRECTION_FILTER = "ShowSeparatedCorrectionFilter"
         private const val SHOW_EXTENDED_COMPLEMENTARY_FILTER = "ShowExtendedComplementaryFilter"
         private const val SHOW_KALMAN_FILTER = "ShowKalmanFilter"
-
-        private fun parseMethod(str: String?, defaultValue: Method): Method =
-            try {
-                if (str.isNullOrBlank()) {
-                    defaultValue
-                } else {
-                    Method.valueOf(str)
-                }
-            } catch (ex: Exception) {
-                defaultValue
-            }
-
-        private fun parseMadgwickMode(str: String?, defaultValue: MadgwickFilter.Mode): MadgwickFilter.Mode =
-            try {
-                if (str.isNullOrBlank()) {
-                    defaultValue
-                } else {
-                    MadgwickFilter.Mode.valueOf(str)
-                }
-            } catch (ex: Exception) {
-                defaultValue
-            }
-
-        private fun parseSeparatedCorrectionMode(str: String?, defaultValue: SeparatedCorrectionFilter.Mode): SeparatedCorrectionFilter.Mode =
-            try {
-                if (str.isNullOrBlank()) {
-                    defaultValue
-                } else {
-                    SeparatedCorrectionFilter.Mode.valueOf(str)
-                }
-            } catch (ex: Exception) {
-                defaultValue
-            }
+        private const val UPDATE_ORIENTATION_DELAY = "UpdateOrientationDelay"
+        private const val UPDATE_SENSOR_FUSION_DELAY = "UpdateSensorFusionDelay"
     }
 }
 

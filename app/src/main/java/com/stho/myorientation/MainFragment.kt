@@ -77,7 +77,6 @@ class MainFragment : Fragment() {
         viewModel.zoomLD.observe(viewLifecycleOwner, { zoom -> observeZoom(zoom) })
         viewModel.startTimeLD.observe(viewLifecycleOwner, { startTime -> observeStartTime(startTime) })
         viewModel.propertyLD.observe(viewLifecycleOwner, { property -> observeProperty(property) })
-        viewModel.timeConstantLD.observe(viewLifecycleOwner, { timeConstant -> observeTimeConstant(timeConstant) })
         viewModel.filterCoefficientLD.observe(viewLifecycleOwner, { filterCoefficient -> observeFilterCoefficient(filterCoefficient) })
         viewModel.accelerationFactorLD.observe(viewLifecycleOwner, { accelerationFactor -> observeFactor(accelerationFactor) })
         viewModel.methodLD.observe(viewLifecycleOwner, { method -> observeMethod(method) })
@@ -152,10 +151,6 @@ class MainFragment : Fragment() {
             Property.CenterAzimuth -> android.R.color.holo_orange_dark
             Property.CenterAltitude -> android.R.color.holo_blue_dark
         }
-
-    private fun observeTimeConstant(timeConstant: Double) {
-        binding.timeConstant.text = getString(R.string.label_name_value, "t", timeConstant.f2())
-    }
 
     private fun observeFilterCoefficient(filterCoefficient: Double) {
         binding.filterCoefficient.text = getString(R.string.label_name_value, "f", filterCoefficient.f2())

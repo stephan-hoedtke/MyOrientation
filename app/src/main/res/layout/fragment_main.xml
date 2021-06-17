@@ -126,21 +126,11 @@
         android:text="@string/label_acceleration_value" />
 
     <TextView
-        android:id="@+id/time_constant"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="@id/vertical_guideline_1"
-        android:layout_margin="@dimen/fab_margin"
-        android:textColor="@color/design_default_color_on_primary"
-        android:text="@string/label_time_constant_value" />
-
-    <TextView
         android:id="@+id/filter_coefficient"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="@id/vertical_guideline_2"
+        app:layout_constraintStart_toStartOf="@id/vertical_guideline_1"
         android:layout_margin="@dimen/fab_margin"
         android:textColor="@color/design_default_color_on_primary"
         android:text="@string/label_filter_coefficient_value" />

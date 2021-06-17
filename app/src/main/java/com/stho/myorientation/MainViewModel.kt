@@ -44,11 +44,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         get() = optionsLiveData.value ?: Options()
         set(value) { optionsLiveData.postValue(value) }
 
+    val updateOrientationDelayLD: LiveData<Long>
+        get() = Transformations.map(optionsLiveData) { params -> params.updateOrientationDelay }
+
+    val updateSensorFusionDelayLD: LiveData<Long>
+        get() = Transformations.map(optionsLiveData) { params -> params.updateSensorFusionDelay }
+
     val accelerationFactorLD: LiveData<Double>
         get() = Transformations.map(optionsLiveData) { params -> params.accelerationFactor }
-
-    val timeConstantLD: LiveData<Double>
-        get() = Transformations.map(optionsLiveData) { params -> params.timeConstant }
 
     val filterCoefficientLD: LiveData<Double>
         get() = Transformations.map(optionsLiveData) { params -> params.filterCoefficient }
@@ -156,14 +159,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             })
         }
 
-    var timeConstant: Double
-        get() = options.timeConstant
-        set(value) {
-            touch(options.apply {
-                timeConstant = value.coerceIn(0.01, 10.0)
-            })
-        }
-
     var accelerationFactor: Double
         get() = options.accelerationFactor
         set(value) {
@@ -193,6 +188,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         set(value) {
             touch(options.apply {
                 varianceGyroscope = value.coerceIn(0.0, 1.0)
+            })
+        }
+
+    var updateOrientationDelay: Long
+        get() = options.updateOrientationDelay
+        set(value) {
+            touch(options.apply {
+                updateOrientationDelay = value.coerceIn(30, 300)
+            })
+        }
+
+    var updateSensorFusionDelay: Long
+        get() = options.updateSensorFusionDelay
+        set(value) {
+            touch(options.apply {
+                updateSensorFusionDelay = value.coerceIn(30, 300)
             })
         }
 
