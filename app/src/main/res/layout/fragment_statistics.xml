@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -61,8 +60,7 @@
         app:layout_constraintTop_toBottomOf="@id/method"
         app:layout_constraintStart_toStartOf="@id/vertical_guideline_2"
         android:layout_margin="@dimen/text_margin"
-        android:text="@string/label_mean"
-        android:textColor="@color/black"/>
+        android:text="@string/label_mean"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -70,8 +68,7 @@
         app:layout_constraintTop_toBottomOf="@id/method"
         app:layout_constraintStart_toStartOf="@id/vertical_guideline_3"
         android:layout_margin="@dimen/text_margin"
-        android:text="@string/label_variance"
-        android:textColor="@color/black"/>
+        android:text="@string/label_variance"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -79,8 +76,7 @@
         app:layout_constraintTop_toBottomOf="@id/method"
         app:layout_constraintStart_toStartOf="@id/vertical_guideline_4"
         android:layout_margin="@dimen/text_margin"
-        android:text="@string/label_standard_deviation"
-        android:textColor="@color/black"/>
+        android:text="@string/label_standard_deviation"/>
 
 
     <TextView
@@ -88,8 +84,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@id/horizontal_guideline_1"
         android:layout_margin="@dimen/text_margin"
-        android:text="@string/label_gyroscope"
-        android:textColor="@color/black"/>
+        android:text="@string/label_gyroscope"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -202,8 +197,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@id/horizontal_guideline_2"
         android:layout_margin="@dimen/text_margin"
-        android:text="@string/label_accelerometer"
-        android:textColor="@color/black"/>
+        android:text="@string/label_accelerometer"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -315,8 +309,7 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@id/horizontal_guideline_3"
         android:layout_margin="@dimen/text_margin"
-        android:text="@string/label_magnetometer"
-        android:textColor="@color/black"/>
+        android:text="@string/label_magnetometer"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -432,6 +425,6 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_margin="@dimen/text_margin"
         android:text="@string/default_method"
-        android:textColor="@color/purple_700"/>
+        android:textColor="@color/purple_200"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

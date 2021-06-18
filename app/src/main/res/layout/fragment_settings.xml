@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -20,7 +21,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
-                android:text="@string/label_parameters" />
+                android:text="@string/label_parameters"
+                android:textSize="30sp"/>
 
             <!-- Method and Method Parameters -->
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -40,9 +42,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@id/label_method"
-                    android:popupBackground="@color/gray"
-                    android:background="@color/gray"
                     android:textAlignment="textEnd"
+                    android:popupBackground="@color/dark_gray"
                     android:entries="@array/methods" />
 
                 <RadioGroup
@@ -65,13 +66,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"/>
 
-                    <RadioButton
+                    <com.google.android.material.radiobutton.MaterialRadioButton
                         android:id="@+id/radioButtonMadgwickDefault"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/label_default" />
 
-                    <RadioButton
+                    <com.google.android.material.radiobutton.MaterialRadioButton
                         android:id="@+id/radioButtonMadgwickModified"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -98,13 +99,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"/>
 
-                    <RadioButton
+                    <com.google.android.material.radiobutton.MaterialRadioButton
                         android:id="@+id/radioButtonSeparatedCorrectionDefault"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/label_default" />
 
-                    <RadioButton
+                    <com.google.android.material.radiobutton.MaterialRadioButton
                         android:id="@+id/radioButtonSeparatedCorrectionModified"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -119,49 +120,49 @@
                     app:layout_constraintTop_toBottomOf="@id/separatedCorrectionFilterOptions"
                     android:orientation="vertical">
 
-                    <androidx.appcompat.widget.SwitchCompat
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switchAccelerometerMagnetometerFilter"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/label_accelerometer_magnetometer"
                         android:checked="true" />
 
-                    <androidx.appcompat.widget.SwitchCompat
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switchRotationVectorFilter"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/label_rotation_vector"
                         android:checked="true" />
 
-                    <androidx.appcompat.widget.SwitchCompat
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switchMadgwickFilter"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/label_madgwick_filter"
                         android:checked="true" />
 
-                    <androidx.appcompat.widget.SwitchCompat
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switchComplementaryFilter"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/label_complementary_filter"
                         android:checked="false" />
 
-                    <androidx.appcompat.widget.SwitchCompat
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switchSeparatedCorrectionFilter"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/label_separated_correction_filter"
                         android:checked="false" />
 
-                    <androidx.appcompat.widget.SwitchCompat
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switchExtendedComplementaryFilter"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/label_extended_complementary_filter"
                         android:checked="false" />
 
-                    <androidx.appcompat.widget.SwitchCompat
+                    <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switchKalmanFilter"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -189,9 +190,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@id/label_property"
-                    android:popupBackground="@color/gray"
-                    android:background="@color/gray"
                     android:textAlignment="textEnd"
+                    android:popupBackground="@color/dark_gray"
                     android:entries="@array/properties" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
