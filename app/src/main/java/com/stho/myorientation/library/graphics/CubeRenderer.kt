@@ -86,10 +86,10 @@ class CubeRenderer : GLSurfaceView.Renderer {
            glCullFace(GL10.GL_BACK)
 
            // Enable depth test
-           glEnable(GLES20.GL_DEPTH_TEST);
+           glEnable(GLES20.GL_DEPTH_TEST)
 
            // Accept fragment if it closer to the camera than the former one
-           glDepthFunc(GLES20.GL_LESS);
+           glDepthFunc(GLES20.GL_LESS)
        }
 
 
@@ -109,7 +109,7 @@ class CubeRenderer : GLSurfaceView.Renderer {
         private fun getRotationMatrixFor(alpha: Float, beta: Float): FloatArray =
             FloatArray(16).also { matrix ->
                 android.opengl.Matrix.setIdentityM(matrix, 0)
-                android.opengl.Matrix.rotateM(matrix, 0, alpha, 0f, 1f, 0f)
+                android.opengl.Matrix.rotateM(matrix, 0, alpha, 0f, 0f, 1f)
                 android.opengl.Matrix.rotateM(matrix, 0, beta, 1f, 0f, 0f)
             }
 

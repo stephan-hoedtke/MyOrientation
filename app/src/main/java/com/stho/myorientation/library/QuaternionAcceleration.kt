@@ -57,12 +57,15 @@ internal class QuaternionAcceleration(factorInSeconds: Double = 0.8, private val
         factor * (t1 - t0)
 
     /**
-     * Linear interpolation of two quaternions
+     * Interpolation of two quaternions so that:
      *      t = 0 --> x(t) = 1 --> q0
      *      t > 2 --> x(t) = 0 --> q1
+     *
+     * Do not use the simple linear interpolation, as it fails for dot(q0, q1) < 0
+     *      q := q1 + (q0 - q1) * x(t)
      */
     private fun getPosition(t: Double): Quaternion =
-        (q1 + (q0 - q1) * x(t)).normalize()
+        Quaternion.interpolate(q1, q0, x(t))
 
     private fun getSpeed(t: Double): Double =
         v(t)
@@ -72,9 +75,9 @@ internal class QuaternionAcceleration(factorInSeconds: Double = 0.8, private val
      */
     private fun x(t: Double): Double =
         when {
-            t < 0 -> x0;
-            t > 2 -> 0.0;
-            else -> (x0 + (x0 * delta + v0) * t) * exp(-delta * t);
+            t < 0 -> x0
+            t > 2 -> 0.0
+            else -> (x0 + (x0 * delta + v0) * t) * exp(-delta * t)
         }
 
     /**

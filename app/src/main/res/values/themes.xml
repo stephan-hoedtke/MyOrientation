@@ -35,7 +35,6 @@
     <style name="MyTextAppearance" parent="@android:style/TextAppearance.Holo">
         <!-- Alternatively, reference this font with the name "aspergit" -->
         <!-- Note that only our own TextView's will use the font attribute -->
-        <item name="android:textStyle">bold|italic</item>
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@color/black</item>
     </style>

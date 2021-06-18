@@ -68,6 +68,6 @@
     <string name="default_angle">0°</string>
     <string name="default_deviation">0.51</string>
     <string name="default_delay">200</string>
-    <string name="label_angle_param">%s°</string>
+    <string name="label_angle_param">%1s°</string>
 </resources>
 

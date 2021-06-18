@@ -51,6 +51,7 @@ abstract class BaseShape {
     private val program: Int =
         loadProgram(vertexShaderCode, fragmentShaderCode)
 
+    @Suppress("unused", "UNUSED_VARIABLE")
     protected fun draw(count: Int, vertexes: FloatBuffer, rotationMatrix: FloatArray) {
         try {
             GLES20.glUseProgram(program)
@@ -68,6 +69,7 @@ abstract class BaseShape {
         }
     }
 
+    @Suppress("UNUSED_VARIABLE")
     protected fun draw(count: Int, vertexes: FloatBuffer, colors: FloatBuffer, rotationMatrix: FloatArray) {
 
         try {
@@ -88,6 +90,7 @@ abstract class BaseShape {
         }
     }
 
+    @Suppress("UNUSED_VARIABLE")
     protected fun draw(count: Int, vertexes: FloatBuffer, colors: FloatBuffer, indices: ShortBuffer, rotationMatrix: FloatArray) {
         try {
             GLES20.glUseProgram(program)
@@ -96,7 +99,7 @@ abstract class BaseShape {
             val colorHandle = assignColorBuffer(program, colors)
             val matrixHandle = assignMatrix(program, rotationMatrix)
 
-            GLES20.glDrawElements(GLES20.GL_TRIANGLES, count, GLES20.GL_UNSIGNED_SHORT, indices);
+            GLES20.glDrawElements(GLES20.GL_TRIANGLES, count, GLES20.GL_UNSIGNED_SHORT, indices)
 
             // Disable vertex array
             GLES20.glDisableVertexAttribArray(colorHandle)
@@ -216,7 +219,7 @@ abstract class BaseShape {
          * create a vertex shader type (GLES20.GL_VERTEX_SHADER)
          * or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
          */
-        internal fun loadShader(type: Int, shaderCode: String): Int =
+        private fun loadShader(type: Int, shaderCode: String): Int =
             GLES20.glCreateShader(type).also { shader ->
                 GLES20.glShaderSource(shader, shaderCode)
                 GLES20.glCompileShader(shader)
@@ -272,18 +275,6 @@ abstract class BaseShape {
             if (result.isNotTrue() ||log.isNotBlank()) {
                 throw Exception("Program link failed: $result $log")
             }
-        }
-
-        private fun getActiveAttributes(program: Int): Int {
-            val result = IntBuffer.allocate(1)
-            GLES20.glGetProgramiv(program, GLES20.GL_ACTIVE_ATTRIBUTES,  result)
-            return result.get(0)
-        }
-
-        private fun getActiveUniforms(program: Int): Int {
-            val result = IntBuffer.allocate(1)
-            GLES20.glGetProgramiv(program, GLES20.GL_ACTIVE_UNIFORMS,  result)
-            return result.get(0)
         }
     }
 }

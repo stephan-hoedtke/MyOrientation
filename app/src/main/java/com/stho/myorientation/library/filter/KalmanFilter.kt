@@ -133,7 +133,7 @@ class KalmanFilter(options: IKalmanFilterOptions) :
     /**
      * Jacobian matrix df/dq of f(q,w) - [4 x 4]
      */
-    @Suppress("FunctionName")
+    @Suppress("FunctionName", "UNUSED_PARAMETER")
     private fun F(q: Quaternion, omega: Vector, dt: Double): Matrix {
         val f = dt / 2
         val fwx = f * omega.x

@@ -19,6 +19,24 @@
         android:layout_height="match_parent" />
 
     <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/horizontal_guideline_1"
+        android:textColor="@color/design_default_color_on_primary"
+        android:layout_margin="@dimen/fab_margin"
+        android:text="@string/label_azimuth"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/horizontal_guideline_1"
+        android:textColor="@color/design_default_color_on_primary"
+        android:layout_margin="@dimen/fab_margin"
+        android:text="@string/label_pitch"/>
+
+    <TextView
         android:id="@+id/method"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
