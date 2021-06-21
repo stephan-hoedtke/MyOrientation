@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.stho.myorientation.MainActivity">
+
+    <item
+        android:id="@+id/action_pdf"
+        android:orderInCategory="130"
+        android:title="@string/action_pdf"
+        android:icon="@drawable/pdf"
+        app:showAsAction="ifRoom" />
+
+
+    <item
+        android:id="@+id/action_web"
+        android:orderInCategory="140"
+        android:title="@string/action_web"
+        android:icon="@drawable/web"
+        app:showAsAction="ifRoom" />
+
+</menu>

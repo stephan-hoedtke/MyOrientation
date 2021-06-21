@@ -28,6 +28,12 @@ class ExtendedComplementaryFilter(options: IFilterOptions) :
 
     private val timer: Timer = Timer()
 
+    override val pdf: String =
+        "ExtendedComplementaryFilter.pdf"
+
+    override val link: String =
+        "https://www.researchgate.net/publication/341718163_An_Extended_Complementary_Filter_ECF_for_Full-Body_MARG_Orientation_Estimation"
+
     override fun updateReadings(type: Measurements.Type, values: FloatArray) {
         @Suppress("NON_EXHAUSTIVE_WHEN")
         when (type) {

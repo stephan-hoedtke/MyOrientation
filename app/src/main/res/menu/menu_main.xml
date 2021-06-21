@@ -24,4 +24,11 @@
         android:icon="@drawable/settings"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/action_documentation"
+        android:orderInCategory="130"
+        android:title="@string/action_documentation"
+        android:icon="@drawable/icon"
+        app:showAsAction="ifRoom" />
+
 </menu>

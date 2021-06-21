@@ -1,10 +1,16 @@
 package com.stho.myorientation.library.filter
 
+import android.content.Context
+import android.graphics.pdf.PdfRenderer
 import android.hardware.SensorManager
+import android.os.ParcelFileDescriptor
 import android.view.Surface
 import com.stho.myorientation.*
 import com.stho.myorientation.library.QuaternionAcceleration
 import com.stho.myorientation.library.algebra.*
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 
 
 abstract class AbstractOrientationFilter(private val method: Method, options: IFilterOptions) : IOrientationFilter {
@@ -24,6 +30,12 @@ abstract class AbstractOrientationFilter(private val method: Method, options: IF
         }
     }
 
+    override val pdf: String =
+        "Unknown.pdf"
+
+    override val link: String =
+        "https://ahrs.readthedocs.io/en/latest/"
+
     private fun setOrientation(orientation: Orientation) {
         Repository.instance.recordEntry(method, orientation)
         acceleration.rotateTo(orientation.rotation)
@@ -37,7 +49,7 @@ abstract class AbstractOrientationFilter(private val method: Method, options: IF
 
 
     internal fun getQuaternionFromAccelerometerMagnetometerReadings(accelerometerReading: FloatArray, magnetometerReading: FloatArray, defaultValue: Quaternion): Quaternion =
-        AbstractOrientationFilter.getQuaternionFromAccelerometerMagnetometerReadings(accelerometerReading, magnetometerReading, deviceRotation, defaultValue)
+        getQuaternionFromAccelerometerMagnetometerReadings(accelerometerReading, magnetometerReading, deviceRotation, defaultValue)
 
     override fun fuseSensors() {
         // Nothing to do in the general case. Only on fusion filter...
@@ -47,7 +59,19 @@ abstract class AbstractOrientationFilter(private val method: Method, options: IF
 
         private const val EPSILON: Double = 0.000000001
 
-        /**
+        internal fun readDocumentation(context: Context, fileName: String): String =
+            try {
+                val asset: InputStream = context.assets.open(fileName)
+                val size: Int = asset.available()
+                val buffer = ByteArray(size)
+                asset.read(buffer)
+                asset.close()
+                String(buffer)
+            } catch(ex: Exception) {
+                ex.toString()
+            }
+
+       /**
          * Returns the rotation changes measured by the gyroscope as a Quaternion
          */
         internal fun getDeltaRotationFromGyroscope(omega: Vector, dt: Double): Quaternion {
@@ -76,7 +100,7 @@ abstract class AbstractOrientationFilter(private val method: Method, options: IF
          * Return the quaternion for the rotation defined by accelerometer and magnetometer readings, of possible, or null otherwise
          */
         internal fun getQuaternionFromAccelerometerMagnetometerReadings(accelerometerReading: FloatArray, magnetometerReading: FloatArray, deviceRotation: Int, defaultValue: Quaternion): Quaternion {
-            val rotationMatrix: FloatArray = FloatArray(9)
+            val rotationMatrix = FloatArray(9)
             if (!SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading)) {
                 return defaultValue
             }

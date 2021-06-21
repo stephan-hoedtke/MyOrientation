@@ -9,5 +9,7 @@ interface IOrientationFilter {
     fun updateReadings(type: Measurements.Type, values: FloatArray)
     fun fuseSensors()
     fun reset()
+    val pdf: String
+    val link: String
 }
 

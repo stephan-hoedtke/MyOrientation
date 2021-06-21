@@ -16,6 +16,12 @@ import kotlin.math.*
 class SeparatedCorrectionFilter(options: ISeparatedCorrectionOptions) :
     AbstractOrientationFilter(Method.SeparatedCorrectionFilter, options) {
 
+    override val pdf: String
+        get() = "Unknown.pdf"
+
+
+
+
     enum class Mode {
         /**
          * Separated Correction Filter
@@ -175,7 +181,7 @@ class SeparatedCorrectionFilter(options: ISeparatedCorrectionOptions) :
          *      theta = ||omega|| * dt
          *      Q = Q(s = cos(theta/2), v = sin(theta2) * |omega|)
          */
-        internal fun getRotationFromGyro(omega: Vector, dt: Double, mode: SeparatedCorrectionFilter.Mode): Quaternion {
+        internal fun getRotationFromGyro(omega: Vector, dt: Double, mode: Mode): Quaternion {
             val alpha = omega.x * dt
             val beta = omega.y * dt
             val gamma = omega.z * dt

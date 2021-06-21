@@ -9,8 +9,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import com.stho.myorientation.library.OrientationSensorListener
 import com.stho.myorientation.library.ProcessorConsumptionMeter
 import com.stho.myorientation.library.filter.*
@@ -96,49 +98,56 @@ class MainActivity : AppCompatActivity() {
         OptionsManager(this).save(viewModel)
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_statistics -> onStatistics()
+            R.id.action_settings -> onSettings()
+            R.id.action_cube -> onCube()
+            R.id.action_documentation -> onDocumentation()
+            android.R.id.home -> onHome()
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun onHome(): Boolean {
+        findNavController().popBackStack()
+        return true
+    }
+
+
+    private fun onStatistics(): Boolean {
+        findNavController().navigate(R.id.action_global_StatisticsFragment)
+        return true
+    }
+
+    private fun onSettings(): Boolean {
+        findNavController().navigate(R.id.action_global_SettingsFragment)
+        return true
+    }
+
+    private fun onCube(): Boolean {
+        findNavController().navigate(R.id.action_global_CubeFragment)
+        return true
+    }
+
+    private fun onDocumentation(): Boolean {
+        findNavController().navigate(R.id.action_global_DocumentationFragment)
+        return true
+    }
+
+    private fun findNavController() =
+        Navigation.findNavController(this, R.id.nav_host_fragment)
+
+
     private fun observeIsActive(isActive: Boolean) {
         val fab: FloatingActionButton = findViewById<FloatingActionButton>(R.id.fab)
         fab.setImageResource(if (isActive) android.R.drawable.ic_media_pause else android.R.drawable.ic_media_play)
     }
 
+    @Suppress("UNUSED_PARAMETER")
     private fun observeMethod(method: Method) {
-        when (method) {
-            Method.AccelerometerMagnetometer -> {
-                orientationFilter = AccelerationMagnetometerFilter(viewModel.options)
-                orientationSensorListener.setFilter(orientationFilter)
-            }
-            Method.RotationVector -> {
-                orientationFilter = RotationVectorFilter(viewModel.options)
-                orientationSensorListener.setFilter(orientationFilter)
-            }
-            Method.ComplementaryFilter -> {
-                orientationFilter = ComplementaryFilter(viewModel.options)
-                orientationSensorListener.setFilter(orientationFilter)
-            }
-            Method.MadgwickFilter -> {
-                orientationFilter = MadgwickFilter(viewModel.options)
-                orientationSensorListener.setFilter(orientationFilter)
-            }
-            Method.SeparatedCorrectionFilter -> {
-                orientationFilter = SeparatedCorrectionFilter(viewModel.options)
-                orientationSensorListener.setFilter(orientationFilter)
-            }
-            Method.ExtendedComplementaryFilter -> {
-                orientationFilter = ExtendedComplementaryFilter(viewModel.options)
-                orientationSensorListener.setFilter(orientationFilter)
-            }
-            Method.KalmanFilter -> {
-                orientationFilter = KalmanFilter(viewModel.options)
-                orientationSensorListener.setFilter(orientationFilter)
-            }
-            Method.Composition -> {
-                orientationFilter = CompositionFilter(viewModel.options)
-                orientationSensorListener.setFilter(orientationFilter)
-            }
-            Method.Damped -> {
-                // do nothing...
-            }
-        }
+        orientationFilter = viewModel.createFilter()
+        orientationSensorListener.setFilter(orientationFilter)
     }
 
     private fun executeHandlerToUpdateOrientation(delayMillis: Long = 200) {
@@ -180,9 +189,9 @@ class MainActivity : AppCompatActivity() {
     private fun stopHandler() =
         handler.removeCallbacksAndMessages(null)
 
-    private fun showSnackbar(message: String) {
+    internal fun showSnackbar(message: String) {
         val container: View = findViewById<View>(R.id.toolbar)
-        Snackbar.make(container, message, Snackbar.LENGTH_LONG)
+        Snackbar.make(container, message, 7000)
             .setBackgroundTint(getColor(R.color.design_default_color_secondary))
             .setTextColor(getColor(R.color.design_default_color_on_secondary))
             .show()

@@ -68,30 +68,6 @@ class StatisticsFragment : Fragment() {
         menu.findItem(R.id.action_statistics).isVisible = false
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_settings -> onSettings()
-            R.id.action_cube -> onCube()
-            android.R.id.home -> onHome()
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun onHome(): Boolean {
-        findNavController().popBackStack()
-        return true
-    }
-
-    private fun onCube(): Boolean {
-        findNavController().navigate(R.id.action_StatisticsFragment_to_CubeFragment)
-        return true
-    }
-
-    private fun onSettings(): Boolean {
-        findNavController().navigate(R.id.action_StatisticsFragment_to_SettingsFragment)
-        return true
-    }
-
     private fun executeHandlerToUpdateStatistics(delayMillis: Long = 1000) {
         val runnableCode: Runnable = object : Runnable {
             override fun run() {

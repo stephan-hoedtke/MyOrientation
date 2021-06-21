@@ -54,30 +54,6 @@ class CubeFragment : Fragment() {
         menu.findItem(R.id.action_cube).isVisible = false
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_settings -> onSettings()
-            R.id.action_statistics -> onStatistics()
-            android.R.id.home -> onHome()
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun onHome(): Boolean {
-        findNavController().popBackStack()
-        return true
-    }
-
-    private fun onSettings(): Boolean {
-        findNavController().navigate(R.id.action_CubeFragment_to_SettingsFragment)
-        return true
-    }
-
-    private fun onStatistics(): Boolean {
-        findNavController().navigate(R.id.action_CubeFragment_to_StatisticsFragment)
-        return true
-    }
-
     private fun observeMethod(method: Method) {
         binding.method.text = method.toString()
     }

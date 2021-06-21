@@ -9,20 +9,7 @@
         android:id="@+id/MainFragment"
         android:name="com.stho.myorientation.MainFragment"
         android:label="@string/label_fragment_main"
-        tools:layout="@layout/fragment_main">
-
-        <action
-            android:id="@+id/action_MainFragment_to_SettingsFragment"
-            app:destination="@id/SettingsFragment" />
-
-        <action
-            android:id="@+id/action_MainFragment_to_CubeFragment"
-            app:destination="@id/CubeFragment" />
-        <action
-            android:id="@+id/action_MainFragment_to_StatisticsFragment"
-            app:destination="@id/StatisticsFragment" />
-
-    </fragment>
+        tools:layout="@layout/fragment_main"/>
 
     <fragment
         android:id="@+id/SettingsFragment"
@@ -31,32 +18,26 @@
         tools:layout="@layout/fragment_settings"/>
 
     <fragment
+        android:id="@+id/DocumentationFragment"
+        android:name="com.stho.myorientation.DocumentationFragment"
+        android:label="@string/label_fragment_documentation"
+        tools:layout="@layout/fragment_documentation"/>
+
+
+    <fragment
         android:id="@+id/CubeFragment"
         android:name="com.stho.myorientation.CubeFragment"
         android:label="@string/label_cube_fragment"
-        tools:layout="@layout/fragment_cube">
-        <action
-            android:id="@+id/action_CubeFragment_to_SettingsFragment"
-            app:destination="@id/SettingsFragment" />
-        <action
-            android:id="@+id/action_CubeFragment_to_StatisticsFragment"
-            app:destination="@id/StatisticsFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_cube"/>
 
     <fragment
         android:id="@+id/StatisticsFragment"
         android:name="com.stho.myorientation.StatisticsFragment"
         android:label="@string/label_fragment_statistics"
-        tools:layout="@layout/fragment_statistics">
-
-        <action
-            android:id="@+id/action_StatisticsFragment_to_SettingsFragment"
-            app:destination="@id/SettingsFragment" />
-        <action
-            android:id="@+id/action_StatisticsFragment_to_CubeFragment"
-            app:destination="@id/CubeFragment" />
-
-    </fragment>
+        tools:layout="@layout/fragment_statistics"/>
+    <action android:id="@+id/action_global_CubeFragment" app:destination="@id/CubeFragment" />
+    <action android:id="@+id/action_global_SettingsFragment" app:destination="@id/SettingsFragment" />
+    <action android:id="@+id/action_global_StatisticsFragment" app:destination="@id/StatisticsFragment" /><action android:id="@+id/action_global_DocumentationFragment" app:destination="@id/DocumentationFragment"/>
 
 
 </navigation>

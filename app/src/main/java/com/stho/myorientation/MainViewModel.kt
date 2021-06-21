@@ -9,8 +9,7 @@ import com.stho.myorientation.library.Timer
 import com.stho.myorientation.library.algebra.Degree
 import com.stho.myorientation.library.algebra.EulerAngles
 import com.stho.myorientation.library.algebra.Orientation
-import com.stho.myorientation.library.filter.MadgwickFilter
-import com.stho.myorientation.library.filter.SeparatedCorrectionFilter
+import com.stho.myorientation.library.filter.*
 import kotlin.math.abs
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -239,6 +238,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val newValue = oldValue + gain * difference
         processorConsumptionLiveData.postValue(newValue)
     }
+
+    internal fun createFilter(): IOrientationFilter =
+        when (method) {
+            Method.AccelerometerMagnetometer -> AccelerationMagnetometerFilter(options)
+            Method.RotationVector -> RotationVectorFilter(options)
+            Method.ComplementaryFilter -> ComplementaryFilter(options)
+            Method.MadgwickFilter -> MadgwickFilter(options)
+            Method.SeparatedCorrectionFilter -> SeparatedCorrectionFilter(options)
+            Method.ExtendedComplementaryFilter -> ExtendedComplementaryFilter(options)
+            Method.KalmanFilter -> KalmanFilter(options)
+            Method.Composition -> CompositionFilter(options)
+            Method.Damped -> CompositionFilter(options)
+        }
 
     companion object {
         private const val DEFAULT_ZOOM = 100.0

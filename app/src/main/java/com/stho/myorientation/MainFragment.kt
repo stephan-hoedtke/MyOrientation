@@ -56,7 +56,7 @@ class MainFragment : Fragment() {
                 viewModel.onScroll(dx, dy)
             }
         })
-        binding.version.text = BuildConfig.VERSION_NAME;
+        binding.version.text = BuildConfig.VERSION_NAME
         binding.gyroscopeView.setType(Measurements.Type.Gyroscope)
         binding.accelerometerView.setType(Measurements.Type.Accelerometer)
         binding.magnetometerView.setType(Measurements.Type.Magnetometer)
@@ -89,28 +89,8 @@ class MainFragment : Fragment() {
         updateActionBar()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.action_statistics -> onStatistics()
-            R.id.action_settings -> onSettings();
-            R.id.action_cube -> onCube()
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun onStatistics(): Boolean {
-        findNavController().navigate(R.id.action_MainFragment_to_StatisticsFragment)
-        return true
-    }
-
-    private fun onSettings(): Boolean {
-        findNavController().navigate(R.id.action_MainFragment_to_SettingsFragment)
-        return true
-    }
-
-    private fun onCube(): Boolean {
-        findNavController().navigate(R.id.action_MainFragment_to_CubeFragment)
-        return true
+    private fun onSettings() {
+        findNavController().navigate(R.id.action_global_SettingsFragment)
     }
 
     private fun observeVersion() {
@@ -135,7 +115,7 @@ class MainFragment : Fragment() {
     }
 
     private fun observeProperty(property: Property) {
-        binding.mainView.setProperty(property);
+        binding.mainView.setProperty(property)
         binding.property.text = property.toString()
         binding.property.setTextColor(getColorForProperty(property))
     }
@@ -172,7 +152,7 @@ class MainFragment : Fragment() {
             when (method) {
                 Method.AccelerometerMagnetometer -> Color.RED
                 Method.RotationVector -> Color.YELLOW
-                Method.KalmanFilter -> Color.rgb(0xFC, 0x0F, 0xC0);
+                Method.KalmanFilter -> Color.rgb(0xFC, 0x0F, 0xC0)
                 Method.ComplementaryFilter -> Color.CYAN
                 Method.MadgwickFilter -> Color.GREEN
                 Method.SeparatedCorrectionFilter -> Color.MAGENTA
