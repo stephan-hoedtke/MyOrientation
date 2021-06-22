@@ -76,5 +76,13 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="label_documentation">Documentation</string>
+    <string name="label_scf">SCF</string>
+    <string name="label_fscf">FSCF</string>
+    <string name="label_k_norm">K norm</string>
+    <string name="label_gyroscope_drift">Gyroscope drift</string>
+    <string name="gyroscope_mean_error">Gyroscope mean error</string>
+    <string name="default_double">0.5</string>
+    <string name="label_lambda1">lambda1</string>
+    <string name="label_lambda2">lambda2</string>
 </resources>
 

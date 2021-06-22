@@ -78,8 +78,8 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
 
         try {
-            executeHandlerToUpdateOrientation(viewModel.updateOrientationDelay)
-            executeHandlerToFuseSensors(viewModel.updateSensorFusionDelay)
+            executeHandlerToUpdateOrientation(viewModel.options.updateOrientationDelay)
+            executeHandlerToFuseSensors(viewModel.options.updateSensorFusionDelay)
             executeHandlerToCleanupHistory()
             orientationSensorListener.onResume()
         } catch (ex: Exception) {

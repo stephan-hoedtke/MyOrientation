@@ -150,62 +150,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         get() = propertyLiveData.value ?: Property.Azimuth
         set(value) { propertyLiveData.postValue(value) }
 
-    var filterCoefficient: Double
-        get() = options.filterCoefficient
-        set(value) {
-            touch(options.apply {
-                filterCoefficient = value.coerceIn(0.0, 1.0)
-            })
-        }
-
-    var accelerationFactor: Double
-        get() = options.accelerationFactor
-        set(value) {
-            touch(options.apply {
-                accelerationFactor = value.coerceIn(0.01, 10.0)
-            })
-        }
-
-    var varianceAccelerometer: Double
-        get() = options.varianceAccelerometer
-        set(value) {
-            touch(options.apply {
-                varianceAccelerometer = value.coerceIn(0.0, 1.0)
-            })
-        }
-
-    var varianceMagnetometer: Double
-        get() = options.varianceMagnetometer
-        set(value) {
-            touch(options.apply {
-                varianceMagnetometer = value.coerceIn(0.0, 1.0)
-            })
-        }
-
-    var varianceGyroscope: Double
-        get() = options.varianceGyroscope
-        set(value) {
-            touch(options.apply {
-                varianceGyroscope = value.coerceIn(0.0, 1.0)
-            })
-        }
-
-    var updateOrientationDelay: Long
-        get() = options.updateOrientationDelay
-        set(value) {
-            touch(options.apply {
-                updateOrientationDelay = value.coerceIn(30, 300)
-            })
-        }
-
-    var updateSensorFusionDelay: Long
-        get() = options.updateSensorFusionDelay
-        set(value) {
-            touch(options.apply {
-                updateSensorFusionDelay = value.coerceIn(30, 300)
-            })
-        }
-
     fun onUpdateOrientation(orientation: Orientation) {
         Repository.instance.recordEntry(Method.Damped, orientation)
         orientationLiveData.postValue(orientation)

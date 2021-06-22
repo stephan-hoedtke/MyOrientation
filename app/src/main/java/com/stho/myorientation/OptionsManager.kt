@@ -22,7 +22,7 @@ class OptionsManager(val context: Context) {
             editor.putDouble(VARIANCE_ACCELERATION, varianceAccelerometer)
             editor.putDouble(VARIANCE_MAGNETOMETER, varianceMagnetometer)
             editor.putDouble(VARIANCE_GYROSCOPE, varianceGyroscope)
-            editor.putBoolean(SHOW_ACCELEROMETER_MAGNETOMETER_FILTER, showAccelerometerMagnetometerFilter)
+            editor.putBoolean(SHOW_ACCELEROMETER_MAGNETOMETER_FILTER,showAccelerometerMagnetometerFilter)
             editor.putBoolean(SHOW_ROTATION_VECTOR_FILTER, showRotationVectorFilter)
             editor.putBoolean(SHOW_MADGWICK_FILTER, showMadgwickFilter)
             editor.putBoolean(SHOW_COMPLEMENTARY_FILTER, showComplementaryFilter)
@@ -31,6 +31,13 @@ class OptionsManager(val context: Context) {
             editor.putBoolean(SHOW_KALMAN_FILTER, showKalmanFilter)
             editor.putLong(UPDATE_ORIENTATION_DELAY, updateOrientationDelay)
             editor.putLong(UPDATE_SENSOR_FUSION_DELAY, updateSensorFusionDelay)
+            editor.putDouble(LAMBDA1, lambda1)
+            editor.putDouble(LAMBDA2, lambda2)
+            editor.putDouble(K_NORM, kNorm)
+            editor.putDouble(K_INIT, kInit)
+            editor.putDouble(T_INIT, tInit)
+            editor.putDouble(GYROSCOPE_MEAN_ERROR, gyroscopeMeanError)
+            editor.putDouble(GYROSCOPE_DRIFT, gyroscopeDrift)
         }
         editor.apply()
     }
@@ -39,41 +46,33 @@ class OptionsManager(val context: Context) {
         val preferences = context.getSharedPreferences("Options", MODE_PRIVATE)
 
         viewModel.method = preferences.parseMethod(METHOD, viewModel.method)
-        viewModel.touch(viewModel.options.apply {
-            madgwickMode =
-                preferences.parseMadgwickMode(MADGWICK_MODE, madgwickMode)
-            separatedCorrectionMode =
-                preferences.parseSeparatedCorrectionMode(SEPARATED_CORRECTION_MODE, separatedCorrectionMode)
-            accelerationFactor =
-                preferences.getDouble(ACCELERATION_FACTOR, accelerationFactor)
-            filterCoefficient =
-                preferences.getDouble(FILTER_COEFFICIENT, filterCoefficient)
-            varianceAccelerometer =
-                preferences.getDouble(VARIANCE_ACCELERATION, varianceAccelerometer)
-            varianceMagnetometer =
-                preferences.getDouble(VARIANCE_MAGNETOMETER, varianceMagnetometer)
-            varianceGyroscope =
-                preferences.getDouble(VARIANCE_GYROSCOPE, varianceGyroscope)
-            showAccelerometerMagnetometerFilter =
-                preferences.getBoolean(SHOW_ACCELEROMETER_MAGNETOMETER_FILTER, showAccelerometerMagnetometerFilter)
-            showRotationVectorFilter =
-                preferences.getBoolean(SHOW_ROTATION_VECTOR_FILTER, showRotationVectorFilter)
-            showMadgwickFilter =
-                preferences.getBoolean(SHOW_MADGWICK_FILTER, showMadgwickFilter)
-            showComplementaryFilter =
-                preferences.getBoolean(SHOW_COMPLEMENTARY_FILTER, showComplementaryFilter)
-            showSeparatedCorrectionFilter =
-                preferences.getBoolean(SHOW_SEPARATED_CORRECTION_FILTER, showSeparatedCorrectionFilter)
-            showExtendedComplementaryFilter =
-                preferences.getBoolean(SHOW_EXTENDED_COMPLEMENTARY_FILTER, showExtendedComplementaryFilter)
-            showKalmanFilter =
-                preferences.getBoolean(SHOW_KALMAN_FILTER, showKalmanFilter)
-            updateOrientationDelay =
-                preferences.getLong(UPDATE_ORIENTATION_DELAY, updateOrientationDelay)
-            updateSensorFusionDelay =
-                preferences.getLong(UPDATE_SENSOR_FUSION_DELAY, updateSensorFusionDelay)
-
-        })
+        viewModel.options.apply {
+            madgwickMode = preferences.parseMadgwickMode(MADGWICK_MODE, madgwickMode)
+            separatedCorrectionMode = preferences.parseSeparatedCorrectionMode(SEPARATED_CORRECTION_MODE, separatedCorrectionMode)
+            accelerationFactor = preferences.getDouble(ACCELERATION_FACTOR, accelerationFactor)
+            filterCoefficient = preferences.getDouble(FILTER_COEFFICIENT, filterCoefficient)
+            varianceAccelerometer = preferences.getDouble(VARIANCE_ACCELERATION, varianceAccelerometer)
+            varianceMagnetometer = preferences.getDouble(VARIANCE_MAGNETOMETER, varianceMagnetometer)
+            varianceGyroscope = preferences.getDouble(VARIANCE_GYROSCOPE, varianceGyroscope)
+            showAccelerometerMagnetometerFilter = preferences.getBoolean(SHOW_ACCELEROMETER_MAGNETOMETER_FILTER, showAccelerometerMagnetometerFilter)
+            showRotationVectorFilter = preferences.getBoolean(SHOW_ROTATION_VECTOR_FILTER, showRotationVectorFilter)
+            showMadgwickFilter = preferences.getBoolean(SHOW_MADGWICK_FILTER, showMadgwickFilter)
+            showComplementaryFilter = preferences.getBoolean(SHOW_COMPLEMENTARY_FILTER, showComplementaryFilter)
+            showSeparatedCorrectionFilter = preferences.getBoolean(SHOW_SEPARATED_CORRECTION_FILTER, showSeparatedCorrectionFilter)
+            showExtendedComplementaryFilter = preferences.getBoolean(SHOW_EXTENDED_COMPLEMENTARY_FILTER, showExtendedComplementaryFilter)
+            showKalmanFilter = preferences.getBoolean(SHOW_KALMAN_FILTER, showKalmanFilter)
+            updateOrientationDelay = preferences.getLong(UPDATE_ORIENTATION_DELAY, updateOrientationDelay)
+            updateSensorFusionDelay = preferences.getLong(UPDATE_SENSOR_FUSION_DELAY, updateSensorFusionDelay)
+            lambda1 = preferences.getDouble(LAMBDA1, lambda1)
+            lambda2 = preferences.getDouble(LAMBDA2, lambda2)
+            kNorm = preferences.getDouble(K_NORM, kNorm)
+            kInit = preferences.getDouble(K_INIT, kInit)
+            tInit = preferences.getDouble(T_INIT, tInit)
+            gyroscopeMeanError = preferences.getDouble(GYROSCOPE_MEAN_ERROR, gyroscopeMeanError)
+            gyroscopeDrift = preferences.getDouble(GYROSCOPE_DRIFT, gyroscopeDrift)
+        }.also {
+            viewModel.touch(it)
+        }
     }
 
 
@@ -95,6 +94,14 @@ class OptionsManager(val context: Context) {
         private const val SHOW_KALMAN_FILTER = "ShowKalmanFilter"
         private const val UPDATE_ORIENTATION_DELAY = "UpdateOrientationDelay"
         private const val UPDATE_SENSOR_FUSION_DELAY = "UpdateSensorFusionDelay"
+        private const val LAMBDA1 = "Lambda1"
+        private const val LAMBDA2 = "Lambda2"
+        private const val K_NORM = "K_NORM"
+        private const val K_INIT = "K_INIT"
+        private const val T_INIT = "T_INIT"
+        private const val GYROSCOPE_MEAN_ERROR = "GyroscopeMeanError"
+        private const val GYROSCOPE_DRIFT = "GyroscopeDrift"
+
     }
 }
 

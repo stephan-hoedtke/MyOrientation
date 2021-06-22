@@ -4,7 +4,6 @@ import com.stho.myorientation.*
 import com.stho.myorientation.library.Timer
 import com.stho.myorientation.library.algebra.Quaternion
 import com.stho.myorientation.library.algebra.Vector
-import kotlin.math.PI
 import kotlin.math.sqrt
 
 
@@ -17,6 +16,15 @@ import kotlin.math.sqrt
  */
 class MadgwickFilter(options: IMadgwickFilterOptions) :
     AbstractOrientationFilter(Method.MadgwickFilter,options) {
+
+    private val beta: Double = sqrt(3.0f / 4.0f) * options.gyroscopeMeanError
+    private val gamma: Double = sqrt(3.0f / 4.0f) * options.gyroscopeDrift
+
+    override val pdf: String
+        get() = "MadgwickFilter.pdf"
+
+    override val link: String
+        get() = "http://x-io.co.uk/res/doc/madgwick_internal_report.pdf"
 
     enum class Mode {
         /**
@@ -128,7 +136,7 @@ class MadgwickFilter(options: IMadgwickFilterOptions) :
         val omegaError = estimate * qDotError * 2.0
 
         // compute gyroscope biases and correct gyro angle rotation
-        gyroBias += omegaError.inverse() * (zeta * dt)
+        gyroBias += omegaError.inverse() * (gamma * dt)
 
         val omega = w - gyroBias
 
@@ -183,10 +191,6 @@ class MadgwickFilter(options: IMadgwickFilterOptions) :
     }
 
     companion object {
-        private const val gyroMeasurementError: Double = PI * (5.0f / 180.0f) // gyroscope measurement error in rad/s (shown as 5 deg/s)
-        private const val gyroMeasurementDrift: Double = PI * (0.2f / 180.0f) // gyroscope measurement error in rad/s/s (shown as 0.2f deg/s/s)
-        private val beta: Double = sqrt(3.0f / 4.0f) * gyroMeasurementError
-        private val zeta: Double = sqrt(3.0f / 4.0f) * gyroMeasurementDrift
 
         /**
          * Return the normalized gradient as the product of the Jacobian matrix with the objective function

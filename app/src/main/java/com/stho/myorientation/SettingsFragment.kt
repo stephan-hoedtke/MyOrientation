@@ -13,6 +13,7 @@ import com.stho.myorientation.databinding.FragmentSettingsBinding
 import com.stho.myorientation.library.Formatter
 import com.stho.myorientation.library.filter.MadgwickFilter
 import com.stho.myorientation.library.filter.SeparatedCorrectionFilter
+import java.lang.Exception
 import kotlin.math.sqrt
 
 class SettingsFragment : Fragment() {
@@ -40,46 +41,64 @@ class SettingsFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentSettingsBinding.inflate(inflater, container, false)
 
-
         binding.buttonDone.setOnClickListener {
-            onHome()
+            onDone()
         }
         binding.buttonReset.setOnClickListener {
             viewModel.resetDefaultValues()
         }
         binding.seekbarAccelerationFactor.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                viewModel.accelerationFactor = progressToValue(progress, MAX_ACCELERATION_FACTOR)
-            }
-        })
-        binding.seekbarFilterCoefficient.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                viewModel.filterCoefficient = progressToValue(progress, MAX_FILTER_COEFFICIENT)
+                viewModel.options.apply {
+                    accelerationFactor = progressToValue(progress, MAX_ACCELERATION_FACTOR)
+                }.also {
+                    viewModel.touch(it)
+                }
             }
         })
         binding.seekbarVarianceAcceleration.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                viewModel.varianceAccelerometer = progressToValue(progress, MAX_STANDARD_DEVIATION).square()
+                viewModel.options.apply {
+                    varianceAccelerometer = progressToValue(progress, MAX_STANDARD_DEVIATION).square()
+                }.also {
+                    viewModel.touch(it)
+                }
             }
         })
         binding.seekbarVarianceMagnetometer.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                viewModel.varianceMagnetometer = progressToValue(progress, MAX_STANDARD_DEVIATION).square()
+                viewModel.options.apply {
+                    varianceMagnetometer = progressToValue(progress, MAX_STANDARD_DEVIATION).square()
+                }.also {
+                    viewModel.touch(it)
+                }
             }
         })
         binding.seekbarVarianceGyroscope.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                viewModel.varianceGyroscope = progressToValue(progress, MAX_STANDARD_DEVIATION).square()
+                viewModel.options.apply {
+                    varianceGyroscope = progressToValue(progress, MAX_STANDARD_DEVIATION).square()
+                }.also {
+                    viewModel.touch(it)
+                }
             }
         })
         binding.seekbarUpdateOrientationDelay.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                viewModel.updateOrientationDelay = progressToValue(progress, MAX_DELAY)
+                viewModel.options.apply {
+                    updateOrientationDelay = progressToValue(progress, MAX_DELAY)
+                }.also {
+                    viewModel.touch(it)
+                }
             }
         })
         binding.seekbarUpdateSensorFusionDelay.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                viewModel.updateSensorFusionDelay = progressToValue(progress, MAX_DELAY)
+                viewModel.options.apply {
+                    updateSensorFusionDelay = progressToValue(progress, MAX_DELAY)
+                }.also {
+                    viewModel.touch(it)
+                }
             }
         })
         val properties: MutableList<Property> = ArrayList()
@@ -172,6 +191,27 @@ class SettingsFragment : Fragment() {
         return true
     }
 
+    private fun onDone() {
+        try {
+            viewModel.options.apply {
+                filterCoefficient = binding.filterCoefficient.text.toString().toDouble()
+                lambda1 = binding.lambda1.text.toString().toDouble()
+                lambda2 = binding.lambda2.text.toString().toDouble()
+                kNorm = binding.kNorm.text.toString().toDouble()
+                gyroscopeMeanError = binding.gyroscopeMeanError.text.toString().toDouble()
+                gyroscopeDrift = binding.gyroscopeDrift.text.toString().toDouble()
+            }.also {
+                viewModel.touch(it)
+            }
+            onHome()
+        }
+        catch (ex: Exception) {
+            mainActivity.showSnackbar("Error: ${ex.message}")
+        }
+    }
+
+    private val mainActivity: MainActivity
+        get() = requireActivity() as MainActivity
 
     private fun observeProperty(property: Property) {
         val pos: Int = propertyAdapter.getPosition(property)
@@ -194,10 +234,14 @@ class SettingsFragment : Fragment() {
         // Madgwick Filter Options
         binding.radioButtonMadgwickDefault.isChecked = (options.madgwickMode == MadgwickFilter.Mode.Default)
         binding.radioButtonMadgwickModified.isChecked = (options.madgwickMode == MadgwickFilter.Mode.Modified)
+        binding.gyroscopeMeanError.setText(Formatter.df4.format(options.gyroscopeMeanError))
+        binding.gyroscopeDrift.setText(Formatter.df4.format(options.gyroscopeDrift))
 
         // Separated Filter Options
         binding.radioButtonSeparatedCorrectionDefault.isChecked = (options.separatedCorrectionMode == SeparatedCorrectionFilter.Mode.SCF)
         binding.radioButtonSeparatedCorrectionModified.isChecked = (options.separatedCorrectionMode == SeparatedCorrectionFilter.Mode.FSCF)
+        binding.lambda1.setText(Formatter.df4.format(options.lambda1))
+        binding.lambda2.setText(Formatter.df4.format(options.lambda2))
 
         // Composition Filter Options
         binding.switchAccelerometerMagnetometerFilter.isChecked = options.showAccelerometerMagnetometerFilter
@@ -214,11 +258,13 @@ class SettingsFragment : Fragment() {
         binding.seekbarAccelerationFactor.progress = valueToProgress(options.accelerationFactor, MAX_ACCELERATION_FACTOR)
 
         // Filter Coefficient
-        binding.filterCoefficient.text = Formatter.df2.format(options.filterCoefficient)
-        binding.seekbarFilterCoefficient.max = 100
-        binding.seekbarFilterCoefficient.progress = valueToProgress(options.filterCoefficient, MAX_FILTER_COEFFICIENT)
+        binding.filterCoefficient.setText(Formatter.df4.format(options.filterCoefficient))
 
-        // Variance
+
+        // Extended Complementary Filter
+        binding.kNorm.setText(Formatter.df4.format(options.kNorm))
+
+        // Kalman Filter Variance
         binding.varianceAcceleration.text = Formatter.df4.format(options.varianceAccelerometer)
         binding.seekbarVarianceAcceleration.max = 100
         binding.seekbarVarianceAcceleration.progress = valueToProgress(options.varianceAccelerometer.squareRoot(), MAX_STANDARD_DEVIATION)

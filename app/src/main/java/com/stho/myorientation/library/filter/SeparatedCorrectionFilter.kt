@@ -1,6 +1,6 @@
 package com.stho.myorientation.library.filter
 
-import com.stho.myorientation.ISeparatedCorrectionOptions
+import com.stho.myorientation.ISeparatedCorrectionFilterOptions
 import com.stho.myorientation.Measurements
 import com.stho.myorientation.Method
 import com.stho.myorientation.library.Timer
@@ -13,13 +13,17 @@ import kotlin.math.*
  * Fast AHRS Filter for Accelerometer, Magnetometer, and Gyroscope Combination with Separated Sensor Corrections
  *      by Josef Justa, Vaclav Smidl, Alex Hamacek, April 2020
  */
-class SeparatedCorrectionFilter(options: ISeparatedCorrectionOptions) :
+class SeparatedCorrectionFilter(options: ISeparatedCorrectionFilterOptions) :
     AbstractOrientationFilter(Method.SeparatedCorrectionFilter, options) {
 
+    private val lambda1: Double = options.lambda1
+    private val lambda2: Double = options.lambda2
+
     override val pdf: String
-        get() = "Unknown.pdf"
+        get() = "SeparatedCorrectionFilter.pdf"
 
-
+    override val link: String
+        get() = "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7420292/"
 
 
     enum class Mode {
@@ -134,8 +138,8 @@ class SeparatedCorrectionFilter(options: ISeparatedCorrectionOptions) :
         val mAlpha = acos(Vector.dot(m, mPrediction))
         val mCorrection = Vector.cross(m, mPrediction).normalize()
 
-        val aBeta = min(aAlpha * GAIN, GAIN)
-        val mBeta = min(mAlpha * GAIN, GAIN)
+        val aBeta = min(aAlpha * lambda1, lambda2)
+        val mBeta = min(mAlpha * lambda1, lambda2)
 
         val fCorrection: Vector = aCorrection * (aBeta / 2) + mCorrection * (mBeta / 2)
 
@@ -161,8 +165,6 @@ class SeparatedCorrectionFilter(options: ISeparatedCorrectionOptions) :
     }
 
     companion object {
-        private const val GAIN: Double = 0.1
-
         /**
          * Returns the magnetic field in earth frame after distortion correction
          */

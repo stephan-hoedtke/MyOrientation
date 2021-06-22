@@ -24,7 +24,7 @@
                 android:text="@string/label_parameters"
                 android:textSize="30sp"/>
 
-            <!-- Method and Method Parameters -->
+            <!-- Method and Property Parameters ************************************************ -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -34,7 +34,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginTop="@dimen/fab_margin"
+                    android:layout_marginVertical="@dimen/text_margin"
                     android:text="@string/label_method" />
 
                 <androidx.appcompat.widget.AppCompatSpinner
@@ -42,83 +42,40 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@id/label_method"
-                    android:textAlignment="textEnd"
+                    android:layout_marginVertical="@dimen/fab_margin"
                     android:popupBackground="@color/dark_gray"
                     android:entries="@array/methods" />
 
-                <RadioGroup
-                    android:id="@+id/madgwickFilterOptions"
+                <TextView
+                    android:id="@+id/label_property"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/spinner_method"
-                    android:layout_marginTop="@dimen/text_margin"
-                    android:orientation="horizontal">
+                    android:layout_marginVertical="@dimen/fab_margin"
+                    android:text="@string/label_property" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/label_madgwick" />
-
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"/>
-
-                    <com.google.android.material.radiobutton.MaterialRadioButton
-                        android:id="@+id/radioButtonMadgwickDefault"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/label_default" />
-
-                    <com.google.android.material.radiobutton.MaterialRadioButton
-                        android:id="@+id/radioButtonMadgwickModified"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/label_modified" />
-
-                </RadioGroup>
-
-                <RadioGroup
-                    android:id="@+id/separatedCorrectionFilterOptions"
+                <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/spinner_property"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/madgwickFilterOptions"
-                    android:orientation="horizontal">
+                    app:layout_constraintTop_toBottomOf="@id/label_property"
+                    android:layout_marginVertical="@dimen/fab_margin"
+                    android:popupBackground="@color/dark_gray"
+                    android:entries="@array/properties" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/label_separated_correction" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <Space
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"/>
-
-                    <com.google.android.material.radiobutton.MaterialRadioButton
-                        android:id="@+id/radioButtonSeparatedCorrectionDefault"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/label_default" />
-
-                    <com.google.android.material.radiobutton.MaterialRadioButton
-                        android:id="@+id/radioButtonSeparatedCorrectionModified"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                         android:text="@string/label_modified" />
-
-                </RadioGroup>
+            <!-- Composition Filter ************************************************************ -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/compositionFilterOptions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <RadioGroup
-                    android:id="@+id/compositionFilterOptions"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@id/separatedCorrectionFilterOptions"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/switchAccelerometerMagnetometerFilter"
@@ -170,95 +127,210 @@
                         android:checked="false" />
 
                 </RadioGroup>
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <!-- Madgwick Filter *************************************************************** -->
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/madgwickFilterOptions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/label_property"
+                <RadioGroup
+                    android:id="@+id/mode1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginVertical="@dimen/fab_margin"
-                    android:text="@string/label_property" />
+                    android:layout_marginVertical="@dimen/text_margin"
+                    android:orientation="horizontal">
 
-                <androidx.appcompat.widget.AppCompatSpinner
-                    android:id="@+id/spinner_property"
-                    android:layout_width="match_parent"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_madgwick" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/radioButtonMadgwickDefault"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_default" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/radioButtonMadgwickModified"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_modified" />
+
+                </RadioGroup>
+
+                <EditText
+                    android:id="@+id/gyroscope_mean_error"
+                    android:layout_width="200sp"
                     android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@id/label_property"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/mode1"
+                    android:textColor="@color/white"
                     android:textAlignment="textEnd"
-                    android:popupBackground="@color/dark_gray"
-                    android:entries="@array/properties" />
+                    android:text="@string/default_double"
+                    android:inputType="numberDecimal" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/gyroscope_mean_error"
+                    app:layout_constraintBottom_toBottomOf="@id/gyroscope_mean_error"
+                    android:labelFor="@id/gyroscope_mean_error"
+                    android:text="@string/gyroscope_mean_error" />
+
+                <EditText
+                    android:id="@+id/gyroscope_drift"
+                    android:layout_width="200sp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/gyroscope_mean_error"
+                    android:textColor="@color/white"
+                    android:textAlignment="textEnd"
+                    android:text="@string/default_double"
+                    android:inputType="numberDecimal" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/gyroscope_drift"
+                    app:layout_constraintBottom_toBottomOf="@id/gyroscope_drift"
+                    android:labelFor="@id/gyroscope_drift"
+                    android:text="@string/label_gyroscope_drift" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <!-- Filter Parameters -->
+            <!-- Extended Complementary Filter ************************************************* -->
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/extendedComplementaryFilterOptions"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/text_margin">
+                android:layout_height="wrap_content">
 
-                 <TextView
-                    android:id="@+id/label_filter_coefficient"
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:id="@+id/k_norm"
+                    android:layout_width="200sp"
                     android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginTop="@dimen/fab_margin"
-                    android:text="@string/label_filter_coefficient" />
+                    android:textColor="@color/white"
+                    android:textAlignment="textEnd"
+                    android:text="@string/default_double"
+                    android:inputType="numberDecimal" />
 
                 <TextView
-                    android:id="@+id/filter_coefficient"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/label_filter_coefficient"
-                    android:text="@string/default_filter_coefficient" />
-
-                <SeekBar
-                    android:id="@+id/seekbar_filter_coefficient"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@id/label_filter_coefficient"
-                    android:max="100"
-                    android:progress="20" />
-
-                <TextView
-                    android:id="@+id/label_acceleration_factor"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/seekbar_filter_coefficient"
-                    android:layout_marginTop="@dimen/fab_margin"
-                    android:text="@string/label_acceleration_factor" />
+                    app:layout_constraintTop_toTopOf="@id/k_norm"
+                    app:layout_constraintBottom_toBottomOf="@id/k_norm"
+                    android:labelFor="@id/k_norm"
+                    android:text="@string/label_k_norm" />
 
-                <TextView
-                    android:id="@+id/acceleration_factor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/label_acceleration_factor"
-                    android:text="@string/default_acceleration_factor" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <SeekBar
-                    android:id="@+id/seekbar_acceleration_factor"
+
+            <!-- Separated Correction Filter *************************************************** -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/separatedCorrectionFilterOptions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <RadioGroup
+                    android:id="@+id/mode2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@id/label_acceleration_factor"
-                    android:max="100"
-                    android:progress="20" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:orientation="horizontal">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_separated_correction" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/radioButtonSeparatedCorrectionDefault"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_scf" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/radioButtonSeparatedCorrectionModified"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/label_fscf" />
+
+                </RadioGroup>
+
+                <EditText
+                    android:id="@+id/lambda1"
+                    android:layout_width="200sp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/mode2"
+                    android:textColor="@color/white"
+                    android:textAlignment="textEnd"
+                    android:inputType="numberDecimal"
+                    android:text="@string/default_double"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/lambda1"
+                    app:layout_constraintBottom_toBottomOf="@id/lambda1"
+                    android:labelFor="@id/lambda1"
+                    android:text="@string/label_lambda1" />
+
+                <EditText
+                    android:id="@+id/lambda2"
+                    android:layout_width="200sp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lambda1"
+                    android:textColor="@color/white"
+                    android:textAlignment="textEnd"
+                    android:inputType="numberDecimal"
+                    android:text="@string/default_double"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/lambda2"
+                    app:layout_constraintBottom_toBottomOf="@id/lambda2"
+                    android:labelFor="@id/lambda2"
+                    android:text="@string/label_lambda2" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Kalman Filter ***************************************************************** -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/kalmanFilterOptions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:id="@+id/label_variance_acceleration"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/seekbar_acceleration_factor"
+                    app:layout_constraintTop_toTopOf="parent"
                     android:layout_marginTop="@dimen/fab_margin"
                     android:text="@string/label_variance_accelerometer" />
 
@@ -328,9 +400,72 @@
                     android:max="100"
                     android:progress="20" />
 
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Complementary Filter ********************************************************** -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/complementaryFilterOptions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/separatedCorrectionFilterOptions">
+
+                <EditText
+                    android:id="@+id/filter_coefficient"
+                    android:layout_width="200sp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:textColor="@color/white"
+                    android:textAlignment="textEnd"
+                    android:inputType="numberDecimal"
+                    android:text="@string/default_filter_coefficient"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/filter_coefficient"
+                    app:layout_constraintBottom_toBottomOf="@id/filter_coefficient"
+                    android:labelFor="@id/lambda2"
+                    android:text="@string/label_filter_coefficient" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <!-- Filter Parameters ************************************************************* -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/text_margin">
+
+                <TextView
+                    android:id="@+id/label_acceleration_factor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_marginTop="@dimen/fab_margin"
+                    android:text="@string/label_acceleration_factor" />
+
+                <TextView
+                    android:id="@+id/acceleration_factor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/label_acceleration_factor"
+                    android:text="@string/default_acceleration_factor" />
+
+                <SeekBar
+                    android:id="@+id/seekbar_acceleration_factor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/label_acceleration_factor"
+                    android:max="100"
+                    android:progress="20" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- General Behavior ************************************************************** -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -386,7 +521,8 @@
                     android:progress="20" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-            <!-- Buttons -->
+
+            <!-- Buttons *********************************************************************** -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_reset"
                 android:layout_width="match_parent"
@@ -401,12 +537,10 @@
                 android:layout_marginTop="@dimen/fab_margin"
                 android:text="@string/label_done" />
 
-            <Space
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="30dp" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.core.widget.NestedScrollView>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>

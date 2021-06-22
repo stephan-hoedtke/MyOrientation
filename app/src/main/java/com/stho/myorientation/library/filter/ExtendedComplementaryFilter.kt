@@ -1,5 +1,6 @@
 package com.stho.myorientation.library.filter
 
+import com.stho.myorientation.IExtendedComplementaryFilterOptions
 import com.stho.myorientation.IFilterOptions
 import com.stho.myorientation.Measurements
 import com.stho.myorientation.Method
@@ -14,8 +15,14 @@ import com.stho.myorientation.library.algebra.Vector
  *      Jane Burridge, Christos Kapatos and Ravi Vaidyananthan,
  *      August 2020
  */
-class ExtendedComplementaryFilter(options: IFilterOptions) :
+class ExtendedComplementaryFilter(options: IExtendedComplementaryFilterOptions) :
     AbstractOrientationFilter(Method.ExtendedComplementaryFilter, options) {
+
+    private val kNorm: Double = options.kNorm
+    private val kInit: Double = options.kInit
+    private val tInit: Double = options.tInit
+    private val mMax: Double = options.mMax
+    private val mMin: Double = options.mMin
 
     private val accelerometerReading = FloatArray(3)
     private val magnetometerReading = FloatArray(3)
@@ -102,7 +109,7 @@ class ExtendedComplementaryFilter(options: IFilterOptions) :
 
         val error = error(estimate, a, m)
 
-        val gain = 0.01
+        val gain = gain()
         val omega = w - error * gain
         val qDot = estimate * omega.asQuaternion() * 0.5
         val delta = qDot * dt
@@ -115,18 +122,36 @@ class ExtendedComplementaryFilter(options: IFilterOptions) :
         hasEstimate = true
     }
 
-    companion object {
-
-        internal fun error(q: Quaternion, a: Vector, m: Vector): Vector {
-            val aHat = a.normalize()
-            val mHat = m.normalize()
-
-            val ea = aError(q, aHat)
-            val ee = eError(q, mHat, mHat)
-
-            // TODO: Apply conditions and magnetic disturbance ...
-            return ea + ee
+    private fun gain(): Double {
+        val t = timer.getTime()
+        return if (t < tInit) {
+            kNorm + (tInit - t) / tInit * (kInit - kNorm)
+        } else {
+            kNorm
         }
+    }
+
+    private fun error(q: Quaternion, a: Vector, m: Vector): Vector {
+        val aNorm = a.norm()
+        val mNorm = m.norm()
+        return when {
+            aNorm > 0 && mMax > mNorm && mNorm > mMin -> {
+                val aHat = a.normalize()
+                val mHat = m.normalize()
+                aError(q, aHat) + eError(q, mHat, mHat)
+            }
+            aNorm > 0 -> {
+                val aHat = a.normalize()
+                aError(q, aHat)
+            }
+            else -> {
+                Vector(0.0, 0.0, 0.0)
+            }
+        }
+    }
+
+
+    companion object {
 
         private fun aError(q: Quaternion, aa: Vector): Vector {
             // Prediction of the normalized acceleration after rotating the reference Vector (0, 0, 1) from earth to sensor frame
