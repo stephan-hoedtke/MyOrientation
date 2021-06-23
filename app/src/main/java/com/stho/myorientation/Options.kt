@@ -61,14 +61,18 @@ interface ICompositionFilterOptions :
 }
 
 interface ISettings {
-    var updateSensorFusionDelay: Long
     var updateOrientationDelay: Long
+    var method: Method
+    var property: Property
 }
 
 data class Options(
-    override var accelerationFactor: Double = DEFAULT_ACCELERATION_FACTOR,
-    override var updateSensorFusionDelay: Long = 150,
+    // Settings
+    override var method: Method = Method.Composition,
+    override var property: Property = Property.CenterAzimuth,
     override var updateOrientationDelay: Long = 200,
+    // (Common)Filter Options
+    override var accelerationFactor: Double = DEFAULT_ACCELERATION_FACTOR,
         // Composition Filter
     override var showAccelerometerMagnetometerFilter: Boolean = false,
     override var showRotationVectorFilter: Boolean = true,
@@ -107,7 +111,7 @@ data class Options(
         IFilterOptions,
         ISettings {
 
-    fun resetDefaultValues() {
+    fun resetDefaultOptions() {
         accelerationFactor = DEFAULT_ACCELERATION_FACTOR
         separatedCorrectionMode = SeparatedCorrectionFilter.Mode.SCF
         madgwickMode = MadgwickFilter.Mode.Default
@@ -125,6 +129,7 @@ data class Options(
     }
 
     companion object {
+        private const val DEFAULT_UPDATE_ORIENTATION_DELAY = 200 // 200 ms
         private const val DEFAULT_ACCELERATION_FACTOR = 0.7
         private const val DEFAULT_FILTER_COEFFICIENT = 0.98
         private const val DEFAULT_VARIANCE_GYROSCOPE = 0.3 * 0.3

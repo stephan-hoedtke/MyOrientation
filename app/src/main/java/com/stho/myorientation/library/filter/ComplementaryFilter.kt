@@ -54,7 +54,7 @@ class ComplementaryFilter(options: IComplementaryFilterOptions) :
         if (SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading)) {
             // TODO: get quaternion from readings directly
             val adjustedRotationMatrix = RotationMatrix.fromFloatArray(getAdjustedRotationMatrix(rotationMatrix))
-            accelerationMagnetometerOrientation = Quaternion.fromRotationMatrix( adjustedRotationMatrix)
+            accelerationMagnetometerOrientation = Quaternion.fromRotationMatrix(adjustedRotationMatrix)
             hasAccelerationMagnetometer = true
         }
     }
@@ -87,28 +87,17 @@ class ComplementaryFilter(options: IComplementaryFilterOptions) :
         val deltaRotation = AbstractOrientationFilter.getDeltaRotationFromGyroscope(omega, dt)
 
         // update the gyro orientation
-        estimate *= deltaRotation
-    }
+        val gyroOrientation = estimate * deltaRotation
 
-    override fun fuseSensors() {
-
-        // Fusion happens as a separate process to update the estimate using the accelerometer / magnetometer readings
-        if (hasGyro && hasAccelerationMagnetometer) {
-            calculateFusedOrientation()
-        }
+        // fuse sensors
+        estimate = Quaternion.interpolate(gyroOrientation, accelerationMagnetometerOrientation, interpolationFactor)
     }
 
     override fun reset() {
-        hasMagnetometer= false
+        hasMagnetometer = false
         hasAccelerationMagnetometer = false
         hasGyro = false
     }
-
-    /**
-     * fuse gyro with acceleration to overcome the gyro bias
-     */
-    private fun calculateFusedOrientation() {
-        estimate = Quaternion.interpolate(estimate, accelerationMagnetometerOrientation, interpolationFactor)
-    }
 }
+
 

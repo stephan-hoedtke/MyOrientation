@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.stho.myorientation.MainActivity">
+
+    <item
+        android:id="@+id/action_save"
+        android:orderInCategory="150"
+        android:title="@string/label_save"
+        android:icon="@drawable/ok"
+        app:showAsAction="always" />
+
+</menu>

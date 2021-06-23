@@ -28,7 +28,7 @@
         android:id="@+id/action_documentation"
         android:orderInCategory="130"
         android:title="@string/action_documentation"
-        android:icon="@drawable/icon"
+        android:icon="@drawable/pdf"
         app:showAsAction="ifRoom" />
 
 </menu>

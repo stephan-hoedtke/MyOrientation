@@ -8,13 +8,12 @@ import com.stho.myorientation.library.filter.SeparatedCorrectionFilter
 
 class OptionsManager(val context: Context) {
 
-    fun save(viewModel: MainViewModel) {
+    fun save(options: Options) {
         val preferences = context.getSharedPreferences("Options", MODE_PRIVATE)
         val editor = preferences.edit()
-
-        editor.putString(METHOD, viewModel.method.toString())
-
-        viewModel.options.apply {
+        options.apply {
+            editor.putString(METHOD, method.toString())
+            editor.putString(PROPERTY, property.toString())
             editor.putString(MADGWICK_MODE, madgwickMode.toString())
             editor.putString(SEPARATED_CORRECTION_MODE, separatedCorrectionMode.toString())
             editor.putDouble(ACCELERATION_FACTOR, accelerationFactor)
@@ -30,7 +29,6 @@ class OptionsManager(val context: Context) {
             editor.putBoolean(SHOW_EXTENDED_COMPLEMENTARY_FILTER, showExtendedComplementaryFilter)
             editor.putBoolean(SHOW_KALMAN_FILTER, showKalmanFilter)
             editor.putLong(UPDATE_ORIENTATION_DELAY, updateOrientationDelay)
-            editor.putLong(UPDATE_SENSOR_FUSION_DELAY, updateSensorFusionDelay)
             editor.putDouble(LAMBDA1, lambda1)
             editor.putDouble(LAMBDA2, lambda2)
             editor.putDouble(K_NORM, kNorm)
@@ -42,11 +40,11 @@ class OptionsManager(val context: Context) {
         editor.apply()
     }
 
-    fun load(viewModel: MainViewModel) {
+    fun load(options: Options) {
         val preferences = context.getSharedPreferences("Options", MODE_PRIVATE)
-
-        viewModel.method = preferences.parseMethod(METHOD, viewModel.method)
-        viewModel.options.apply {
+        options.apply {
+            method = preferences.parseMethod(METHOD, method)
+            property = preferences.parseProperty(PROPERTY, property)
             madgwickMode = preferences.parseMadgwickMode(MADGWICK_MODE, madgwickMode)
             separatedCorrectionMode = preferences.parseSeparatedCorrectionMode(SEPARATED_CORRECTION_MODE, separatedCorrectionMode)
             accelerationFactor = preferences.getDouble(ACCELERATION_FACTOR, accelerationFactor)
@@ -62,7 +60,6 @@ class OptionsManager(val context: Context) {
             showExtendedComplementaryFilter = preferences.getBoolean(SHOW_EXTENDED_COMPLEMENTARY_FILTER, showExtendedComplementaryFilter)
             showKalmanFilter = preferences.getBoolean(SHOW_KALMAN_FILTER, showKalmanFilter)
             updateOrientationDelay = preferences.getLong(UPDATE_ORIENTATION_DELAY, updateOrientationDelay)
-            updateSensorFusionDelay = preferences.getLong(UPDATE_SENSOR_FUSION_DELAY, updateSensorFusionDelay)
             lambda1 = preferences.getDouble(LAMBDA1, lambda1)
             lambda2 = preferences.getDouble(LAMBDA2, lambda2)
             kNorm = preferences.getDouble(K_NORM, kNorm)
@@ -70,14 +67,13 @@ class OptionsManager(val context: Context) {
             tInit = preferences.getDouble(T_INIT, tInit)
             gyroscopeMeanError = preferences.getDouble(GYROSCOPE_MEAN_ERROR, gyroscopeMeanError)
             gyroscopeDrift = preferences.getDouble(GYROSCOPE_DRIFT, gyroscopeDrift)
-        }.also {
-            viewModel.touch(it)
         }
     }
 
 
     companion object {
         private const val METHOD = "Method"
+        private const val PROPERTY = "Property"
         private const val MADGWICK_MODE = "MadgwickMode"
         private const val SEPARATED_CORRECTION_MODE = "SeparatedCorrectionMode"
         private const val ACCELERATION_FACTOR = "AccelerationFactor"
@@ -93,7 +89,6 @@ class OptionsManager(val context: Context) {
         private const val SHOW_EXTENDED_COMPLEMENTARY_FILTER = "ShowExtendedComplementaryFilter"
         private const val SHOW_KALMAN_FILTER = "ShowKalmanFilter"
         private const val UPDATE_ORIENTATION_DELAY = "UpdateOrientationDelay"
-        private const val UPDATE_SENSOR_FUSION_DELAY = "UpdateSensorFusionDelay"
         private const val LAMBDA1 = "Lambda1"
         private const val LAMBDA2 = "Lambda2"
         private const val K_NORM = "K_NORM"
@@ -101,7 +96,6 @@ class OptionsManager(val context: Context) {
         private const val T_INIT = "T_INIT"
         private const val GYROSCOPE_MEAN_ERROR = "GyroscopeMeanError"
         private const val GYROSCOPE_DRIFT = "GyroscopeDrift"
-
     }
 }
 
@@ -115,40 +109,38 @@ fun SharedPreferences.getDouble(key: String, defaultValue: Double): Double {
 
 fun SharedPreferences.parseMethod(key: String, defaultValue: Method): Method {
     val value = this.getString(key, "")
-    return try {
-        if (value.isNullOrBlank()) {
-            defaultValue
-        } else {
-            Method.valueOf(value)
-        }
-    } catch (ex: Exception) {
+    return if (value.isNullOrBlank()) {
         defaultValue
+    } else {
+        Method.values().firstOrNull() { it.toString() == value } ?: defaultValue
+    }
+}
+
+fun SharedPreferences.parseProperty(key: String, defaultValue: Property): Property {
+    val value = this.getString(key, "")
+    return if (value.isNullOrBlank()) {
+        defaultValue
+    } else {
+        Property.values().firstOrNull() { it.toString() == value } ?: defaultValue
     }
 }
 
 fun SharedPreferences.parseMadgwickMode(key: String, defaultValue: MadgwickFilter.Mode): MadgwickFilter.Mode {
     val value = getString(key, "")
-    return try {
-        if (value.isNullOrBlank()) {
-            defaultValue
-        } else {
-            MadgwickFilter.Mode.valueOf(value)
-        }
-    } catch (ex: Exception) {
+    return if (value.isNullOrBlank()) {
         defaultValue
+    } else {
+        MadgwickFilter.Mode.values().firstOrNull() { it.toString() == value } ?: defaultValue
     }
 }
 
 fun SharedPreferences.parseSeparatedCorrectionMode(key: String, defaultValue: SeparatedCorrectionFilter.Mode): SeparatedCorrectionFilter.Mode {
     val value = getString(key, "")
-    return try {
-        if (value.isNullOrBlank()) {
-            defaultValue
-        } else {
-            SeparatedCorrectionFilter.Mode.valueOf(value)
-        }
-    } catch (ex: Exception) {
+    return if (value.isNullOrBlank()) {
         defaultValue
+    } else {
+        SeparatedCorrectionFilter.Mode.values().firstOrNull() { it.toString() == value } ?: defaultValue
     }
 }
+
 

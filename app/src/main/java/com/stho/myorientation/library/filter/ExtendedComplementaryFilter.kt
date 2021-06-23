@@ -1,7 +1,6 @@
 package com.stho.myorientation.library.filter
 
 import com.stho.myorientation.IExtendedComplementaryFilterOptions
-import com.stho.myorientation.IFilterOptions
 import com.stho.myorientation.Measurements
 import com.stho.myorientation.Method
 import com.stho.myorientation.library.Timer
@@ -64,6 +63,7 @@ class ExtendedComplementaryFilter(options: IExtendedComplementaryFilterOptions) 
         hasMagnetometer = false
         hasAcceleration = false
         hasGyro = false
+        hasEstimate = false
     }
 
     private fun updateOrientationAnglesFromGyroscope() {
@@ -110,7 +110,7 @@ class ExtendedComplementaryFilter(options: IExtendedComplementaryFilterOptions) 
         val error = error(estimate, a, m)
 
         val gain = gain()
-        val omega = w - error * gain
+        val omega = w + error * gain
         val qDot = estimate * omega.asQuaternion() * 0.5
         val delta = qDot * dt
         estimate = (estimate + delta).normalize()
@@ -125,7 +125,7 @@ class ExtendedComplementaryFilter(options: IExtendedComplementaryFilterOptions) 
     private fun gain(): Double {
         val t = timer.getTime()
         return if (t < tInit) {
-            kNorm + (tInit - t) / tInit * (kInit - kNorm)
+            kNorm + ((tInit - t) / tInit) * (kInit - kNorm)
         } else {
             kNorm
         }
@@ -135,14 +135,17 @@ class ExtendedComplementaryFilter(options: IExtendedComplementaryFilterOptions) 
         val aNorm = a.norm()
         val mNorm = m.norm()
         return when {
-            aNorm > 0 && mMax > mNorm && mNorm > mMin -> {
-                val aHat = a.normalize()
-                val mHat = m.normalize()
-                aError(q, aHat) + eError(q, mHat, mHat)
+            aNorm > 0 && mMin < mNorm && mNorm < mMax -> {
+                val aHat = a / aNorm
+                val mHat = m / mNorm
+                val ea = aError(q, aHat)
+                val em = eError(q, aHat, mHat)
+                ea + em
             }
             aNorm > 0 -> {
-                val aHat = a.normalize()
-                aError(q, aHat)
+                val aHat = a / aNorm
+                val ea = aError(q, aHat)
+                ea
             }
             else -> {
                 Vector(0.0, 0.0, 0.0)
@@ -153,29 +156,31 @@ class ExtendedComplementaryFilter(options: IExtendedComplementaryFilterOptions) 
 
     companion object {
 
-        private fun aError(q: Quaternion, aa: Vector): Vector {
-            // Prediction of the normalized acceleration after rotating the reference Vector (0, 0, 1) from earth to sensor frame
-            // --> aPrediction = (0, 0, 1).rotateBy(q.inverse()) = M(q).transpose() * (0, 0, 1)
+        /**
+         * Prediction of the normalized acceleration after rotating the reference Vector (0, 0, 1) from earth to sensor frame
+         *      aPrediction = (0, 0, 1).rotateBy(q.inverse()) = M(q).transpose() * (0, 0, 1)
+         */
+        private fun aError(q: Quaternion, a: Vector): Vector {
             val prediction = Vector(
                 x = q.m31,
                 y = q.m32,
                 z = q.m33,
             )
-            return aa.cross(prediction)
+            return a.cross(prediction)
         }
 
-        private fun eError(q: Quaternion, aa: Vector, mm: Vector): Vector {
-
-            // Prediction of the normalized cross product of acceleration and magnetic field after rotating the reference Vector (-1, 0, 0) from earth to sensor frame
-            // --> ePrediction = (-1, 0, 0).rotateBy(q.inverse()) = M(q).transpose() * (-1, 0, 0)
+        /**
+         * Prediction of the normalized cross product of acceleration and magnetic field after rotating the reference Vector (-1, 0, 0) from earth to sensor frame
+         *      ePrediction = (-1, 0, 0).rotateBy(q.inverse()) = M(q).transpose() * (-1, 0, 0)
+         */
+        private fun eError(q: Quaternion, a: Vector, m: Vector): Vector {
             val prediction = Vector(
                 x = -q.m11,
                 y = -q.m12,
                 z = -q.m13,
             )
-
-            return aa.cross(mm).cross(prediction)
-
+            val e = a.cross(m)
+            return e.cross(prediction)
         }
     }
 }

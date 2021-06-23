@@ -15,7 +15,7 @@ import kotlin.math.sqrt
  *      implementation sample: https://github.com/Josef4Sci/AHRS_Filter/blob/master/Filters/MadgwickAHRS3.m
  */
 class MadgwickFilter(options: IMadgwickFilterOptions) :
-    AbstractOrientationFilter(Method.MadgwickFilter,options) {
+    AbstractOrientationFilter(Method.MadgwickFilter, options) {
 
     private val beta: Double = sqrt(3.0f / 4.0f) * options.gyroscopeMeanError
     private val gamma: Double = sqrt(3.0f / 4.0f) * options.gyroscopeDrift

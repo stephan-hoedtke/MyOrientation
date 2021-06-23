@@ -14,18 +14,23 @@ import kotlin.math.abs
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val methodLiveData: MutableLiveData<Method> = MutableLiveData<Method>().apply { value = Method.Composition }
     private val optionsLiveData: MutableLiveData<Options> = MutableLiveData<Options>().apply { value = Options() }
     private val zoomLiveData: MutableLiveData<Double> = MutableLiveData<Double>().apply { value = DEFAULT_ZOOM }
-    private val propertyLiveData: MutableLiveData<Property> = MutableLiveData<Property>().apply { value = Property.CenterAzimuth}
     private val startTimeLiveData: MutableLiveData<Double> = MutableLiveData<Double>().apply { value = DEFAULT_START_TIME }
     private val orientationLiveData: MutableLiveData<Orientation> = MutableLiveData<Orientation>().apply { value = Orientation.default }
     private val cubeOrientationLiveData: MutableLiveData<EulerAngles> = MutableLiveData<EulerAngles>().apply { value = EulerAngles.default }
     private val processorConsumptionLiveData: MutableLiveData<Double> = MutableLiveData<Double>().apply { value = 0.0 }
     private val processorConsumptionTimer = Timer()
 
+    init {
+        loadOptions()
+    }
+
     val methodLD: LiveData<Method>
-        get() = methodLiveData
+        get() =  Transformations.map(optionsLiveData) { options -> options.method }
+
+    val propertyLD: LiveData<Property>
+        get() = Transformations.map(optionsLiveData) { options -> options.property }
 
     val zoomLD: LiveData<Double>
         get() = zoomLiveData
@@ -33,21 +38,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val startTimeLD: LiveData<Double>
         get() = startTimeLiveData
 
-    val propertyLD: LiveData<Property>
-        get() = propertyLiveData
-
     val optionsLD: LiveData<Options>
         get() = optionsLiveData
 
-    var options: Options
+    val options: Options
         get() = optionsLiveData.value ?: Options()
-        set(value) { optionsLiveData.postValue(value) }
-
-    val updateOrientationDelayLD: LiveData<Long>
-        get() = Transformations.map(optionsLiveData) { params -> params.updateOrientationDelay }
-
-    val updateSensorFusionDelayLD: LiveData<Long>
-        get() = Transformations.map(optionsLiveData) { params -> params.updateSensorFusionDelay }
 
     val accelerationFactorLD: LiveData<Double>
         get() = Transformations.map(optionsLiveData) { params -> params.accelerationFactor }
@@ -109,30 +104,85 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         })
     }
 
-    internal fun touch(filterParameters: Options) {
-        optionsLiveData.value = filterParameters
-        touch()
+    fun setUpdateOrientationDelay(newDelay: Long) {
+        touch(options.apply {
+            updateOrientationDelay = newDelay
+        })
     }
 
-    private fun touch() {
-        methodLiveData.postValue(method)
+    fun setMethod(newMethod: Method) {
+        touch(options.apply {
+            method = newMethod
+        })
+    }
+
+    fun setProperty(newProperty: Property) {
+        touch(options.apply {
+            property = newProperty
+        })
+    }
+
+    fun setAccelerationFactor(newAccelerationFactor: Double) {
+        touch(options.apply {
+            accelerationFactor = newAccelerationFactor
+        })
+    }
+
+    fun setVarianceAccelerometer(newVariance: Double) {
+        touch(options.apply {
+            varianceAccelerometer = newVariance
+        })
+    }
+
+    fun setVarianceMagnetometer(newVariance: Double) {
+        touch(options.apply {
+            varianceMagnetometer = newVariance
+        })
+    }
+
+    fun setVarianceGyroscope(newVariance: Double) {
+        touch(options.apply {
+            varianceGyroscope = newVariance
+        })
+    }
+
+    fun setOptions(
+        newFilterCoefficient: Double,
+        newLambda1: Double,
+        newLambda2: Double,
+        newKNorm: Double,
+        newGyroscopeMeanError: Double,
+        newGyroscopeDrift: Double) {
+        touch(options.apply {
+            filterCoefficient = newFilterCoefficient
+            lambda1 = newLambda1
+            lambda2 = newLambda2
+            kNorm = newKNorm
+            gyroscopeMeanError = newGyroscopeMeanError
+            gyroscopeDrift = newGyroscopeDrift
+        })
+    }
+
+    fun resetCubeOrientation() {
+        cubeOrientationLiveData.postValue(EulerAngles.default)
     }
 
     fun reset() {
-        methodLiveData.postValue(method)
         startTimeLiveData.postValue(DEFAULT_START_TIME)
         zoomLiveData.postValue(DEFAULT_ZOOM)
     }
 
-    fun resetDefaultValues() {
+    fun resetDefaultOptions() {
         touch(options.apply {
-            resetDefaultValues()
+            resetDefaultOptions()
         })
     }
 
-    var method: Method
-        get() = methodLiveData.value ?: Method.AccelerometerMagnetometer
-        set(value) { methodLiveData.postValue(value) }
+    val method: Method
+        get() = options.method
+
+    val property: Property
+        get() = options.property
 
     fun onZoom(f: Double) {
         val zoom: Double = zoomLiveData.value ?: DEFAULT_ZOOM
@@ -145,10 +195,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val zoom: Double = zoomLiveData.value ?: DEFAULT_ZOOM
         startTimeLiveData.postValue(startTime + dx / zoom)
     }
-
-    var property: Property
-        get() = propertyLiveData.value ?: Property.Azimuth
-        set(value) { propertyLiveData.postValue(value) }
 
     fun onUpdateOrientation(orientation: Orientation) {
         Repository.instance.recordEntry(Method.Damped, orientation)
@@ -173,6 +219,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val consumption = processorConsumptionTimer.getTime()
         val oldValue = processorConsumptionLiveData.value ?: consumption
         val difference = consumption - oldValue
+        // apply a linear low pass filter ...
         val percentage = abs(difference) / (consumption + oldValue)
         val gain = when {
             percentage > 0.5 -> 0.01
@@ -195,6 +242,21 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             Method.Composition -> CompositionFilter(options)
             Method.Damped -> CompositionFilter(options)
         }
+
+    private fun loadOptions() {
+        touch(options.apply {
+            OptionsManager(getApplication()).load(this)
+        })
+    }
+
+    private fun saveOptions(options: Options) {
+        OptionsManager(getApplication()).save(options)
+    }
+
+    private fun touch(options: Options) {
+        saveOptions(options)
+        optionsLiveData.postValue(options)
+    }
 
     companion object {
         private const val DEFAULT_ZOOM = 100.0

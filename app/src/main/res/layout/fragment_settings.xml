@@ -43,6 +43,8 @@
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@id/label_method"
                     android:layout_marginVertical="@dimen/fab_margin"
+                    android:spinnerMode="dropdown"
+                    android:theme="@style/MySpinnerStyle"
                     android:popupBackground="@color/dark_gray"
                     android:entries="@array/methods" />
 
@@ -60,6 +62,8 @@
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toBottomOf="@id/label_property"
                     android:layout_marginVertical="@dimen/fab_margin"
+                    android:spinnerMode="dropdown"
+                    android:theme="@style/MySpinnerStyle"
                     android:popupBackground="@color/dark_gray"
                     android:entries="@array/properties" />
 
@@ -167,7 +171,7 @@
 
                 </RadioGroup>
 
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/gyroscope_mean_error"
                     android:layout_width="200sp"
                     android:layout_height="wrap_content"
@@ -187,7 +191,7 @@
                     android:labelFor="@id/gyroscope_mean_error"
                     android:text="@string/gyroscope_mean_error" />
 
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/gyroscope_drift"
                     android:layout_width="200sp"
                     android:layout_height="wrap_content"
@@ -215,7 +219,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/k_norm"
                     android:layout_width="200sp"
                     android:layout_height="wrap_content"
@@ -275,7 +279,7 @@
 
                 </RadioGroup>
 
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/lambda1"
                     android:layout_width="200sp"
                     android:layout_height="wrap_content"
@@ -296,7 +300,7 @@
                     android:labelFor="@id/lambda1"
                     android:text="@string/label_lambda1" />
 
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/lambda2"
                     android:layout_width="200sp"
                     android:layout_height="wrap_content"
@@ -409,7 +413,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/separatedCorrectionFilterOptions">
 
-                <EditText
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/filter_coefficient"
                     android:layout_width="200sp"
                     android:layout_height="wrap_content"
@@ -495,32 +499,7 @@
                     android:max="100"
                     android:progress="20" />
 
-                <TextView
-                    android:id="@+id/label_update_sensor_fusion_delay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/seekbar_update_orientation_delay"
-                    android:layout_marginTop="@dimen/fab_margin"
-                    android:text="@string/label_update_sensor_fusion_delay" />
-
-                <TextView
-                    android:id="@+id/update_sensor_fusion_delay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/label_update_sensor_fusion_delay"
-                    android:text="@string/default_delay" />
-
-                <SeekBar
-                    android:id="@+id/seekbar_update_sensor_fusion_delay"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@id/label_update_sensor_fusion_delay"
-                    android:max="100"
-                    android:progress="20" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
+             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- Buttons *********************************************************************** -->
             <com.google.android.material.button.MaterialButton

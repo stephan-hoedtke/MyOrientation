@@ -171,7 +171,7 @@ class MainFragment : Fragment() {
     }
 
     private fun onChangeProperty(newProperty: Property) {
-        viewModel.property = newProperty
+        viewModel.setProperty(newProperty)
     }
 
     /**

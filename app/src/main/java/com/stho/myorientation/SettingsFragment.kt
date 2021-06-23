@@ -42,63 +42,34 @@ class SettingsFragment : Fragment() {
         binding = FragmentSettingsBinding.inflate(inflater, container, false)
 
         binding.buttonDone.setOnClickListener {
-            onDone()
+            onSave()
         }
         binding.buttonReset.setOnClickListener {
-            viewModel.resetDefaultValues()
+            viewModel.resetDefaultOptions()
         }
         binding.seekbarAccelerationFactor.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                viewModel.options.apply {
-                    accelerationFactor = progressToValue(progress, MAX_ACCELERATION_FACTOR)
-                }.also {
-                    viewModel.touch(it)
-                }
+                viewModel.setAccelerationFactor(progressToValue(progress, MAX_ACCELERATION_FACTOR))
             }
         })
         binding.seekbarVarianceAcceleration.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                viewModel.options.apply {
-                    varianceAccelerometer = progressToValue(progress, MAX_STANDARD_DEVIATION).square()
-                }.also {
-                    viewModel.touch(it)
-                }
+                viewModel.setVarianceAccelerometer(progressToValue(progress, MAX_STANDARD_DEVIATION).square())
             }
         })
         binding.seekbarVarianceMagnetometer.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                viewModel.options.apply {
-                    varianceMagnetometer = progressToValue(progress, MAX_STANDARD_DEVIATION).square()
-                }.also {
-                    viewModel.touch(it)
-                }
+                viewModel.setVarianceMagnetometer(progressToValue(progress, MAX_STANDARD_DEVIATION).square())
             }
         })
         binding.seekbarVarianceGyroscope.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                viewModel.options.apply {
-                    varianceGyroscope = progressToValue(progress, MAX_STANDARD_DEVIATION).square()
-                }.also {
-                    viewModel.touch(it)
-                }
+                viewModel.setVarianceGyroscope(progressToValue(progress, MAX_STANDARD_DEVIATION).square())
             }
         })
         binding.seekbarUpdateOrientationDelay.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                viewModel.options.apply {
-                    updateOrientationDelay = progressToValue(progress, MAX_DELAY)
-                }.also {
-                    viewModel.touch(it)
-                }
-            }
-        })
-        binding.seekbarUpdateSensorFusionDelay.setOnSeekBarChangeListener(object : SeekBarChangeListener() {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                viewModel.options.apply {
-                    updateSensorFusionDelay = progressToValue(progress, MAX_DELAY)
-                }.also {
-                    viewModel.touch(it)
-                }
+                viewModel.setUpdateOrientationDelay(progressToValue(progress, MAX_DELAY))
             }
         })
         val properties: MutableList<Property> = ArrayList()
@@ -113,11 +84,11 @@ class SettingsFragment : Fragment() {
         binding.spinnerProperty.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 val item = parent.getItemAtPosition(position) as Property
-                viewModel.property = item
+                viewModel.setProperty(item)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                viewModel.property = Property.Azimuth
+                viewModel.setProperty(Property.Azimuth)
             }
         }
 
@@ -137,11 +108,11 @@ class SettingsFragment : Fragment() {
         binding.spinnerMethod.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 val item = parent.getItemAtPosition(position) as Method
-                viewModel.method = item
+                viewModel.setMethod(item)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
-                viewModel.method = Method.AccelerometerMagnetometer
+                viewModel.setMethod(Method.AccelerometerMagnetometer)
             }
         }
 
@@ -172,15 +143,15 @@ class SettingsFragment : Fragment() {
         updateActionBar()
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu){
-        super.onPrepareOptionsMenu(menu)
-        menu.findItem(R.id.action_cube).isVisible = false
-        menu.findItem(R.id.action_settings).isVisible = false
-        menu.findItem(R.id.action_statistics).isVisible = false
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        menu.clear()
+        inflater.inflate(R.menu.menu_settings, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.action_save -> onSave()
             android.R.id.home -> onHome()
             else -> super.onOptionsItemSelected(item)
         }
@@ -191,22 +162,22 @@ class SettingsFragment : Fragment() {
         return true
     }
 
-    private fun onDone() {
+    private fun onSave(): Boolean {
         try {
-            viewModel.options.apply {
-                filterCoefficient = binding.filterCoefficient.text.toString().toDouble()
-                lambda1 = binding.lambda1.text.toString().toDouble()
-                lambda2 = binding.lambda2.text.toString().toDouble()
-                kNorm = binding.kNorm.text.toString().toDouble()
-                gyroscopeMeanError = binding.gyroscopeMeanError.text.toString().toDouble()
-                gyroscopeDrift = binding.gyroscopeDrift.text.toString().toDouble()
-            }.also {
-                viewModel.touch(it)
-            }
+            viewModel.setOptions(
+                newFilterCoefficient = binding.filterCoefficient.text.toString().toDouble(),
+                newLambda1 = binding.lambda1.text.toString().toDouble(),
+                newLambda2 = binding.lambda2.text.toString().toDouble(),
+                newKNorm = binding.kNorm.text.toString().toDouble(),
+                newGyroscopeMeanError = binding.gyroscopeMeanError.text.toString().toDouble(),
+                newGyroscopeDrift = binding.gyroscopeDrift.text.toString().toDouble(),
+            )
             onHome()
+            return true
         }
         catch (ex: Exception) {
             mainActivity.showSnackbar("Error: ${ex.message}")
+            return false
         }
     }
 
@@ -260,7 +231,6 @@ class SettingsFragment : Fragment() {
         // Filter Coefficient
         binding.filterCoefficient.setText(Formatter.df4.format(options.filterCoefficient))
 
-
         // Extended Complementary Filter
         binding.kNorm.setText(Formatter.df4.format(options.kNorm))
 
@@ -281,10 +251,6 @@ class SettingsFragment : Fragment() {
         binding.updateOrientationDelay.text = options.updateOrientationDelay.toString()
         binding.seekbarUpdateOrientationDelay.max = 100
         binding.seekbarUpdateOrientationDelay.progress = valueToProgress(options.updateOrientationDelay, MAX_DELAY)
-
-        binding.updateSensorFusionDelay.text = options.updateSensorFusionDelay.toString()
-        binding.seekbarUpdateSensorFusionDelay.max = 100
-        binding.seekbarUpdateSensorFusionDelay.progress = valueToProgress(options.updateSensorFusionDelay, MAX_DELAY)
     }
 
     private fun updateActionBar() {

@@ -84,5 +84,6 @@
     <string name="default_double">0.5</string>
     <string name="label_lambda1">lambda1</string>
     <string name="label_lambda2">lambda2</string>
+    <string name="label_save">Save</string>
 </resources>
 

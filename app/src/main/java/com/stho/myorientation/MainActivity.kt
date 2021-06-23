@@ -69,17 +69,11 @@ class MainActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onStart() {
-        super.onStart()
-        OptionsManager(this).load(viewModel)
-    }
-
     override fun onResume() {
         super.onResume()
 
         try {
             executeHandlerToUpdateOrientation(viewModel.options.updateOrientationDelay)
-            executeHandlerToFuseSensors(viewModel.options.updateSensorFusionDelay)
             executeHandlerToCleanupHistory()
             orientationSensorListener.onResume()
         } catch (ex: Exception) {
@@ -91,11 +85,6 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
         stopHandler()
         orientationSensorListener.onPause()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        OptionsManager(this).save(viewModel)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -155,18 +144,6 @@ class MainActivity : AppCompatActivity() {
             override fun run() {
                 CoroutineScope(Dispatchers.Default).launch {
                     viewModel.onUpdateOrientation(orientationFilter.currentOrientation)
-                }
-                handler.postDelayed(this, delayMillis)
-            }
-        }
-        handler.postDelayed(runnableCode, 100)
-    }
-
-    private fun executeHandlerToFuseSensors(delayMillis: Long = 100) {
-        val runnableCode: Runnable = object : Runnable {
-            override fun run() {
-                CoroutineScope(Dispatchers.Default).launch {
-                    orientationFilter.fuseSensors()
                 }
                 handler.postDelayed(this, delayMillis)
             }

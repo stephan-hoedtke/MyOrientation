@@ -34,7 +34,25 @@ class CubeFragment : Fragment() {
                 viewModel.rotateCube(alpha, beta)
             }
         })
+        binding.method.setOnClickListener {
+            onSettings()
+        }
+        binding.alpha.setOnLongClickListener {
+            onResetCubeOrientation()
+        }
+        binding.beta.setOnLongClickListener {
+            onResetCubeOrientation()
+        }
         return binding.root
+    }
+
+    private fun onSettings() {
+        findNavController().navigate(R.id.action_global_SettingsFragment)
+    }
+
+    private fun onResetCubeOrientation(): Boolean {
+        viewModel.resetCubeOrientation()
+        return true
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

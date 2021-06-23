@@ -51,25 +51,9 @@ abstract class AbstractOrientationFilter(private val method: Method, options: IF
     internal fun getQuaternionFromAccelerometerMagnetometerReadings(accelerometerReading: FloatArray, magnetometerReading: FloatArray, defaultValue: Quaternion): Quaternion =
         getQuaternionFromAccelerometerMagnetometerReadings(accelerometerReading, magnetometerReading, deviceRotation, defaultValue)
 
-    override fun fuseSensors() {
-        // Nothing to do in the general case. Only on fusion filter...
-    }
-
     companion object {
 
         private const val EPSILON: Double = 0.000000001
-
-        internal fun readDocumentation(context: Context, fileName: String): String =
-            try {
-                val asset: InputStream = context.assets.open(fileName)
-                val size: Int = asset.available()
-                val buffer = ByteArray(size)
-                asset.read(buffer)
-                asset.close()
-                String(buffer)
-            } catch(ex: Exception) {
-                ex.toString()
-            }
 
        /**
          * Returns the rotation changes measured by the gyroscope as a Quaternion

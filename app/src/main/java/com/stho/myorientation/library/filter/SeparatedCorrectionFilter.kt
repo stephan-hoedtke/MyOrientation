@@ -73,6 +73,7 @@ class SeparatedCorrectionFilter(options: ISeparatedCorrectionFilterOptions) :
         hasMagnetometer = false
         hasAcceleration = false
         hasGyro = false
+        hasEstimate = false
     }
 
     private fun updateOrientationAnglesFromGyroscope() {
@@ -133,38 +134,43 @@ class SeparatedCorrectionFilter(options: ISeparatedCorrectionFilterOptions) :
         )
 
         val aAlpha = acos(a.dot(aPrediction))
-        val aCorrection = a.cross(aPrediction).normalize()
+        val aCorrectionRaw = a.cross(aPrediction)
+        val aNorm = aCorrectionRaw.norm()
+        val aCorrection = if (aNorm > EPS) aCorrectionRaw / aNorm else Vector.default
 
         val mAlpha = acos(Vector.dot(m, mPrediction))
-        val mCorrection = Vector.cross(m, mPrediction).normalize()
+        val mCorrectionRaw = Vector.cross(m, mPrediction)
+        val mNorm = mCorrectionRaw.norm()
+        val mCorrection = if (mNorm > EPS) mCorrectionRaw / mNorm else Vector.default
 
         val aBeta = min(aAlpha * lambda1, lambda2)
         val mBeta = min(mAlpha * lambda1, lambda2)
 
         val fCorrection: Vector = aCorrection * (aBeta / 2) + mCorrection * (mBeta / 2)
+        val fNorm = fCorrection.norm()
+        if (fNorm > EPS) {
+            val qCorrection = when (mode) {
+                Mode.SCF -> {
+                    val c = sin(fNorm) / fNorm
+                    val v = fCorrection * c
+                    Quaternion(s = sqrt(1 - v.normSquare()), v = v)
+                }
+                Mode.FSCF -> {
+                    Quaternion(s = 1.0, v = fCorrection)
+                }
+            }
 
-        val qCorrection = when(mode) {
-            Mode.SCF -> {
-                val n = fCorrection.norm()
-                val c = sin(n) / n
-                val v = fCorrection * c
-                Quaternion(s = sqrt(1 - v.normSquare()), v = v)
-            }
-            Mode.FSCF -> {
-                Quaternion(s = 1.0, v = fCorrection)
-            }
+            estimate = (prediction * qCorrection).normalize()
         }
-
-        estimate = (prediction * qCorrection).normalize()
+        else {
+            estimate = prediction
+        }
 
         hasEstimate = true
     }
 
-    private fun getQuaternionFromAccelerometerMagnetometerReadings() {
-
-    }
-
     companion object {
+        private const val EPS = 0.0000001
         /**
          * Returns the magnetic field in earth frame after distortion correction
          */
