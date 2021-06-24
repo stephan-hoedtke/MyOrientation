@@ -116,14 +116,9 @@ class MadgwickFilter(options: IMadgwickFilterOptions) :
         val mHat = Vector.fromFloatArray(magnetometerReading).normalize()
         val w = Vector.fromFloatArray(gyroscopeReading).asQuaternion()
 
-        //Log.d("MGW", "Estimate: s=${estimate.s.f11()}, x=${estimate.x.f11()}, y=${estimate.y.f11()}, z=${estimate.z.f11()}")
-
         if (!hasEstimate) {
             estimate = super.getQuaternionFromAccelerometerMagnetometerReadings(accelerometerReading, magnetometerReading, Quaternion.default)
         }
-
-        //Log.d("MGW", "Accelerometer: Reading(x=${aHat.x.f11()}, y=${aHat.y.f11()}, z=${aHat.z.f11()}) ")
-        //Log.d("MGW", "Magnetometer: Reading(x=${mHat.x.f11()}, y=${mHat.y.f11()}, z=${mHat.z.f11()}) ")
 
         // compute the gradient (matrix multiplication) estimated direction of the gyroscope error
         val gradient: Quaternion = gradient(estimate, aHat, mHat)
@@ -145,10 +140,6 @@ class MadgwickFilter(options: IMadgwickFilterOptions) :
         val qDot = qDotGyro - qDotCorrection
         val delta = qDot * dt
         estimate = (estimate + delta).normalize()
-
-        //Log.d("MGW", "Gyro(x=${w.x.f11()}, y=${w.y.f11()}, z=${w.z.f11()}) " +
-        //        "Error: s=${gradient.s.f11()} x=${gradient.x.f11()} y=${gradient.y.f11()} z=${gradient.z.f11()} |gradient|=${gradient.norm().f11()} " +
-        //        "New Estimate: s=${estimate.s.f11()}, x=${estimate.x.f11()}, y=${estimate.y.f11()}, z=${estimate.z.f11()}")
 
         hasEstimate = true
     }

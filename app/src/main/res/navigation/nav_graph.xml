@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/MainFragment">
+    app:startDestination="@id/CubeFragment">
 
     <fragment
-        android:id="@+id/MainFragment"
-        android:name="com.stho.myorientation.MainFragment"
+        android:id="@+id/SensorsFragment"
+        android:name="com.stho.myorientation.SensorsFragment"
         android:label="@string/label_fragment_main"
-        tools:layout="@layout/fragment_main"/>
+        tools:layout="@layout/fragment_sensors"/>
 
     <fragment
         android:id="@+id/SettingsFragment"
@@ -23,7 +23,6 @@
         android:label="@string/label_fragment_documentation"
         tools:layout="@layout/fragment_documentation"/>
 
-
     <fragment
         android:id="@+id/CubeFragment"
         android:name="com.stho.myorientation.CubeFragment"
@@ -35,9 +34,12 @@
         android:name="com.stho.myorientation.StatisticsFragment"
         android:label="@string/label_fragment_statistics"
         tools:layout="@layout/fragment_statistics"/>
+
     <action android:id="@+id/action_global_CubeFragment" app:destination="@id/CubeFragment" />
     <action android:id="@+id/action_global_SettingsFragment" app:destination="@id/SettingsFragment" />
-    <action android:id="@+id/action_global_StatisticsFragment" app:destination="@id/StatisticsFragment" /><action android:id="@+id/action_global_DocumentationFragment" app:destination="@id/DocumentationFragment"/>
+    <action android:id="@+id/action_global_StatisticsFragment" app:destination="@id/StatisticsFragment" />
+    <action android:id="@+id/action_global_DocumentationFragment" app:destination="@id/DocumentationFragment"/>
+    <action android:id="@+id/action_global_SensorsFragment" app:destination="@id/SensorsFragment"/>
 
 
 </navigation>

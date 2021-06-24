@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/action_save"
-        android:orderInCategory="150"
+        android:orderInCategory="300"
         android:title="@string/label_save"
         android:icon="@drawable/ok"
         app:showAsAction="always" />

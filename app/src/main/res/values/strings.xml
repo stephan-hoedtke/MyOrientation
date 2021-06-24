@@ -2,6 +2,7 @@
     <string name="app_name">Orientation</string>
     <string name="action_statistics">Statistics</string>
     <string name="action_settings">Settings</string>
+    <string name="action_sensors">Sensors</string>
     <string name="action_cube">Cube</string>
     <string name="action_documentation">Documentation</string>
     <string name="action_pdf">PDF</string>
@@ -52,7 +53,7 @@
     <string name="label_cube_fragment">Cube Fragment</string>
     <string name="label_mean">Mean</string>
     <string name="label_variance">Variance</string>
-    <string name="label_standard_deviation">Std. Deviation</string>
+    <string name="label_standard_deviation">Deviation</string>
     <string name="label_update_orientation_delay">Update Orientation (ms)</string>
     <string name="label_update_sensor_fusion_delay">Update Sensor Fusion (ms)</string>
     <string name="label_x">X</string>

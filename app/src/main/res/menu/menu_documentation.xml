@@ -5,7 +5,7 @@
 
     <item
         android:id="@+id/action_pdf"
-        android:orderInCategory="130"
+        android:orderInCategory="200"
         android:title="@string/action_pdf"
         android:icon="@drawable/pdf"
         app:showAsAction="ifRoom" />
@@ -13,7 +13,7 @@
 
     <item
         android:id="@+id/action_web"
-        android:orderInCategory="140"
+        android:orderInCategory="210"
         android:title="@string/action_web"
         android:icon="@drawable/web"
         app:showAsAction="ifRoom" />

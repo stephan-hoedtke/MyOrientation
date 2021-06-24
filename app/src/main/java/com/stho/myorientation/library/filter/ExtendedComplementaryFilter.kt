@@ -98,14 +98,9 @@ class ExtendedComplementaryFilter(options: IExtendedComplementaryFilterOptions) 
         val m = Vector.fromFloatArray(magnetometerReading)
         val w = Vector.fromFloatArray(gyroscopeReading)
 
-        //Log.d("ECF", "Estimate: s=${estimate.s.f11()}, x=${estimate.x.f11()}, y=${estimate.y.f11()}, z=${estimate.z.f11()}")
-
         if (!hasEstimate) {
             estimate = super.getQuaternionFromAccelerometerMagnetometerReadings(accelerometerReading, magnetometerReading, Quaternion.default)
         }
-
-        //Log.d("ECF", "Accelerometer: Reading(x=${a.x.f11()}, y=${a.y.f11()}, z=${a.z.f11()}) ")
-        //Log.d("ECF", "Magnetometer: Reading(x=${m.x.f11()}, y=${m.y.f11()}, z=${m.z.f11()}) ")
 
         val error = error(estimate, a, m)
 
@@ -114,10 +109,6 @@ class ExtendedComplementaryFilter(options: IExtendedComplementaryFilterOptions) 
         val qDot = estimate * omega.asQuaternion() * 0.5
         val delta = qDot * dt
         estimate = (estimate + delta).normalize()
-
-        //Log.d("ECF", "Gyro(x=${w.x.f11()}, y=${w.y.f11()}, z=${w.z.f11()}) " +
-        //        "Error(x=${error.x.f11()}, y=${error.y.f11()}, z=${error.z.f11()}) |e|=${error.norm().f11()} " +
-        //        "New Estimate: s=${estimate.s.f11()}, x=${estimate.x.f11()}, y=${estimate.y.f11()}, z=${estimate.z.f11()}")
 
         hasEstimate = true
     }
@@ -138,17 +129,14 @@ class ExtendedComplementaryFilter(options: IExtendedComplementaryFilterOptions) 
             aNorm > 0 && mMin < mNorm && mNorm < mMax -> {
                 val aHat = a / aNorm
                 val mHat = m / mNorm
-                val ea = aError(q, aHat)
-                val em = eError(q, aHat, mHat)
-                ea + em
+                aError(q, aHat) + eError(q, aHat, mHat)
             }
             aNorm > 0 -> {
                 val aHat = a / aNorm
-                val ea = aError(q, aHat)
-                ea
+                aError(q, aHat)
             }
             else -> {
-                Vector(0.0, 0.0, 0.0)
+                Vector.default
             }
         }
     }

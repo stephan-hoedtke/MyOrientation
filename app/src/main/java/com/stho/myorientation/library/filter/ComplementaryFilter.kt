@@ -13,6 +13,9 @@ import com.stho.myorientation.library.algebra.Vector
 class ComplementaryFilter(options: IComplementaryFilterOptions) :
     AbstractOrientationFilter(Method.ComplementaryFilter, options) {
 
+    override val pdf: String
+        get() = "ComplementaryFusion.pdf"
+
     private val interpolationFactor = 1 - options.filterCoefficient
     private val accelerometerReading = FloatArray(3)
     private val magnetometerReading = FloatArray(3)

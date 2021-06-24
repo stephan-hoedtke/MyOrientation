@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_statistics -> onStatistics()
             R.id.action_settings -> onSettings()
-            R.id.action_cube -> onCube()
+            R.id.action_sensors -> onSensors()
             R.id.action_documentation -> onDocumentation()
             android.R.id.home -> onHome()
             else -> super.onOptionsItemSelected(item)
@@ -111,6 +111,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun onSettings(): Boolean {
         findNavController().navigate(R.id.action_global_SettingsFragment)
+        return true
+    }
+
+    private fun onSensors(): Boolean {
+        findNavController().navigate(R.id.action_global_SensorsFragment)
         return true
     }
 

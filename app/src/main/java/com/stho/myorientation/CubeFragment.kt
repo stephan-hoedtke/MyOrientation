@@ -17,7 +17,6 @@ class CubeFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
     private lateinit var binding: FragmentCubeBinding
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(requireActivity()).get(MainViewModel::class.java)
@@ -43,11 +42,26 @@ class CubeFragment : Fragment() {
         binding.beta.setOnLongClickListener {
             onResetCubeOrientation()
         }
+        binding.buttonSensors.setOnClickListener { onSensors() }
+        binding.buttonDocumentation.setOnClickListener { onDocumentation() }
+        binding.buttonStatistics.setOnClickListener { onStatistics() }
         return binding.root
+    }
+
+    private fun onSensors() {
+        findNavController().navigate(R.id.action_global_SensorsFragment)
     }
 
     private fun onSettings() {
         findNavController().navigate(R.id.action_global_SettingsFragment)
+    }
+
+    private fun onStatistics() {
+        findNavController().navigate(R.id.action_global_StatisticsFragment)
+    }
+
+    private fun onDocumentation() {
+        findNavController().navigate(R.id.action_global_DocumentationFragment)
     }
 
     private fun onResetCubeOrientation(): Boolean {
@@ -67,9 +81,12 @@ class CubeFragment : Fragment() {
         updateActionBar()
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu){
+    override fun onPrepareOptionsMenu(menu: Menu) {
         super.onPrepareOptionsMenu(menu)
-        menu.findItem(R.id.action_cube).isVisible = false
+        // We have buttons instead ...s
+        menu.findItem(R.id.action_sensors).isVisible = false
+        menu.findItem(R.id.action_statistics).isVisible = false
+        menu.findItem(R.id.action_documentation).isVisible = false
     }
 
     private fun observeMethod(method: Method) {
@@ -93,7 +110,7 @@ class CubeFragment : Fragment() {
     private fun updateActionBar() {
         actionBar?.apply {
             setHomeButtonEnabled(true)
-            setDisplayHomeAsUpEnabled(true)
+            setDisplayHomeAsUpEnabled(false)
             title = "Orientation"
         }
     }
