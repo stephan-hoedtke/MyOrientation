@@ -19,27 +19,35 @@ class RotationUnitTests : BaseUnitTestsHelper() {
     @Test
     fun adjustForLookingAtThePhoneFromBelow_isCorrect() {
         adjustForLookingAtThePhoneFromBelow_isCorrect(
-            o = Orientation(10.0, 30.0, 0.0, 10.0, -60.0),
-            e = Orientation(10.0, 30.0, 0.0, 10.0, -60.0),
+            a = Orientation.forEulerAngles(10.0, 30.0, 0.0),10.0, 30.0, 0.0
         )
 
         adjustForLookingAtThePhoneFromBelow_isCorrect(
-            o = Orientation(10.0, 30.0, 180.0, 190.0, 60.0),
-            e = Orientation(190.0, 150.0, 0.0, 190.0, 60.0),
+            a = Orientation.forEulerAngles(10.0, 30.0, 179.0),190.0, 150.0, -1.0
         )
 
         adjustForLookingAtThePhoneFromBelow_isCorrect(
-            o = Orientation(10.0, 30.0, 160.0, 205.0, 55.0),
-            e = Orientation(190.0, 150.0, 20.0, 205.0, 55.0),
+            a = Orientation.forEulerAngles(10.0, 30.0, 181.0),190.0, 150.0, 1.0
+        )
+
+        adjustForLookingAtThePhoneFromBelow_isCorrect(
+            a = Orientation.forEulerAngles(10.0, 30.0, 180.0),190.0, 150.0, 0.0
+        )
+
+        adjustForLookingAtThePhoneFromBelow_isCorrect(
+            a = Orientation.forEulerAngles(10.0, 30.0, 180.0), 190.0, 150.0, 0.0
+        )
+
+        adjustForLookingAtThePhoneFromBelow_isCorrect(
+            a = Orientation.forEulerAngles(10.0, 30.0, 160.0),190.0, 150.0, -20.0
         )
     }
 
-    private fun adjustForLookingAtThePhoneFromBelow_isCorrect(o: Orientation, e: Orientation) {
-        val a = if (Rotation.requireAdjustmentForLookingAtThePhoneFromBelow(o))
-            Rotation.adjustForLookingAtThePhoneFromBelow(o)
-        else
-            o
-
+    private fun adjustForLookingAtThePhoneFromBelow_isCorrect(a: Orientation, azimuth: Double, pitch: Double, roll: Double) {
+        val e = Orientation.forEulerAngles(azimuth, pitch, roll)
+        assertEquals("Azimuth", azimuth, e.azimuth, EPS_E8)
+        assertEquals("Pitch", pitch, e.pitch, EPS_E8)
+        assertEquals("Roll", roll, e.roll, EPS_E8)
         assertEquals(e, a)
     }
 

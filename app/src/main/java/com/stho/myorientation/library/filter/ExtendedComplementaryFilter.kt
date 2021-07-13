@@ -148,7 +148,7 @@ class ExtendedComplementaryFilter(options: IExtendedComplementaryFilterOptions) 
          * Prediction of the normalized acceleration after rotating the reference Vector (0, 0, 1) from earth to sensor frame
          *      aPrediction = (0, 0, 1).rotateBy(q.inverse()) = M(q).transpose() * (0, 0, 1)
          */
-        private fun aError(q: Quaternion, a: Vector): Vector {
+        internal fun aError(q: Quaternion, a: Vector): Vector {
             val prediction = Vector(
                 x = q.m31,
                 y = q.m32,
@@ -161,7 +161,7 @@ class ExtendedComplementaryFilter(options: IExtendedComplementaryFilterOptions) 
          * Prediction of the normalized cross product of acceleration and magnetic field after rotating the reference Vector (-1, 0, 0) from earth to sensor frame
          *      ePrediction = (-1, 0, 0).rotateBy(q.inverse()) = M(q).transpose() * (-1, 0, 0)
          */
-        private fun eError(q: Quaternion, a: Vector, m: Vector): Vector {
+        internal fun eError(q: Quaternion, a: Vector, m: Vector): Vector {
             val prediction = Vector(
                 x = -q.m11,
                 y = -q.m12,

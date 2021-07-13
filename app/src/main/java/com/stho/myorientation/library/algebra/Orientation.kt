@@ -25,6 +25,32 @@ data class Orientation(val azimuth: Double, val pitch: Double, val roll: Double,
     fun toEulerAngles(): EulerAngles =
         EulerAngles.fromAzimuthPitchRoll(azimuth, pitch, roll)
 
+    /**
+     * Adjust for looking at the phone from below...
+     *
+     * For the rotation expressed as Quaternion, there is no change:
+     *      azimuth -> 180° + azimuth
+     *      pitch -> 180° - pitch
+     *      roll -> roll - 180°
+     *
+     *  Quaternion(azimuth, pitch, roll) = Quaternion(180° + azimuth, 180° - pitch, roll - 180°)
+     *    as Q(v,s) = Q(-v, -s)
+     */
+    fun normalize(): Orientation =
+        if (roll <= -90 || 90 <= roll) {
+            Orientation(
+                azimuth = Degree.normalize(180 + azimuth),
+                pitch = Degree.normalizeTo180(180 - pitch),
+                roll = Degree.normalizeTo180(roll - 180),
+                centerAzimuth = centerAzimuth,
+                centerAltitude = centerAltitude,
+                rotation = rotation,
+            )
+        } else {
+            this
+        }
+
+
     companion object {
         val default: Orientation =
             Orientation(
@@ -35,5 +61,8 @@ data class Orientation(val azimuth: Double, val pitch: Double, val roll: Double,
                 centerAltitude = -90.0,
                 rotation = Quaternion.default
             )
+
+        fun forEulerAngles(azimuth: Double, pitch: Double, roll: Double): Orientation =
+            Quaternion.forEulerAngles(azimuth, pitch, roll).toOrientation().normalize()
     }
 }

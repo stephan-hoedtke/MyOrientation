@@ -113,23 +113,6 @@ data class Quaternion(val v: Vector, val s: Double) : IRotation {
     fun normalize(): Quaternion =
         this * (1.0 / norm())
 
-    fun normalizePositiveX(): Quaternion =
-        // warning: do not use sign(x) as it is 0 for x = 0
-        // this method may be difficult for gradient descent debugging...
-        when {
-            x < 0 -> this * (-1.0 / norm())
-            else -> this * (1.0 / norm())
-        }
-
-    fun round(): Quaternion {
-        val n = norm()
-        val xx = (x / n).round(6)
-        val yy = (y / n).round(6)
-        val zz = (z / n).round(6)
-        val ss = (s / n).round(6)
-        return Quaternion(xx, yy, zz, ss)
-    }
-
     companion object {
         fun fromFloatArray(v: FloatArray): Quaternion =
                 if (v.size >= 4) {
@@ -137,7 +120,7 @@ data class Quaternion(val v: Vector, val s: Double) : IRotation {
                     Quaternion(x = v[0].toDouble(), y = v[1].toDouble(), z = v[2].toDouble(), s = v[3].toDouble())
                 } else {
                     // assume v[0], v[1], v[2] build the vector, so that s can be calculated for the unit quaternion
-                    val n = 1 - v[0] * v[0] - v[1] * v[1] - v[2] * v[2];
+                    val n = 1 - v[0] * v[0] - v[1] * v[1] - v[2] * v[2]
                     val s = if (n > 0) sqrt(n.toDouble()) else 0.0
                     Quaternion(x = v[0].toDouble(), y = v[1].toDouble(), z = v[2].toDouble(), s = s)
                 }

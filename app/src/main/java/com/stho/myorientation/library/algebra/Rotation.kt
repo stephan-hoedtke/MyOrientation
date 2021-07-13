@@ -56,9 +56,9 @@ object Rotation {
         val sinZ = sin(omega.z / 2)
 
         // calculate as q.inverse() of q = qy * qx * qz with
-        //  qy = (cos(Y/2) + sin(Y/2) * j)
-        //  qx = (cos(X/2) + sin(X/2) * i)
-        //  qz = (cos(Z/2) + sin(Z/2) * k)
+        //  qx = Quaternion(s = cos(X/2), v = sin(X/2) * i) for pitch
+        //  qy = Quaternion(s = cos(Y/2), v = sin(Y/2) * j) for roll
+        //  qz = Quaternion(s = cos(Z/2), v = sin(Z/2) * k) for azimuth
 
         return Quaternion(
             s = cosY * cosX * cosZ + sinY * sinX * sinZ,
@@ -270,19 +270,6 @@ object Rotation {
         return Quaternion.forRotation(w, theta)
     }
 
-    internal fun requireAdjustmentForLookingAtThePhoneFromBelow(orientation: Orientation) =
-        orientation.roll <= -90 || 90 <= orientation.roll
-
-    internal fun adjustForLookingAtThePhoneFromBelow(orientation: Orientation): Orientation =
-        Orientation(
-            azimuth = Degree.normalize(180 + orientation.azimuth),
-            pitch = Degree.normalizeTo180(180 - orientation.pitch),
-            roll = Degree.normalizeTo180(180 - orientation.roll),
-            centerAzimuth = orientation.centerAzimuth,
-            centerAltitude = orientation.centerAltitude,
-            rotation = orientation.rotation,
-        )
-
     /**
      * Jacobian Matrix for rotation by quaternion q:
      *
@@ -332,13 +319,13 @@ object Rotation {
     }
 
     internal fun isPositiveGimbalLock(eulerAngles: EulerAngles) =
-        Rotation.isGimbalLockForRadians(eulerAngles.x) && eulerAngles.x > 0
+        isGimbalLockForRadians(eulerAngles.x) && eulerAngles.x > 0
 
     internal fun isNegativeGimbalLock(eulerAngles: EulerAngles) =
-        Rotation.isGimbalLockForRadians(eulerAngles.x) && eulerAngles.x < 0
+        isGimbalLockForRadians(eulerAngles.x) && eulerAngles.x < 0
 
     internal fun isGimbalLock(eulerAngles: EulerAngles) =
-        Rotation.isGimbalLockForRadians(eulerAngles.x)
+        isGimbalLockForRadians(eulerAngles.x)
 
     /**
      * Returns if x is about +/- PI/2

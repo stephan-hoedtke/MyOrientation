@@ -23,11 +23,7 @@ abstract class AbstractOrientationFilter(private val method: Method, options: IF
     override var deviceRotation: Int = Surface.ROTATION_0
 
     protected open fun onOrientationAnglesChanged(orientation: Orientation) {
-        if (Rotation.requireAdjustmentForLookingAtThePhoneFromBelow(orientation)) {
-            setOrientation(Rotation.adjustForLookingAtThePhoneFromBelow(orientation))
-        } else {
-            setOrientation(orientation)
-        }
+        setOrientation(orientation.normalize())
     }
 
     override val pdf: String =

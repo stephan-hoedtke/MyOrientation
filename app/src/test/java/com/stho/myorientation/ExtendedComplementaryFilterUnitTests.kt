@@ -34,9 +34,9 @@ class ExtendedComplementaryFilterUnitTests : BaseUnitTestsHelper() {
         val a = Vector(0.0, 0.0, 9.81).rotateBy(q.inverse())
         val m = Vector(0.0, 18.0, -44.0).rotateBy(q.inverse())
 
-        val e = ExtendedComplementaryFilter.error(q, a, m)
-        val e0 = ExtendedComplementaryFilter.error(q0, a, m)
-        val e1 = ExtendedComplementaryFilter.error(q1, a, m)
+        val e = error(q, a, m)
+        val e0 = error(q0, a, m)
+        val e1 = error(q1, a, m)
 
         val n = e.norm()
         val n0 = e0.norm()
@@ -60,7 +60,7 @@ class ExtendedComplementaryFilterUnitTests : BaseUnitTestsHelper() {
     private fun correctionIsReducingTheError(q: Quaternion, a: Vector, m: Vector, dt: Double = 0.01) {
         val w = Vector(0.0, 0.0, 0.0)
 
-        val error = ExtendedComplementaryFilter.error(q, a, m)
+        val error = error(q, a, m)
 
         // Integrate corrected gyro measurement
         val omega = w + error * GAIN
@@ -74,12 +74,16 @@ class ExtendedComplementaryFilterUnitTests : BaseUnitTestsHelper() {
             z = q1.m33,
         )
 
-        val error1 = ExtendedComplementaryFilter.error(q1, a, m)
+        val error1 = error(q1, a, m)
 
         val n = error.norm()
         val n1 = error1.norm()
 
         assertTrue("error",  n1 < n)
+    }
+
+    private fun error(q: Quaternion, a: Vector, m: Vector): Vector {
+        return ExtendedComplementaryFilter.aError(q, a) + ExtendedComplementaryFilter.eError(q, a, m)
     }
 
     companion object {

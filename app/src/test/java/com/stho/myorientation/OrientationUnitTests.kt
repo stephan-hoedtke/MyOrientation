@@ -23,13 +23,7 @@ class OrientationUnitTests : BaseUnitTestsHelper() {
 
     private fun orientation_isCorrect(azimuth: Double, pitch: Double, roll: Double, centerAzimuth: Double, centerAltitude: Double) {
         val matrix = RotationMatrix.fromEulerAngles(azimuth, pitch, roll)
-        val orientationRaw = matrix.toOrientation()
-
-        val orientation = if (Rotation.requireAdjustmentForLookingAtThePhoneFromBelow(orientationRaw)) {
-            Rotation.adjustForLookingAtThePhoneFromBelow(orientationRaw)
-        } else {
-            orientationRaw
-        }
+        val orientation = matrix.toOrientation().normalize()
 
         assertEquals("azimuth", azimuth, orientation.azimuth, EPS_E8)
         assertEquals("pitch", pitch, orientation.pitch, EPS_E8)
@@ -128,15 +122,7 @@ class OrientationUnitTests : BaseUnitTestsHelper() {
 
         val eulerAngles = EulerAngles.fromAzimuthPitchRoll(azimuth, pitch, roll)
         val q: Quaternion = eulerAngles.toQuaternion()
-        val orientation = q.toOrientation()
-
-        val adjustedOrientation = if (Rotation.requireAdjustmentForLookingAtThePhoneFromBelow(orientation)) {
-            Rotation.adjustForLookingAtThePhoneFromBelow(orientation)
-        } else {
-            orientation
-        }
-
-        val p = adjustedOrientation.toEulerAngles().toQuaternion()
+        val p = q.toOrientation().normalize().toEulerAngles().toQuaternion()
 
         assertEquals(p, q, EPS_E8)
     }
