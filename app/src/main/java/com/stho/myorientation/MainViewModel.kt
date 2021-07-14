@@ -231,17 +231,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     internal fun createFilter(): IOrientationFilter =
-        when (method) {
-            Method.AccelerometerMagnetometer -> AccelerationMagnetometerFilter(options)
-            Method.RotationVector -> RotationVectorFilter(options)
-            Method.ComplementaryFilter -> ComplementaryFilter(options)
-            Method.MadgwickFilter -> MadgwickFilter(options)
-            Method.SeparatedCorrectionFilter -> SeparatedCorrectionFilter(options)
-            Method.ExtendedComplementaryFilter -> ExtendedComplementaryFilter(options)
-            Method.KalmanFilter -> KalmanFilter(options)
-            Method.Composition -> CompositionFilter(options)
-            Method.Damped -> CompositionFilter(options)
-        }
+        createFilter(method, options)
+
+    internal fun createFilter(method: Method): IOrientationFilter =
+        createFilter(method, options)
 
     private fun loadOptions() {
         touch(options.apply {
@@ -261,6 +254,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     companion object {
         private const val DEFAULT_ZOOM = 100.0
         private const val DEFAULT_START_TIME = 0.0
+
+        internal fun createFilter(method: Method, options: Options): IOrientationFilter =
+            when (method) {
+                Method.AccelerometerMagnetometer -> AccelerationMagnetometerFilter(options)
+                Method.RotationVector -> RotationVectorFilter(options)
+                Method.ComplementaryFilter -> ComplementaryFilter(options)
+                Method.MadgwickFilter -> MadgwickFilter(options)
+                Method.SeparatedCorrectionFilter -> SeparatedCorrectionFilter(options)
+                Method.ExtendedComplementaryFilter -> ExtendedComplementaryFilter(options)
+                Method.KalmanFilter -> KalmanFilter(options)
+                Method.Composition -> CompositionFilter(options)
+                Method.Damped -> CompositionFilter(options)
+            }
     }
 }
 

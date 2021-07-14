@@ -125,7 +125,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onDocumentation(): Boolean {
-        findNavController().navigate(R.id.action_global_DocumentationFragment)
+        findNavController().navigate(R.id.action_global_DocumentationContainerFragment)
         return true
     }
 

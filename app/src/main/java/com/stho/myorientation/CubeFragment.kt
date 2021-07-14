@@ -61,7 +61,7 @@ class CubeFragment : Fragment() {
     }
 
     private fun onDocumentation() {
-        findNavController().navigate(R.id.action_global_DocumentationFragment)
+        findNavController().navigate(R.id.action_global_DocumentationContainerFragment)
     }
 
     private fun onResetCubeOrientation(): Boolean {

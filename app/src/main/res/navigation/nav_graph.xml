@@ -18,10 +18,16 @@
         tools:layout="@layout/fragment_settings"/>
 
     <fragment
+        android:id="@+id/DocumentationContainerFragment"
+        android:name="com.stho.myorientation.DocumentationContainerFragment"
+        android:label="@string/label_fragment_documentation"
+        tools:layout="@layout/fragment_documentation_container"/>
+
+    <fragment
         android:id="@+id/DocumentationFragment"
         android:name="com.stho.myorientation.DocumentationFragment"
         android:label="@string/label_fragment_documentation"
-        tools:layout="@layout/fragment_documentation"/>
+        tools:layout="@layout/fragment_documentation_container"/>
 
     <fragment
         android:id="@+id/CubeFragment"
@@ -36,10 +42,10 @@
         tools:layout="@layout/fragment_statistics"/>
 
     <action android:id="@+id/action_global_CubeFragment" app:destination="@id/CubeFragment" />
+    <action android:id="@+id/action_global_SensorsFragment" app:destination="@id/SensorsFragment"/>
     <action android:id="@+id/action_global_SettingsFragment" app:destination="@id/SettingsFragment" />
     <action android:id="@+id/action_global_StatisticsFragment" app:destination="@id/StatisticsFragment" />
-    <action android:id="@+id/action_global_DocumentationFragment" app:destination="@id/DocumentationFragment"/>
-    <action android:id="@+id/action_global_SensorsFragment" app:destination="@id/SensorsFragment"/>
+    <action android:id="@+id/action_global_DocumentationContainerFragment" app:destination="@id/DocumentationContainerFragment"/>
 
 
 </navigation>
