@@ -51,31 +51,6 @@ abstract class AbstractOrientationFilter(private val method: Method, options: IF
 
         private const val EPSILON: Double = 0.000000001
 
-       /**
-         * Returns the rotation changes measured by the gyroscope as a Quaternion
-         */
-        internal fun getDeltaRotationFromGyroscope(omega: Vector, dt: Double): Quaternion {
-
-            // Quaternion integration:
-            // ds/dt = omega x s
-            // with s = q # s0 # q* follows
-            //      dq/dt = 0.5 * omega # q
-            //      q(t) = exp(0.5 * omega * (t - t0)) # q0
-            //      q(t) = cos(|v|) + v / |v| * sin(|v|) # q0 with v = 0.5 * omega * (t - t0)
-            //      this is equivalent to a rotation by theta around the rotation vector omega/|omega| with theta = |omega| * (t - t0)
-
-            // Calculate the angular speed
-            val omegaMagnitude: Double = omega.norm()
-
-            // Normalize the rotation vector if it's big enough to get the axis
-            // (that is, EPSILON should represent your maximum allowable margin of error)
-            return if (omegaMagnitude > EPSILON) {
-                Quaternion.forRotation(u = omega / omegaMagnitude, theta = omegaMagnitude * dt)
-            } else {
-                Quaternion.forRotation(omega, omegaMagnitude * dt)
-            }
-        }
-
         /**
          * Return the quaternion for the rotation defined by accelerometer and magnetometer readings, of possible, or null otherwise
          */

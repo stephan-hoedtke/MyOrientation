@@ -266,8 +266,7 @@ object Rotation {
         //      q(t) = exp(0.5 * omega * (t - t0)) # q0
         //      q(t) = cos(|v|) + v / |v| * sin(|v|) # q0 with v = 0.5 * omega * (t - t0)
         //      this is equivalent to a rotation by theta around the rotation vector omega/|omega| with theta = |omega| * (t - t0)
-        val theta: Double = omegaMagnitude * dt
-        return Quaternion.forRotation(w, theta)
+        return Quaternion.forRotation(u = w, theta = omegaMagnitude * dt)
     }
 
     /**

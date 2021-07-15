@@ -7,6 +7,7 @@ import com.stho.myorientation.Method
 import com.stho.myorientation.library.*
 import com.stho.myorientation.library.algebra.RotationMatrix
 import com.stho.myorientation.library.algebra.Quaternion
+import com.stho.myorientation.library.algebra.Rotation
 import com.stho.myorientation.library.algebra.Vector
 
 
@@ -87,7 +88,7 @@ class ComplementaryFilter(options: IComplementaryFilterOptions) :
         val omega = Vector.fromFloatArray(gyroscopeReading)
 
         // Get updated Gyro delta rotation from gyroscope readings
-        val deltaRotation = AbstractOrientationFilter.getDeltaRotationFromGyroscope(omega, dt)
+        val deltaRotation = Rotation.getRotationFromGyro(omega, dt)
 
         // update the gyro orientation
         val gyroOrientation = estimate * deltaRotation

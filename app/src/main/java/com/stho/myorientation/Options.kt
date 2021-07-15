@@ -70,7 +70,7 @@ data class Options(
     // Settings
     override var method: Method = Method.Composition,
     override var property: Property = Property.CenterAzimuth,
-    override var updateOrientationDelay: Long = 200,
+    override var updateOrientationDelay: Long = DEFAULT_UPDATE_ORIENTATION_DELAY,
     // (Common)Filter Options
     override var accelerationFactor: Double = DEFAULT_ACCELERATION_FACTOR,
         // Composition Filter
@@ -129,7 +129,7 @@ data class Options(
     }
 
     companion object {
-        private const val DEFAULT_UPDATE_ORIENTATION_DELAY = 200 // 200 ms
+        private const val DEFAULT_UPDATE_ORIENTATION_DELAY = 200L // 200 ms
         private const val DEFAULT_ACCELERATION_FACTOR = 0.7
         private const val DEFAULT_FILTER_COEFFICIENT = 0.98
         private const val DEFAULT_VARIANCE_GYROSCOPE = 0.3 * 0.3
