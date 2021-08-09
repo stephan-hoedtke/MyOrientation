@@ -436,6 +436,13 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchUseAcceleration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/label_use_acceleration"
+                android:checked="false" />
+
             <!-- Filter Parameters ************************************************************* -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"

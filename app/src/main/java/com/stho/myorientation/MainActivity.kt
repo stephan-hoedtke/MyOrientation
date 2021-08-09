@@ -43,9 +43,10 @@ class MainActivity : AppCompatActivity() {
         orientationFilter = AccelerationMagnetometerFilter(viewModel.options)
         orientationSensorListener = OrientationSensorListener(this, orientationFilter, processorConsumptionMeter)
 
-        viewModel.isActiveLD.observe(this, { isActive -> observeIsActive(isActive) })
-        viewModel.accelerationFactorLD.observe(this, { _ -> viewModel.reset() })
-        viewModel.methodLD.observe(this, { method -> observeMethod(method) })
+        viewModel.isActiveLD.observe(this) { isActive -> observeIsActive(isActive) }
+        viewModel.accelerationFactorLD.observe(this) { _ -> viewModel.reset() }
+        viewModel.useAccelerationLD.observe(this) { _ -> viewModel.reset() }
+        viewModel.methodLD.observe(this) { method -> observeMethod(method) }
 
         // TODO: google says its not good to lock the orientation, so why...
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT

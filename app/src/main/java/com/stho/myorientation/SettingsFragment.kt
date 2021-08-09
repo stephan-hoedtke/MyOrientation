@@ -127,15 +127,16 @@ class SettingsFragment : Fragment() {
         binding.switchSeparatedCorrectionFilter.setOnCheckedChangeListener { _, isChecked -> viewModel.showFilter(Method.SeparatedCorrectionFilter, isChecked) }
         binding.switchExtendedComplementaryFilter.setOnCheckedChangeListener { _, isChecked -> viewModel.showFilter(Method.ExtendedComplementaryFilter, isChecked) }
         binding.switchKalmanFilter.setOnCheckedChangeListener { _, isChecked -> viewModel.showFilter(Method.KalmanFilter, isChecked) }
+        binding.switchUseAcceleration.setOnCheckedChangeListener { _, isChecked -> viewModel.useAcceleration(isChecked) }
 
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.propertyLD.observe(viewLifecycleOwner, { property -> observeProperty(property) })
-        viewModel.methodLD.observe(viewLifecycleOwner, { mode -> observeMethod(mode) })
-        viewModel.optionsLD.observe(viewLifecycleOwner, { options -> observeOptions(options) })
+        viewModel.propertyLD.observe(viewLifecycleOwner) { property -> observeProperty(property) }
+        viewModel.methodLD.observe(viewLifecycleOwner) { mode -> observeMethod(mode) }
+        viewModel.optionsLD.observe(viewLifecycleOwner) { options -> observeOptions(options) }
     }
 
     override fun onStart() {
@@ -224,6 +225,7 @@ class SettingsFragment : Fragment() {
         binding.switchKalmanFilter.isChecked = options.showKalmanFilter
 
         // Acceleration Factor
+        binding.switchUseAcceleration.isChecked = options.useAcceleration
         binding.accelerationFactor.text = Formatter.df2.format(options.accelerationFactor)
         binding.seekbarAccelerationFactor.max = 100
         binding.seekbarAccelerationFactor.progress = valueToProgress(options.accelerationFactor, MAX_ACCELERATION_FACTOR)

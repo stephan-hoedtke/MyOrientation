@@ -1,12 +1,9 @@
 package com.stho.myorientation.library
 
-import com.stho.myorientation.library.algebra.Degree
-import com.stho.myorientation.library.algebra.IRotation
 import com.stho.myorientation.library.algebra.Quaternion
-import com.stho.myorientation.library.algebra.Rotation
 import kotlin.math.exp
 
-internal class QuaternionAcceleration(factorInSeconds: Double = 0.8, private val timeSource: TimeSource = SystemClockTimeSource()) {
+internal class QuaternionAcceleration(factorInSeconds: Double = 0.8, private val timeSource: TimeSource = SystemClockTimeSource()) : IQuaternionStorage {
 
 /*
    Use critical damped oscillation
@@ -32,22 +29,18 @@ internal class QuaternionAcceleration(factorInSeconds: Double = 0.8, private val
     private var q1: Quaternion = Quaternion.default
     private val factor = 1 / factorInSeconds
 
-    val position: Quaternion
+    override val position: Quaternion
         get() {
             val t = getTime(timeSource.elapsedRealtimeSeconds)
             return getPosition(t)
         }
 
-    fun rotateTo(targetPosition: IRotation) {
-        rotateTo(Quaternion.fromRotationMatrix(targetPosition))
-    }
-
-    fun rotateTo(targetQuaternion: Quaternion) {
+    override fun setTargetPosition(targetPosition: Quaternion) {
         val t1 = timeSource.elapsedRealtimeSeconds
         val t = getTime(t1)
         val v = getSpeed(t)
         q0 = getPosition(t)
-        q1 = targetQuaternion
+        q1 = targetPosition
         x0 = 1.0
         v0 = v
         t0 = t1

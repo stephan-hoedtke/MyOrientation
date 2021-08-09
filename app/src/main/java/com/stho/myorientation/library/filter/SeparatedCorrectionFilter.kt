@@ -136,12 +136,12 @@ class SeparatedCorrectionFilter(options: ISeparatedCorrectionFilterOptions) :
         val aAlpha = acos(a.dot(aPrediction))
         val aCorrectionRaw = a.cross(aPrediction)
         val aNorm = aCorrectionRaw.norm()
-        val aCorrection = if (aNorm > EPS) aCorrectionRaw / aNorm else Vector.default
+        val aCorrection = if (aNorm > EPS) aCorrectionRaw / aNorm else aCorrectionRaw
 
-        val mAlpha = acos(Vector.dot(m, mPrediction))
-        val mCorrectionRaw = Vector.cross(m, mPrediction)
+        val mAlpha = acos(m.dot(mPrediction))
+        val mCorrectionRaw = m.cross(mPrediction)
         val mNorm = mCorrectionRaw.norm()
-        val mCorrection = if (mNorm > EPS) mCorrectionRaw / mNorm else Vector.default
+        val mCorrection = if (mNorm > EPS) mCorrectionRaw / mNorm else mCorrectionRaw
 
         val aBeta = min(aAlpha * lambda1, lambda2)
         val mBeta = min(mAlpha * lambda1, lambda2)

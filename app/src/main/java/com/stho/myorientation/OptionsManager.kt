@@ -17,6 +17,7 @@ class OptionsManager(val context: Context) {
             editor.putString(MADGWICK_MODE, madgwickMode.toString())
             editor.putString(SEPARATED_CORRECTION_MODE, separatedCorrectionMode.toString())
             editor.putDouble(ACCELERATION_FACTOR, accelerationFactor)
+            editor.putBoolean(USE_ACCELERATION, useAcceleration)
             editor.putDouble(FILTER_COEFFICIENT, filterCoefficient)
             editor.putDouble(VARIANCE_ACCELERATION, varianceAccelerometer)
             editor.putDouble(VARIANCE_MAGNETOMETER, varianceMagnetometer)
@@ -48,6 +49,7 @@ class OptionsManager(val context: Context) {
             madgwickMode = preferences.parseMadgwickMode(MADGWICK_MODE, madgwickMode)
             separatedCorrectionMode = preferences.parseSeparatedCorrectionMode(SEPARATED_CORRECTION_MODE, separatedCorrectionMode)
             accelerationFactor = preferences.getDouble(ACCELERATION_FACTOR, accelerationFactor)
+            useAcceleration = preferences.getBoolean(USE_ACCELERATION, useAcceleration)
             filterCoefficient = preferences.getDouble(FILTER_COEFFICIENT, filterCoefficient)
             varianceAccelerometer = preferences.getDouble(VARIANCE_ACCELERATION, varianceAccelerometer)
             varianceMagnetometer = preferences.getDouble(VARIANCE_MAGNETOMETER, varianceMagnetometer)
@@ -77,6 +79,7 @@ class OptionsManager(val context: Context) {
         private const val MADGWICK_MODE = "MadgwickMode"
         private const val SEPARATED_CORRECTION_MODE = "SeparatedCorrectionMode"
         private const val ACCELERATION_FACTOR = "AccelerationFactor"
+        private const val USE_ACCELERATION = "UseAcceleration"
         private const val FILTER_COEFFICIENT = "FilterCoefficient"
         private const val VARIANCE_ACCELERATION = "VarianceAccelerometer"
         private const val VARIANCE_MAGNETOMETER = "VarianceMagnetometer"

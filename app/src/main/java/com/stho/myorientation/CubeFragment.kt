@@ -71,9 +71,9 @@ class CubeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.methodLD.observe(viewLifecycleOwner, { method -> observeMethod(method) })
-        viewModel.orientationLD.observe(viewLifecycleOwner, { orientation -> observeOrientation(orientation) })
-        viewModel.cubeOrientationLD.observe(viewLifecycleOwner, { eulerAngles -> observeCubeOrientation(eulerAngles) })
+        viewModel.methodLD.observe(viewLifecycleOwner) { method -> observeMethod(method) }
+        viewModel.orientationLD.observe(viewLifecycleOwner) { orientation -> observeOrientation(orientation) }
+        viewModel.cubeOrientationLD.observe(viewLifecycleOwner) { eulerAngles -> observeCubeOrientation(eulerAngles) }
     }
 
     override fun onStart() {

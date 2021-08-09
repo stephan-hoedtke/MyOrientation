@@ -86,5 +86,6 @@
     <string name="label_lambda1">lambda1</string>
     <string name="label_lambda2">lambda2</string>
     <string name="label_save">Save</string>
+    <string name="label_use_acceleration">Use Acceleration</string>
 </resources>
 

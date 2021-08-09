@@ -47,6 +47,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val accelerationFactorLD: LiveData<Double>
         get() = Transformations.map(optionsLiveData) { params -> params.accelerationFactor }
 
+    val useAccelerationLD: LiveData<Boolean>
+        get() = Transformations.map(optionsLiveData) { params -> params.useAcceleration }
+
     val filterCoefficientLD: LiveData<Double>
         get() = Transformations.map(optionsLiveData) { params -> params.filterCoefficient }
 
@@ -125,6 +128,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun setAccelerationFactor(newAccelerationFactor: Double) {
         touch(options.apply {
             accelerationFactor = newAccelerationFactor
+        })
+    }
+
+    fun useAcceleration(newValue: Boolean) {
+        touch(options.apply {
+            useAcceleration = newValue
         })
     }
 

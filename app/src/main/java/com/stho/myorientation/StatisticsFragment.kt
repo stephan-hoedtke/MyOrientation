@@ -42,10 +42,10 @@ class StatisticsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mainViewModel.methodLD.observe(viewLifecycleOwner, { method -> observeMethod(method) })
-        viewModel.accelerometerLD.observe(viewLifecycleOwner, { statistics -> observeAccelerometer(statistics) })
-        viewModel.magnetometerLD.observe(viewLifecycleOwner, { statistics -> observeMagnetometer(statistics) })
-        viewModel.gyroscopeLD.observe(viewLifecycleOwner, { statistics -> observeGyroscope(statistics) })
+        mainViewModel.methodLD.observe(viewLifecycleOwner) { method -> observeMethod(method) }
+        viewModel.accelerometerLD.observe(viewLifecycleOwner) { statistics -> observeAccelerometer(statistics) }
+        viewModel.magnetometerLD.observe(viewLifecycleOwner) { statistics -> observeMagnetometer(statistics) }
+        viewModel.gyroscopeLD.observe(viewLifecycleOwner) { statistics -> observeGyroscope(statistics) }
     }
 
     override fun onStart() {

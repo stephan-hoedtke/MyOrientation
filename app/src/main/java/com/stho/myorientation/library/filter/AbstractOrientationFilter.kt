@@ -1,24 +1,20 @@
 package com.stho.myorientation.library.filter
 
-import android.content.Context
-import android.graphics.pdf.PdfRenderer
 import android.hardware.SensorManager
-import android.os.ParcelFileDescriptor
 import android.view.Surface
 import com.stho.myorientation.*
+import com.stho.myorientation.library.IQuaternionStorage
 import com.stho.myorientation.library.QuaternionAcceleration
+import com.stho.myorientation.library.QuaternionStorage
 import com.stho.myorientation.library.algebra.*
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
 
 
 abstract class AbstractOrientationFilter(private val method: Method, options: IFilterOptions) : IOrientationFilter {
 
-    private val acceleration: QuaternionAcceleration = QuaternionAcceleration(options.accelerationFactor)
+    private val storage: IQuaternionStorage = createQuaternionStorage(options)
 
     override val currentOrientation: Orientation
-        get() = acceleration.position.toOrientation()
+        get() = storage.position.toOrientation()
 
     override var deviceRotation: Int = Surface.ROTATION_0
 
@@ -34,7 +30,7 @@ abstract class AbstractOrientationFilter(private val method: Method, options: IF
 
     private fun setOrientation(orientation: Orientation) {
         Repository.instance.recordEntry(method, orientation)
-        acceleration.rotateTo(orientation.rotation)
+        storage.setTargetPosition(Quaternion.fromRotationMatrix(orientation.rotation))
     }
 
     internal fun getAdjustedRotationMatrix(rotationMatrix: RotationMatrix): RotationMatrix =
@@ -117,6 +113,12 @@ abstract class AbstractOrientationFilter(private val method: Method, options: IF
                 }
             }
         }
+
+        private fun createQuaternionStorage(options: IFilterOptions): IQuaternionStorage =
+            when (options.useAcceleration) {
+                true -> QuaternionAcceleration(options.accelerationFactor)
+                false -> QuaternionStorage()
+            }
     }
 }
 

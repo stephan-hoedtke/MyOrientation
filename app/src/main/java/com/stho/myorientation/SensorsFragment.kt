@@ -70,15 +70,15 @@ class SensorsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.versionLD.observe(viewLifecycleOwner, { _ -> observeVersion() })
-        viewModel.zoomLD.observe(viewLifecycleOwner, { zoom -> observeZoom(zoom) })
-        viewModel.startTimeLD.observe(viewLifecycleOwner, { startTime -> observeStartTime(startTime) })
-        viewModel.propertyLD.observe(viewLifecycleOwner, { property -> observeProperty(property) })
-        viewModel.filterCoefficientLD.observe(viewLifecycleOwner, { filterCoefficient -> observeFilterCoefficient(filterCoefficient) })
-        viewModel.accelerationFactorLD.observe(viewLifecycleOwner, { accelerationFactor -> observeFactor(accelerationFactor) })
-        viewModel.methodLD.observe(viewLifecycleOwner, { method -> observeMethod(method) })
-        viewModel.orientationLD.observe(viewLifecycleOwner, { orientation -> observeOrientation(orientation) })
-        viewModel.processorConsumptionLD.observe(viewLifecycleOwner, { consumption -> observeProcessorConsumption(consumption) })
+        viewModel.versionLD.observe(viewLifecycleOwner) { _ -> observeVersion() }
+        viewModel.zoomLD.observe(viewLifecycleOwner) { zoom -> observeZoom(zoom) }
+        viewModel.startTimeLD.observe(viewLifecycleOwner) { startTime -> observeStartTime(startTime) }
+        viewModel.propertyLD.observe(viewLifecycleOwner) { property -> observeProperty(property) }
+        viewModel.filterCoefficientLD.observe(viewLifecycleOwner) { filterCoefficient -> observeFilterCoefficient(filterCoefficient) }
+        viewModel.accelerationFactorLD.observe(viewLifecycleOwner) { accelerationFactor -> observeFactor(accelerationFactor) }
+        viewModel.methodLD.observe(viewLifecycleOwner) { method -> observeMethod(method) }
+        viewModel.orientationLD.observe(viewLifecycleOwner) { orientation -> observeOrientation(orientation) }
+        viewModel.processorConsumptionLD.observe(viewLifecycleOwner) { consumption -> observeProcessorConsumption(consumption) }
     }
 
     override fun onStart() {

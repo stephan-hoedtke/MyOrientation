@@ -6,6 +6,7 @@ import kotlin.math.PI
 
 interface IFilterOptions {
     val accelerationFactor: Double
+    val useAcceleration: Boolean
 }
 
 interface IAccelerationMagnetometerFilterOptions : IFilterOptions {
@@ -73,6 +74,7 @@ data class Options(
     override var updateOrientationDelay: Long = DEFAULT_UPDATE_ORIENTATION_DELAY,
     // (Common)Filter Options
     override var accelerationFactor: Double = DEFAULT_ACCELERATION_FACTOR,
+    override var useAcceleration: Boolean = true,
         // Composition Filter
     override var showAccelerometerMagnetometerFilter: Boolean = false,
     override var showRotationVectorFilter: Boolean = true,
@@ -113,6 +115,7 @@ data class Options(
 
     fun resetDefaultOptions() {
         accelerationFactor = DEFAULT_ACCELERATION_FACTOR
+        useAcceleration = true
         separatedCorrectionMode = SeparatedCorrectionFilter.Mode.SCF
         madgwickMode = MadgwickFilter.Mode.Default
         gyroscopeMeanError = DEFAULT_GYROSCOPE_MEAN_ERROR
